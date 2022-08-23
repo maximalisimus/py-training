@@ -1,0 +1,20 @@
+﻿
+1. PC minimal Info	
+2. File hosts
+3. pings
+	3.1. ya.ru
+	3.2. 8.8.8.8
+	3.3. ESRN
+	3.4. Pidgin-Public-CHAT-Adreses
+	3.5. MSED
+	3.6. pgs gosuslugi
+	3.7. pgs data gosuslugi
+4. Logical disk free and used memory info
+5. List Printers
+6. Fragmentation udefrag
+7. smartctl
+
+
+
+
+
