@@ -1,0 +1,19 @@
+
+wmic cpu get name
+
+pywin32
+def get_cpu_type():
+    from win32com.client import GetObject
+    root_winmgmts = GetObject("winmgmts:root\cimv2")
+    cpus = root_winmgmts.ExecQuery("Select * from Win32_Processor")
+    return cpus[0].Name
+
+wmic baseboard get version
+wmic baseboard get product
+
+wmic path win32_VideoController get name
+wmic path win32_VideoController get VideoModeDescription
+
+
+
+
