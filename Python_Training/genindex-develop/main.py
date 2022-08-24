@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import json
+
+def WriteBasicIcons(file_icons: str = "icons.json"):
+	data = {
+			"standart": {
+				"file_icon": "file",
+				"folder_icon": "folder",
+				"back_icon": "back"
+			},
+			"others": {
+				"b5i9v": "arj,zip,rar,gz,gz2,xz,7z,bz2,tar,zip,cab",
+				"b5j7k": "iso,mds,mdf,ccd,img,sub,cue,nrg,bwt,bwi,bws,cdi",
+				"b7m2o": "bmp,jpeg,jpg,png,gif,tiff,svg,webdm,ico,cdr,eps,wmf",
+				"c3t4s": "hlp",
+				"d5g1v": "chm",
+				"d5r4o": "mp3,wav,ogg,flac",
+				"d7f2o": "mp4,avi,3gp,wmv,webm,mpeg,divx,mkv,m4v",
+				"w1t3b": "flv",
+				"f4t3t": "deb",
+				"f9j6j": "rpm",
+				"g5f7m": "patch",
+				"g9j9d": "pdf",
+				"h2y4h": "doc,docx,odt",
+				"i8k2z": "xls,xlsx,ods",
+				"l3n4g": "ppt,pptx,odp",
+				"l9k2n": "c",
+				"m7t2p": "cpp",
+				"n9o2x": "h",
+				"o6i7b": "log",
+				"o8j5k": "html,htm,hta",
+				"p4f4q": "css",
+				"p7g3b": "php",
+				"q4u5x": "pro",
+				"r7s4y": "ttf,otf,fon,pfa,pfb,pfr,fnt",
+				"r9b7l": "svg",
+				"s3b4b": "sh,py,rb,vbs,ps1,AppImage,json,pl",
+				"t2h1s": "bat,cmd",
+				"w1l5d": "rtf,dot,csv,xml,txt,md,locale,mo,trans",
+				"w4c1d": "conf,ini,asc,cnf,cur,ani,sys,mui,spl,inf",
+				"x1q8u": "exe,msi,scr,run,bin",
+				"n7p9z": "ovpn,vpn",
+				"o1q5j": "pem,crl,crt,gpg,pub,rsa,rev,cer",
+				"t5d0x": "sig,asc,sam,key,req",
+				"o1q5j": "gpg",
+				"p5x6t": "apk,tgz,zst",
+				"k9r9s": "vdi,vhd,vmdk,vhdx,ova",
+				"j9p5i": "acdb,acdc,adb,sql,adf,alf,db,dbf,dbc,dxl,kdb,mdb,kbx",
+				"t0l5m": "desktop",
+				"p7m9c": "info,nfo",
+				"g7z2i": "dll,so,0,1,2",
+				"n2b2e": "xml,msc",
+				"h7o6j": "json",
+				"k0e1m": "lic,license",
+				"y8w8p": "man",
+				"c4i7v": "py",
+				"h5e6d": "lib,dcm",
+				"q6f3z": "bck,sum,sums,md5,sha,sha1,sha1sums,sha256sums,sha512sums,hash",
+				"t0k2y": "kicad_mod",
+				"x2i7d": "user",
+				"z0w2a": "STL,stl,wrl,dae,vrm,vrml",
+				"k1w4m": "fcstd",
+				"l5g6m": "blend,blende1,blende2,blend3,blend4,blend5"
+			}
+	}
+	with open(file_icons, "w") as fp:
+		json.dump(data, fp, indent=2)
+
+def ReadIcons(file_icons: str = "icons.json") -> dict:
+	data = ''
+	with open("icons.json", "r") as fp:
+		data = json.load(fp)
+	return data
+
+def main():
+	# WriteBasicIcons()
+	data = ReadIcons()
+	print(data['standart'])
+
+if __name__ == '__main__':
+	main()
