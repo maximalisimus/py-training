@@ -301,8 +301,11 @@ def GetHostData() -> str:
 	data_host = '\n'.join([x.strip() for x in host_data if not '#' in x]).strip()
 	return data_host
 
-def WriteBaseInfo(LogFile: str, ListDisks: tuple, isHosts: bool = True, isDisks: bool = True):
-		
+def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True, 
+				isCPUinfo: bool = True, isVideoCardInfo: bool = True,
+				isMemoryInfo: bool = True, isNetAdapterInfo: bool = True,
+				isHosts: bool = True, isDisks: bool = True,
+				isUserInfo: bool = True, isNetName: bool = True):
 	all_users = list_users()
 	username = GetUserName()
 	cpu_info = GetCPUType()
@@ -312,43 +315,87 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isHosts: bool = True, isDisks:
 	if isHosts: on_hosts = GetHostData()
 		
 	global default_out_color
+	
 	if default_out_color:
-		print(Fore.RED + 'Writing basic PC information to a log file ...' + Fore.RESET)
+		print(Fore.RED + 'Writing PC information to a log file.' + Fore.RESET)
 	else:
-		print('Writing basic PC information to a log file ...')
+		print('Writing PC information to a log file.')
 	
 	with open(LogFile, 'w') as f:
-		f.write(f'{datetime.now().strftime("%d.%m.%Y-%H:%M:%S")}\n')
-		f.write(f"Architecture: {platform.architecture()}\n")
-		f.write(f"Machine: {platform.machine()}\n")
-		f.write(f"Users: {' '.join(all_users)}\n")
-		f.write(f"User login: {username}\n")
-		f.write(f"Network Name: {platform.node()}\n")
-		f.write(f"Release: {platform.release()}\n")
-		f.write(f"System: {platform.system()}\n")
-		f.write(f"Version: {platform.version()}\n")
-		f.write(f"Platform: {platform.platform()}\n")
-		f.write(f"CPU: {platform.processor()}\n")
-		f.write(f"CPU INFO: \n")
-		for i in cpu_info:
-			f.write(f"\t{i}\n")
-		f.write('VideoCards:\n')
-		for i in video_info:
-			f.write(f"\t{i}\n")
-		f.write('Memory:\n')
-		for i in on_memory:
-			f.write(f"\t{i}\n")
-		f.write('Network adapters:\n')
-		for i in networks:
-			f.write(f"\t{i}\n")
+		if isBasicInfo:
+			if default_out_color:
+				print(Fore.RED + '\tWriting basic PC information to a log file ...' + Fore.RESET)
+			else:
+				print('\tWriting basic PC information to a log file ...')
+			f.write(f'{datetime.now().strftime("%d.%m.%Y-%H:%M:%S")}\n')
+			f.write(f"Architecture: {platform.architecture()}\n")
+			f.write(f"Machine: {platform.machine()}\n")
+			f.write(f"Release: {platform.release()}\n")
+			f.write(f"System: {platform.system()}\n")
+			f.write(f"Version: {platform.version()}\n")
+			f.write(f"Platform: {platform.platform()}\n")
+			f.write(f"CPU: {platform.processor()}\n")
+		if isUserInfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Users info.' + Fore.RESET)
+			else:
+				print('\tWriting Users info.')
+			f.write(f"Users: {' '.join(all_users)}\n")
+			f.write(f"User login: {username}\n")
+		if isNetName:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Network Name info.' + Fore.RESET)
+			else:
+				print('\tWriting Network Name info.')
+			f.write(f"Network Name: {platform.node()}\n")
+		if isCPUinfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting CPU info.' + Fore.RESET)
+			else:
+				print('\tWriting CPU info.')
+			f.write(f"CPU INFO: \n")
+			for i in cpu_info:
+				f.write(f"\t{i}\n")
+		if isVideoCardInfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting VideoCard info.' + Fore.RESET)
+			else:
+				print('\tWriting VideoCard info.')
+			f.write('VideoCards:\n')
+			for i in video_info:
+				f.write(f"\t{i}\n")
+		if isMemoryInfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Memory info.' + Fore.RESET)
+			else:
+				print('\tWriting Memory info.')
+			f.write('Memory:\n')
+			for i in on_memory:
+				f.write(f"\t{i}\n")
+		if isNetAdapterInfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Network Adapaters info.' + Fore.RESET)
+			else:
+				print('\tWriting Network Adapaters info.')
+			f.write('Network adapters:\n')
+			for i in networks:
+				f.write(f"\t{i}\n")
 		f.write('\n')
 		if isHosts:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Hosts file info.' + Fore.RESET)
+			else:
+				print('\tWriting Hosts file info.')
 			f.write(f"File hosts:\n")
 			f.write(on_hosts)
 			f.write('\n\n')
 		else:
 			f.write('\n')
 		if isDisks:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Disks info.' + Fore.RESET)
+			else:
+				print('\tWriting Disks info.')
 			f.write('Local disk information:\n')
 			for disks in ListDisks:
 				total, used, free = shutil.disk_usage("C:")
@@ -378,6 +425,12 @@ def createParser():
 	parser.add_argument("-t", '--ontimeout', dest="ontimeout", metavar='TIMEOUT', type=float, default=2, help='The maximum waiting time for receiving a reply in seconds.')
 	return parser
 
+def FuncParserA(args):
+	print(f"Creating parser_a")
+
+def FuncParserB(args):
+	print(f"Creating parser_b")
+
 def main():
 	global programs_dir
 	global cmds
@@ -386,19 +439,28 @@ def main():
 	init()
 	
 	parser = createParser()
-	subparsers = parser.add_subparsers(title='Logs',
-										description='Change the log output folder.',
-										help='commands')
-	parser_a = subparsers.add_parser('edit', help='Changing the location of logs.')
-	parser_a.add_argument ('-ndf', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
-	parser_a.add_argument ('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
+	subparsers = parser.add_subparsers(title='subcommands',
+											description='valid subcommands',
+											help='description')
+	parser_a = subparsers.add_parser('basic',  help='Changing the output of basic information.')
+	parser_a.add_argument('-nbi', '--nobasicinfo', action='store_false', default=True,  help='Do not record basic information.')
+	parser_a.add_argument('-nui', '--nouserinfo', action='store_false', default=True,  help='Do not display information about system users.')
+	parser_a.add_argument('-nnn', '--nonetworkname', action='store_false', default=True,  help='Do not output the network name of the computer.')
+	parser_a.add_argument('-nci', '--nocpuinfo', action='store_false', default=True,  help='Do not output detailed information about the processor.')
+	parser_a.add_argument('-nvi', '--novideoinfo', action='store_false', default=True,  help='Do not display detailed information about video cards.')
+	parser_a.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
+	parser_a.add_argument('-nni', '--nonetworkinfo', action='store_false', default=True,  help='Do not display detailed information about network adapters.')
+	
+	parser_b = subparsers.add_parser('edit', help='Changing the location of logs.')
+	parser_b.add_argument('-ndf', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
+	parser_b.add_argument('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
 	
 	structure_file = GetFileConfig('', default_structure_file)
 
 	with open(structure_file, 'r') as f:
 		kabinets = list(map(lambda x: x.replace('\n',''), f.readlines()))
 	del structure_file
-	parser_a.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
+	parser_b.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
 	
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
@@ -410,11 +472,25 @@ def main():
 	datafolder = '' if args.nodatayear else str('Log-' + GetDateTime('%Y'))
 	qarter = '' if args.noqarter else GetQuarterName()
 	
+	if args.nodatayear == None: args.nodatayear = False
+	if args.noqarter == None: args.noqarter = False
+	
 	logfile = pathlib.Path().cwd().joinpath('Log').joinpath(datafolder).joinpath(qarter).joinpath(args.move if args.nodatayear else str(args.move + '-' + GetDateTime('%Y'))).joinpath(GetLogName()) if args.move != None else pathlib.Path().cwd().joinpath('Log').joinpath(datafolder).joinpath(qarter).joinpath(GetLogName())
 	logfile = logfile.resolve()
-	MakeDirs(str(logfile.parent))	
+	MakeDirs(str(logfile.parent))
 	
-	WriteBaseInfo(logfile, local_disk, args.nohosts, args.nodiskinfo)
+	if args.nobasicinfo == None: args.nobasicinfo = True
+	if args.nocpuinfo == None: args.nocpuinfo = True
+	if args.novideoinfo == None: args.novideoinfo = True
+	if args.nomemoryinfo == None: args.nomemoryinfo = True
+	if args.nonetworkinfo == None: args.nonetworkinfo = True
+	if args.nouserinfo == None: args.nouserinfo = True
+	if args.nonetworkname == None: args.nonetworkname = True
+	
+	WriteBaseInfo(logfile, local_disk, args.nobasicinfo, 
+				args.nocpuinfo, args.novideoinfo, args.nomemoryinfo, 
+				args.nonetworkinfo, args.nohosts, args.nodiskinfo,
+				args.nouserinfo, args.nonetworkname)
 	
 	p = subprocess.Popen('cmd.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 	
