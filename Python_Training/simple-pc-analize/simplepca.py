@@ -32,8 +32,7 @@ from enum import Enum
 import win32api
 import win32file
 
-import ctypes
-from ctypes.wintypes import BYTE, DWORD, LPCWSTR
+from win32com.client import GetObject
 
 from colorama import init, Fore
 
@@ -86,6 +85,52 @@ default_structure_file = 'structure.txt'
 
 default_out_color: bool = True
 
+def size_format(in_size):
+	if in_size < 1000:
+		return f"{in_size} B"
+	elif 1000 <= in_size < 1000000:
+		#return '%.1f' % float(in_size/1000) + ' KB'
+		return f"{float(in_size/1000):.1f} KB"
+	elif 1000000 <= in_size < 1000000000:
+		#return '%.1f' % float(in_size/1000000) + ' MB'
+		return f"{float(in_size/1000000):.1f} MB"
+	elif 1000000000 <= in_size < 1000000000000:
+		# return '%.1f' % float(in_size/1000000000) + ' GB'
+		return f"{float(in_size/1000000000):.1f} GB"
+	elif 1000000000000 <= in_size:
+		#return '%.1f' % float(in_size/1000000000000) + ' TB'
+		return f"{float(in_size/1000000000000):.1f} TB"
+
+def OnWinmgmts(OnObject: str):
+	root_winmgmts = GetObject("winmgmts:root\cimv2")
+	on_root = root_winmgmts.ExecQuery("Select * from " + OnObject)
+	return on_root
+
+def GetCPUType():
+	cpus = OnWinmgmts('Win32_Processor')
+	for x in cpus:
+		output = f"{str(x.Name).strip()}, L2CacheSize = {str(size_format(x.L2CacheSize)).strip()}, " + \
+				f"L3CacheSize = {str(size_format(x.L3CacheSize)).strip()}, " + \
+				f"Cores = {str(x.NumberOfCores).strip()}, Thread = {str(x.NumberOfLogicalProcessors).strip()}"
+		yield output
+
+def GetMemory():
+	memory = OnWinmgmts('Win32_PhysicalMemory')
+	for x in memory:
+		yield f"{x.Name}: {str(x.PartNumber).strip()}, {str(x.Speed).strip()} MHz, {size_format(int(x.Capacity))}"
+
+def GetVideoControllerInfo():
+	videocontroller = OnWinmgmts('Win32_VideoController')
+	for x in videocontroller:
+		yield f"{str(x.Name).strip()}, {str(x.VideoModeDescription).strip()}"
+
+def GetNetAdapter():
+	netadapter = OnWinmgmts('Win32_NetworkAdapter')
+	for x in netadapter:
+		if x.PhysicalAdapter:
+			yield f"{x.Name}, {x.MACAddress}, {x.AdapterType}" + \
+				f", Enabled {x.NetEnabled}"
+
 def FastOnePing(addr: str, count = 4, interval: float = 0.5, pocket_size: int = 64, timeout: float = 2, source: str = None):
 	out_text = []
 	try:
@@ -108,39 +153,9 @@ def FastOnePing(addr: str, count = 4, interval: float = 0.5, pocket_size: int = 
 	yield '\n'.join(out_text)
 
 def GetPrinters():
-	winspool = ctypes.WinDLL('winspool.drv')  # for EnumPrintersW
-	msvcrt = ctypes.cdll.msvcrt  # for malloc, free
-
-	# Parameters: modify as you need. See MSDN for detail.
-	PRINTER_ENUM_LOCAL = 2
-	Name = None  # ignored for PRINTER_ENUM_LOCAL
-	Level = 1  # or 2, 4, 5
-
-	class PRINTER_INFO_1(ctypes.Structure):
-		_fields_ = [
-			("Flags", DWORD),
-			("pDescription", LPCWSTR),
-			("pName", LPCWSTR),
-			("pComment", LPCWSTR),
-		]
-
-	# Invoke once with a NULL pointer to get buffer size.
-	info = ctypes.POINTER(BYTE)()
-	pcbNeeded = DWORD(0)
-	pcReturned = DWORD(0)  # the number of PRINTER_INFO_1 structures retrieved
-	winspool.EnumPrintersW(PRINTER_ENUM_LOCAL, Name, Level, ctypes.byref(info), 0,
-			ctypes.byref(pcbNeeded), ctypes.byref(pcReturned))
-
-	bufsize = pcbNeeded.value
-	buffer = msvcrt.malloc(bufsize)
-	winspool.EnumPrintersW(PRINTER_ENUM_LOCAL, Name, Level, buffer, bufsize,
-			ctypes.byref(pcbNeeded), ctypes.byref(pcReturned))
-	info = ctypes.cast(buffer, ctypes.POINTER(PRINTER_INFO_1))
-	#for i in range(pcReturned.value):
-	#	print(info[i].pName)#, '=>', info[i].pDescription
-	msvcrt.free(buffer)
-	for i in range(pcReturned.value):
-		yield f"{info[i].pName}"
+	printers = OnWinmgmts('Win32_Printer')
+	for x in printers:
+		yield f"{x.Name}".replace('\n', '').strip()
 
 class NoValue(Enum):
 
@@ -290,8 +305,12 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isHosts: bool = True, isDisks:
 		
 	all_users = list_users()
 	username = GetUserName()
+	cpu_info = GetCPUType()
+	video_info = GetVideoControllerInfo()
+	on_memory = GetMemory()
+	networks = GetNetAdapter()
 	if isHosts: on_hosts = GetHostData()
-	
+		
 	global default_out_color
 	if default_out_color:
 		print(Fore.RED + 'Writing basic PC information to a log file ...' + Fore.RESET)
@@ -309,7 +328,20 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isHosts: bool = True, isDisks:
 		f.write(f"System: {platform.system()}\n")
 		f.write(f"Version: {platform.version()}\n")
 		f.write(f"Platform: {platform.platform()}\n")
-		f.write(f"CPU: {platform.processor()}\n\n")
+		f.write(f"CPU: {platform.processor()}\n")
+		f.write(f"CPU INFO: \n")
+		for i in cpu_info:
+			f.write(f"\t{i}\n")
+		f.write('VideoCards:\n')
+		for i in video_info:
+			f.write(f"\t{i}\n")
+		f.write('Memory:\n')
+		for i in on_memory:
+			f.write(f"\t{i}\n")
+		f.write('Network adapters:\n')
+		for i in networks:
+			f.write(f"\t{i}\n")
+		f.write('\n')
 		if isHosts:
 			f.write(f"File hosts:\n")
 			f.write(on_hosts)
