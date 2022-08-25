@@ -280,14 +280,6 @@ def GetFileConfig(on_file: str, default_file: str) -> str:
 	else:
 		return str(pathlib.Path().cwd().joinpath(default_file).resolve())
 
-class Arguments:
-	
-	def __getattr__(self, attrname):
-		return None
-	
-	def __repr__(self):
-		return f"{self.__class__}: \n\t(nohosts={self.nohosts}, \n\tnodiskinfo={self.nodiskinfo}, \n\tnoping={self.noping}, \n\tnoprinters={self.noprinters}. \n\tnodefrag={self.nodefrag}, \n\tnosmart={self.nosmart}, \n\tpingfile={self.pingfile}, \n\tmove={self.move})"
-
 def GetHostData() -> str:
 	global default_out_color
 	if default_out_color:
@@ -409,22 +401,68 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 			f.write('\n')
 			del total, used, free
 
+class Arguments:
+	
+	def __getattr__(self, attrname):
+		return None
+	
+	def __repr__(self):
+		return f"{self.__class__}: (\n" + \
+				f"\tnocolorout: {self.nocolorout},\n" + \
+				f"\tnoping: {self.noping},\n\tnoprinters: {self.noprinters},\n\tnodefrag: {self.nodefrag},\n\tnosmart: {self.nosmart},\n" + \
+				f"\tnobasicinfo: {self.nobasicinfo},\n" + \
+				f"\tnohostfile: {self.nohostfile},\n\tnodiskinfo: {self.nodiskinfo},\n\tnouserinfo: {self.nouserinfo},\n" + \
+				f"\tnonetworkname: {self.nonetworkname},\n\tnocpuinfo: {self.nocpuinfo},\n\tnovideoinfo: {self.novideoinfo},\n" + \
+				f"\tnomemoryinfo: {self.nomemoryinfo},\n\tnonetworkinfo: {self.nonetworkinfo},\n" + \
+				f"\tpingfile: {self.pingfile},\n" + \
+				f"\toncount: {self.oncount},\n\toninterval: {self.oninterval},\n\tonsize: {self.onsize},\n" + \
+				f"\tsrcaddr: {self.srcaddr},\n\tontimeout: {self.ontimeout},\n" + \
+				f"\tnodatayear: {self.nodatayear},\n\tnoqarter: {self.noqarter},\n" + \
+				f"\tmove: {self.move}"
+
 def createParser():
 	global progname
 	parser = argparse.ArgumentParser(prog=progname,description='Simple PC Analysis')
-	parser.add_argument ('-v', '--version', action='version', version=f'{progname}  {__version__}',  help='Version.')
-	parser.add_argument ('-np', '--noping', action='store_false', default=True, help='Do not read or write ping data.')
-	parser.add_argument ('-pn', '--noprinters', action='store_false', default=True, help='Do not list printers.')
-	parser.add_argument ('-nf', '--nodefrag', action='store_false', default=True, help='Do not read and write disks fragmentation data.')
-	parser.add_argument ('-ns', '--nosmart', action='store_false', default=True, help='Do not read or write S.M.A.R.T. disks data.')
+	parser.add_argument ('-v', '--version', action='version', version=f'{progname} {__version__}',  help='Version.')
 	parser.add_argument ('-nc', '--nocolorout', action='store_false', default=True, help='Discolor informational messages.')
+	
+	group1 = parser.add_argument_group('extend', 'Changing the receipt of extended information about PC disks.')
+	group1.add_argument ('-np', '--noping', action='store_false', default=True, help='Do not read or write ping data.')
+	group1.add_argument ('-pn', '--noprinters', action='store_false', default=True, help='Do not list printers.')
+	group1.add_argument ('-nf', '--nodefrag', action='store_false', default=True, help='Do not read and write disks fragmentation data.')
+	group1.add_argument ('-ns', '--nosmart', action='store_false', default=True, help='Do not read or write S.M.A.R.T. disks data.')
+	
+	group2 = parser.add_argument_group('basic', 'Changing the output of basic information.')
+	group2.add_argument('-nbi', '--nobasicinfo', action='store_false', default=True,  help='Do not record basic information.')
+	group2.add_argument ('-nhf', '--nohostfile', action='store_false', default=True,  help='Do not read and write data from the hosts file.')
+	group2.add_argument ('-ndi', '--nodiskinfo', action='store_false', default=True, help='Do not read or write computer disk sizes.')
+	group2.add_argument('-nui', '--nouserinfo', action='store_false', default=True,  help='Do not display information about system users.')
+	group2.add_argument('-nnn', '--nonetworkname', action='store_false', default=True,  help='Do not output the network name of the computer.')
+	group2.add_argument('-nci', '--nocpuinfo', action='store_false', default=True,  help='Do not output detailed information about the processor.')
+	group2.add_argument('-nvi', '--novideoinfo', action='store_false', default=True,  help='Do not display detailed information about video cards.')
+	group2.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
+	group2.add_argument('-nni', '--nonetworkinfo', action='store_false', default=True,  help='Do not display detailed information about network adapters.')
+	
+	group3 = parser.add_argument_group('ping', 'Changing the ping settings.')
+	group3.add_argument("-pf", '--pingfile', dest="pingfile", metavar='PINGFILE', type=str, default='', help='A file with a list for ping addresses.')
+	group3.add_argument("-c", '--oncount', dest="oncount", metavar='COUNT', type=int, default=4, help='Number of echo requests to send.')
+	group3.add_argument("-i", '--oninterval', dest="oninterval", metavar='INTERVAL', type=float, default=0.5, help='The interval in seconds between sending each packet.')
+	group3.add_argument("-s", '--onsize', dest="onsize", metavar='SIZE', type=int, default=64, help='Send buffer size.')
+	group3.add_argument("-S", '--srcaddr', dest="srcaddr", metavar='SRCADDR', type=str, default=None, help='Source address to use.')
+	group3.add_argument("-t", '--ontimeout', dest="ontimeout", metavar='TIMEOUT', type=float, default=2.0, help='The maximum waiting time for receiving a reply in seconds.')
+	
+	group4 = parser.add_argument_group('log', 'Changing the location of logs.')
+	group4.add_argument('-nde', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
+	group4.add_argument('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
+	
+	structure_file = GetFileConfig('', default_structure_file)
+
+	with open(structure_file, 'r') as f:
+		kabinets = list(map(lambda x: x.replace('\n',''), f.readlines()))
+	del structure_file
+	group4.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
+	
 	return parser
-
-def FuncParserA(args):
-	print(f"Creating parser_a")
-
-def FuncParserB(args):
-	print(f"Creating parser_b")
 
 def main():
 	global programs_dir
@@ -434,38 +472,6 @@ def main():
 	init()
 	
 	parser = createParser()
-	subparsers = parser.add_subparsers(title='subcommands',
-											description='valid subcommands',
-											help='description')
-	parser_a = subparsers.add_parser('basic',  help='Changing the output of basic information.')
-	parser_a.add_argument('-nbi', '--nobasicinfo', action='store_false', default=True,  help='Do not record basic information.')
-	parser_a.add_argument ('-nhf', '--nohostfile', action='store_false', default=True,  help='Do not read and write data from the hosts file.')
-	parser_a.add_argument ('-ndi', '--nodiskinfo', action='store_false', default=True, help='Do not read or write computer disk sizes.')
-	parser_a.add_argument('-nui', '--nouserinfo', action='store_false', default=True,  help='Do not display information about system users.')
-	parser_a.add_argument('-nnn', '--nonetworkname', action='store_false', default=True,  help='Do not output the network name of the computer.')
-	parser_a.add_argument('-nci', '--nocpuinfo', action='store_false', default=True,  help='Do not output detailed information about the processor.')
-	parser_a.add_argument('-nvi', '--novideoinfo', action='store_false', default=True,  help='Do not display detailed information about video cards.')
-	parser_a.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
-	parser_a.add_argument('-nni', '--nonetworkinfo', action='store_false', default=True,  help='Do not display detailed information about network adapters.')
-	
-	parser_b = subparsers.add_parser('ping', help='Changing the ping settings.')
-	parser_b.add_argument("-pf", '--pingfile', dest="pingfile", metavar='PINGFILE', type=str, default='', help='A file with a list for ping addresses.')
-	parser_b.add_argument("-c", '--oncount', dest="oncount", metavar='COUNT', type=int, default=4, help='Number of echo requests to send.')
-	parser_b.add_argument("-i", '--oninterval', dest="oninterval", metavar='INTERVAL', type=float, default=0.5, help='The interval in seconds between sending each packet.')
-	parser_b.add_argument("-s", '--onsize', dest="onsize", metavar='SIZE', type=int, default=64, help='Send buffer size.')
-	parser_b.add_argument("-S", '--srcaddr', dest="srcaddr", metavar='SRCADDR', type=str, default=None, help='Source address to use.')
-	parser_b.add_argument("-t", '--ontimeout', dest="ontimeout", metavar='TIMEOUT', type=float, default=2.0, help='The maximum waiting time for receiving a reply in seconds.')
-	
-	parser_c = subparsers.add_parser('edit', help='Changing the location of logs.')
-	parser_c.add_argument('-ndf', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
-	parser_c.add_argument('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
-	
-	structure_file = GetFileConfig('', default_structure_file)
-
-	with open(structure_file, 'r') as f:
-		kabinets = list(map(lambda x: x.replace('\n',''), f.readlines()))
-	del structure_file
-	parser_c.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
 	
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
@@ -477,29 +483,9 @@ def main():
 	datafolder = '' if args.nodatayear else str('Log-' + GetDateTime('%Y'))
 	qarter = '' if args.noqarter else GetQuarterName()
 	
-	if args.nodatayear == None: args.nodatayear = False
-	if args.noqarter == None: args.noqarter = False
-	
 	logfile = pathlib.Path().cwd().joinpath('Log').joinpath(datafolder).joinpath(qarter).joinpath(args.move if args.nodatayear else str(args.move + '-' + GetDateTime('%Y'))).joinpath(GetLogName()) if args.move != None else pathlib.Path().cwd().joinpath('Log').joinpath(datafolder).joinpath(qarter).joinpath(GetLogName())
 	logfile = logfile.resolve()
 	MakeDirs(str(logfile.parent))
-	
-	if args.nobasicinfo == None: args.nobasicinfo = True
-	if args.nocpuinfo == None: args.nocpuinfo = True
-	if args.novideoinfo == None: args.novideoinfo = True
-	if args.nomemoryinfo == None: args.nomemoryinfo = True
-	if args.nonetworkinfo == None: args.nonetworkinfo = True
-	if args.nouserinfo == None: args.nouserinfo = True
-	if args.nonetworkname == None: args.nonetworkname = True
-	if args.nohostfile == None: args.nohostfile = True
-	if args.nodiskinfo == None: args.nodiskinfo = True
-	
-	if args.pingfile == None: args.pingfile: str = ''
-	if args.oncount == None: args.oncount: int = 4
-	if args.oninterval == None: args.oninterval: float = 0.5
-	if args.onsize == None: args.onsize = 64
-	if args.srcaddr == None: args.srcaddr = None
-	if args.ontimeout == None: args.ontimeout: float = 2.0
 	
 	WriteBaseInfo(logfile, local_disk, args.nobasicinfo, 
 				args.nocpuinfo, args.novideoinfo, args.nomemoryinfo, 
