@@ -324,9 +324,9 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 	with open(LogFile, 'w') as f:
 		if isBasicInfo:
 			if default_out_color:
-				print(Fore.RED + '\tWriting basic PC information to a log file ...' + Fore.RESET)
+				print(Fore.RED + 'Writing basic PC information to a log file ...' + Fore.RESET)
 			else:
-				print('\tWriting basic PC information to a log file ...')
+				print('Writing basic PC information to a log file ...')
 			f.write(f'{datetime.now().strftime("%d.%m.%Y-%H:%M:%S")}\n')
 			f.write(f"Architecture: {platform.architecture()}\n")
 			f.write(f"Machine: {platform.machine()}\n")
