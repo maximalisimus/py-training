@@ -316,10 +316,13 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 		
 	global default_out_color
 	
-	if default_out_color:
-		print(Fore.RED + 'Writing PC information to a log file.' + Fore.RESET)
-	else:
-		print('Writing PC information to a log file.')
+	iswritebase = isBasicInfo + isCPUinfo + isVideoCardInfo + isMemoryInfo + isNetAdapterInfo + \
+				isHosts + isDisks + isUserInfo + isNetName
+	if iswritebase > 0:
+		if default_out_color:
+			print(Fore.RED + 'Writing PC information to a log file.' + Fore.RESET)
+		else:
+			print('Writing PC information to a log file.')
 	
 	with open(LogFile, 'w') as f:
 		if isBasicInfo:
@@ -410,19 +413,11 @@ def createParser():
 	global progname
 	parser = argparse.ArgumentParser(prog=progname,description='Simple PC Analysis')
 	parser.add_argument ('-v', '--version', action='version', version=f'{progname}  {__version__}',  help='Version.')
-	parser.add_argument ('-nh', '--nohosts', action='store_false', default=True,  help='Do not read and write data from the hosts file.')
-	parser.add_argument ('-nd', '--nodiskinfo', action='store_false', default=True, help='Do not read or write computer disk sizes.')
-	parser.add_argument ('-np', '--noping', action='store_true', default=False, help='Do not read or write ping data.')
-	parser.add_argument ('-pn', '--noprinters', action='store_true', default=False, help='Do not list printers.')
-	parser.add_argument ('-nf', '--nodefrag', action='store_true', default=False, help='Do not read and write disks fragmentation data.')
-	parser.add_argument ('-ns', '--nosmart', action='store_true', default=False, help='Do not read or write S.M.A.R.T. disks data.')
-	parser.add_argument("-pf", '--pingfile', dest="pingfile", metavar='PINGFILE', type=str, default='', help='A file with a list for ping addresses.')
+	parser.add_argument ('-np', '--noping', action='store_false', default=True, help='Do not read or write ping data.')
+	parser.add_argument ('-pn', '--noprinters', action='store_false', default=True, help='Do not list printers.')
+	parser.add_argument ('-nf', '--nodefrag', action='store_false', default=True, help='Do not read and write disks fragmentation data.')
+	parser.add_argument ('-ns', '--nosmart', action='store_false', default=True, help='Do not read or write S.M.A.R.T. disks data.')
 	parser.add_argument ('-nc', '--nocolorout', action='store_false', default=True, help='Discolor informational messages.')
-	parser.add_argument("-c", '--oncount', dest="oncount", metavar='COUNT', type=int, default=4, help='Number of echo requests to send.')
-	parser.add_argument("-i", '--oninterval', dest="oninterval", metavar='INTERVAL', type=float, default=0.5, help='The interval in seconds between sending each packet.')
-	parser.add_argument("-s", '--onsize', dest="onsize", metavar='SIZE', type=int, default=64, help='Send buffer size.')
-	parser.add_argument("-S", '--srcaddr', dest="srcaddr", metavar='SRCADDR', type=str, default=None, help='Source address to use.')
-	parser.add_argument("-t", '--ontimeout', dest="ontimeout", metavar='TIMEOUT', type=float, default=2, help='The maximum waiting time for receiving a reply in seconds.')
 	return parser
 
 def FuncParserA(args):
@@ -444,6 +439,8 @@ def main():
 											help='description')
 	parser_a = subparsers.add_parser('basic',  help='Changing the output of basic information.')
 	parser_a.add_argument('-nbi', '--nobasicinfo', action='store_false', default=True,  help='Do not record basic information.')
+	parser_a.add_argument ('-nhf', '--nohostfile', action='store_false', default=True,  help='Do not read and write data from the hosts file.')
+	parser_a.add_argument ('-ndi', '--nodiskinfo', action='store_false', default=True, help='Do not read or write computer disk sizes.')
 	parser_a.add_argument('-nui', '--nouserinfo', action='store_false', default=True,  help='Do not display information about system users.')
 	parser_a.add_argument('-nnn', '--nonetworkname', action='store_false', default=True,  help='Do not output the network name of the computer.')
 	parser_a.add_argument('-nci', '--nocpuinfo', action='store_false', default=True,  help='Do not output detailed information about the processor.')
@@ -451,16 +448,24 @@ def main():
 	parser_a.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
 	parser_a.add_argument('-nni', '--nonetworkinfo', action='store_false', default=True,  help='Do not display detailed information about network adapters.')
 	
-	parser_b = subparsers.add_parser('edit', help='Changing the location of logs.')
-	parser_b.add_argument('-ndf', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
-	parser_b.add_argument('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
+	parser_b = subparsers.add_parser('ping', help='Changing the ping settings.')
+	parser_b.add_argument("-pf", '--pingfile', dest="pingfile", metavar='PINGFILE', type=str, default='', help='A file with a list for ping addresses.')
+	parser_b.add_argument("-c", '--oncount', dest="oncount", metavar='COUNT', type=int, default=4, help='Number of echo requests to send.')
+	parser_b.add_argument("-i", '--oninterval', dest="oninterval", metavar='INTERVAL', type=float, default=0.5, help='The interval in seconds between sending each packet.')
+	parser_b.add_argument("-s", '--onsize', dest="onsize", metavar='SIZE', type=int, default=64, help='Send buffer size.')
+	parser_b.add_argument("-S", '--srcaddr', dest="srcaddr", metavar='SRCADDR', type=str, default=None, help='Source address to use.')
+	parser_b.add_argument("-t", '--ontimeout', dest="ontimeout", metavar='TIMEOUT', type=float, default=2.0, help='The maximum waiting time for receiving a reply in seconds.')
+	
+	parser_c = subparsers.add_parser('edit', help='Changing the location of logs.')
+	parser_c.add_argument('-ndf', '--nodatayear', action='store_true', default=False, help='Do not sort log files by year.')
+	parser_c.add_argument('-nq', '--noqarter', action='store_true', default=False, help='Do not sort log files by quarters.')
 	
 	structure_file = GetFileConfig('', default_structure_file)
 
 	with open(structure_file, 'r') as f:
 		kabinets = list(map(lambda x: x.replace('\n',''), f.readlines()))
 	del structure_file
-	parser_b.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
+	parser_c.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
 	
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
@@ -486,23 +491,40 @@ def main():
 	if args.nonetworkinfo == None: args.nonetworkinfo = True
 	if args.nouserinfo == None: args.nouserinfo = True
 	if args.nonetworkname == None: args.nonetworkname = True
+	if args.nohostfile == None: args.nohostfile = True
+	if args.nodiskinfo == None: args.nodiskinfo = True
+	
+	if args.pingfile == None: args.pingfile: str = ''
+	if args.oncount == None: args.oncount: int = 4
+	if args.oninterval == None: args.oninterval: float = 0.5
+	if args.onsize == None: args.onsize = 64
+	if args.srcaddr == None: args.srcaddr = None
+	if args.ontimeout == None: args.ontimeout: float = 2.0
 	
 	WriteBaseInfo(logfile, local_disk, args.nobasicinfo, 
 				args.nocpuinfo, args.novideoinfo, args.nomemoryinfo, 
-				args.nonetworkinfo, args.nohosts, args.nodiskinfo,
+				args.nonetworkinfo, args.nohostfile, args.nodiskinfo,
 				args.nouserinfo, args.nonetworkname)
 	
-	p = subprocess.Popen('cmd.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+	isqueryinfo = args.nodefrag + args.nosmart
 	
-	if default_out_color:
-		print(Fore.CYAN + 'Request for extended PC information.' + Fore.RESET)
-	else:
-		print('Request for extended PC information.')
+	isallinfo = args.nodefrag + args.nosmart + args.noprinters + args.noping
 	
-	sys.stdout.flush()
-	p.stdin.write(cmds[0] + "\n")
+	p = ''
+	if isqueryinfo > 0:
+		p = subprocess.Popen('cmd.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+		
+		sys.stdout.flush()
+		p.stdin.write(cmds[0] + "\n")
 	
-	if not args.noprinters:
+	if isallinfo > 0:
+		if default_out_color:
+			print(Fore.CYAN + 'Request for extended PC information.' + Fore.RESET)
+		else:
+			print('Request for extended PC information.')
+	
+	lst_printers = ''
+	if args.noprinters:
 		if default_out_color:
 			print(Fore.YELLOW + 'Getting a list of printers.' + Fore.RESET)
 		else:
@@ -510,7 +532,7 @@ def main():
 		lst_printers = GetPrinters()
 	
 	ping_list = ''
-	if not args.noping:
+	if args.noping:
 		ping_list = GetPingList(args.pingfile)
 		if default_out_color:
 			print(Fore.YELLOW + 'Loading the address ping function.' + Fore.RESET)
@@ -518,7 +540,7 @@ def main():
 			print('Loading the address ping function.')
 		full_ping = tuple(map(lambda x: FastOnePing(x, args.oncount, args.oninterval, args.onsize, args.ontimeout, args.srcaddr), ping_list))
 	
-	if not args.nodefrag:
+	if args.nodefrag:
 		if default_out_color:
 			print(Fore.MAGENTA + 'Analysis of disks defragmentation ...' + Fore.RESET)
 		else:
@@ -530,7 +552,7 @@ def main():
 			sys.stdout.flush()
 			p.stdin.write(on_run + "\n")
 	
-	if not args.nosmart:
+	if args.nosmart:
 		if default_out_color:
 			print(Fore.MAGENTA + 'Analysis of S.M.A.R.T. information about disks in the system.' + Fore.RESET)
 		else:
@@ -542,8 +564,9 @@ def main():
 			sys.stdout.flush()
 			p.stdin.write(on_run + "\n")
 	
-	# Close the 'stdin' process correctly
-	p.stdin.close()
+	if isqueryinfo > 0:
+		# Close the 'stdin' process correctly
+		p.stdin.close()
 	
 	# Free up some memory
 	del local_disk
@@ -551,28 +574,30 @@ def main():
 	del cmds
 	
 	out_data = ''
-	if not args.nodefrag:
-		# Delete a lot of 'analysis' lines:' from udefrag output
-		data = p.stdout.read().split('\n')
-		out_data = '\n'.join([x.strip() for x in data if not 'analysis:' in x]).strip()
-		del data
-	else:
-		out_data = p.stdout.read()
+	if isqueryinfo > 0:
+		if args.nodefrag:
+			# Delete a lot of 'analysis' lines:' from udefrag output
+			data = p.stdout.read().split('\n')
+			out_data = '\n'.join([x.strip() for x in data if not 'analysis:' in x]).strip()
+			del data
+		else:
+			out_data = p.stdout.read()
 	
-	if default_out_color:
-		print(Fore.RED + '\nWriting the received data to a log file ...' + Fore.RESET)
-	else:
-		print('\nWriting the received data to a log file ...')
+	if isallinfo > 0:
+		if default_out_color:
+			print(Fore.RED + '\nWriting the received data to a log file ...' + Fore.RESET)
+		else:
+			print('\nWriting the received data to a log file ...')
 	
 	# write output data
 	with open(logfile, 'a') as logfile:
 		logfile.write(out_data)
-		if not args.noprinters:
+		if args.noprinters:
 			logfile.write('\n\nList of printers:\n')
 			for item in lst_printers:
 				logfile.write('\t'+ item + '\n')
 			logfile.write('\n')
-		if not args.noping:
+		if args.noping:
 			logfile.write('\n\nList of pings:\n')
 			if default_out_color:
 				print(Fore.YELLOW + '\nPing of lists:' + Fore.RESET)
@@ -588,9 +613,10 @@ def main():
 					logfile.write(x + '\n')
 				logfile.write('\n')
 	
-	# Close the 'Popen' process correctly
-	p.terminate()
-	p.kill()
+	if isqueryinfo > 0:
+		# Close the 'Popen' process correctly
+		p.terminate()
+		p.kill()
 	
 	if default_out_color:
 		print(Fore.GREEN + '\nThe system analysis has been successfully completed !' + Fore.RESET)
