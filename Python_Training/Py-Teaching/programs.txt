@@ -1,0 +1,181 @@
+Windows programs:
+	Плагин пользователя систем электронного правительства (версия 3.1.1.0) x64, 3.1.1.0, 08.07.2022, None
+	Blender, 2.80.0, 11.05.2022, C:\Program Files\Blender Foundation\Blender\
+	Microsoft DCF MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Professional Plus 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft OneNote MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office 32-bit Components 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Shared 32-bit MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office OSM MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office OSM UX MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft InfoPath MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Access MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Excel MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft PowerPoint MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Publisher MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Outlook MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Groove MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Word MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Lync MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Proofing (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Shared MUI (Russian) 2013, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Засоби перевірки правопису Microsoft Office 2013 – Українська версія, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Korrekturhilfen 2013 - Deutsch, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Microsoft Office Proofing Tools 2013 - English, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	Средства проверки правописания Microsoft Office 2013 — русский, 15.0.4420.1017, 07.04.2022, C:\Program Files\Microsoft Office\
+	NI Multisim LabVIEW Interoperability Support 14.0.0, 14.0.593, 10.06.2019, None
+	VEGAS Pro 13.0 (64-bit), 13.0.543, 07.04.2022, C:\Program Files\VEGAS\Vegas Pro 13\
+	NI LabWindows/CVI 2013 SP2 TDMS Library, 13.0.2278, 10.06.2019, None
+	NI LabVIEW 2014 Deployment Framework, 14.0.390, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 TDMS Library (64-bit), 13.0.2278, 10.06.2019, None
+	NI SSL Support (64-bit), 14.5.10, 10.06.2019, None
+	Microsoft Visual C++ 2008 Redistributable - x64 9.0.30729.4148, 9.0.30729.4148, 23.07.2014, None
+	Math Kernel Libraries (64-bit), 13.0.13, 10.06.2019, None
+	MarketResearch, 130.0.374.000, 04.04.2014, None
+	NI-RPC 14.0.0f0 for 64 Bit Windows, 14.00.49152, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 Network Variable Library, 13.0.2278, 10.06.2019, None
+	NI System Web Server Base 2014 SP1, 14.5.6, 10.06.2019, None
+	NI MetaSuite Installer, 3.30.282, 10.06.2019, None
+	Microsoft_VC90_CRT_x86, 1.00.0000, 07.04.2022, None
+	NI Security Update (KB 67L8LCQW), 1.0.29.0, 10.06.2019, None
+	MSVCRT Redists, 1.0, 07.04.2022, None
+	NI mDNS Responder 14.0 for Windows 64-bit, 14.00.49152, 10.06.2019, None
+	hppLaserJetService, 001.001.0.0, 04.04.2014, None
+	NI Logos XT Support, 5.6.253, 10.06.2019, None
+	Microsoft Visual C++ 2010  x64 Redistributable - 10.0.40219, 10.0.40219, 23.07.2014, None
+	NI VC2008MSMs x86, 9.0.401, 10.06.2019, None
+	Microsoft Visual C++ 2005 Redistributable (x64), 8.0.61000, 23.07.2014, None
+	NI TDM Streaming 14.0 (64-bit), 14.0.43, 10.06.2019, None
+	NI Circuit Design Suite 14.0 Core, 14.0.593, 10.06.2019, None
+	Microsoft Visual C++ 2010  x86 Redistributable - 10.0.40219, 10.0.40219, 23.07.2014, None
+	Microsoft Visual C++ 2022 X64 Minimum Runtime - 14.31.31103, 14.31.31103, 08.04.2022, None
+	NI Service Locator 2014, 14.0.217, 10.06.2019, None
+	CARMA, 56.0.219, 31.05.2022, C:\Program Files (x86)\EOS\CARMA\
+	NI Authentication 2014SP1, 14.5.5, 10.06.2019, None
+	Дело, 20.4.86.441808, 05.08.2022, None
+	NI LabWindows/CVI 2013 SP2 Low-Level Driver (Original), 13.0.2278, 10.06.2019, None
+	NI System State Publisher, 14.1.7, 10.06.2019, None
+	NI Example Finder 14.0, 14.0.133, 10.06.2019, None
+	NI Web Application Server 2014 SP1 (64-bit), 14.5.8, 10.06.2019, None
+	NI License Manager, 3.7.73, 10.06.2019, None
+	NI LabVIEW-Multisim Co-simulation Plug-in 14.0 for LabVIEW 2014, 14.0.593, 10.06.2019, None
+	NI Visual C++ 2008 Redistributable Package, 9.00.49152, 10.06.2019, None
+	NI Launcher, 3.30.282, 10.06.2019, None
+	Ассистент 4.0, 4.0.2010.801, 29.04.2022, C:\Program Files (x86)\Ассистент\
+	NI MDF Support, 14.50.214, 10.06.2019, None
+	NI Update Service 2014 (64-bit), 14.0.34, 10.06.2019, None
+	HPSSupply, 2.1.1.0000, 04.04.2014, C:\Program Files (x86)\HP\HPSSUPPLY\
+	NI LabWindows/CVI Shared Run-Time Engine 2013 SP2 (64-bit), 13.0.2278, 10.06.2019, None
+	NI LabVIEW 2014 SP1 Run-Time Engine Web Server, 14.5.5, 10.06.2019, None
+	NI LabVIEW Runtime 2014 SP1, 14.1.101, 10.06.2019, None
+	Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.40649, 12.0.40649, 26.03.2019, None
+	NI LabWindows/CVI 2013 SP2 .NET Library, 13.0.2278, 10.06.2019, None
+	Math Kernel Libraries (64-bit), 14.0.6, 10.06.2019, None
+	NI VC2010SP1MSMs x64, 10.0.100, 10.06.2019, None
+	Sputnik Update Helper, 1.3.33.31, 08.07.2022, None
+	eXtended Container, 1.0.2.2, 26.03.2019, None
+	Microsoft Visual C++ 2015 x86 Minimum Runtime - 14.0.24215, 14.0.24215, 19.08.2022, None
+	NI System Web Server 2014 SP1, 14.5.9, 10.06.2019, None
+	NI VC2008MSMs x64, 9.0.401, 10.06.2019, None
+	NI Uninstaller, 14.50.214, 10.06.2019, None
+	Microsoft Visual C++ 2013 x64 Minimum Runtime - 12.0.40649, 12.0.40649, 26.03.2019, None
+	NI Web Application Server 2014 SP1, 14.5.8, 10.06.2019, None
+	Java 8 Update 111, 8.0.1110.14, 27.06.2017, C:\Program Files (x86)\Java\jre1.8.0_111\
+	Java 8 Update 101 (64-bit), 8.0.1010.13, 08.04.2022, C:\Program Files\Java\jre1.8.0_101\
+	NI Circuit Design Suite Master Database, 14.0.593, 10.06.2019, None
+	NI ActiveX Container, 14.0.5, 10.06.2019, None
+	NI Trace Engine (64-bit), 14.0.177, 10.06.2019, None
+	Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.40649, 12.0.40649, 26.03.2019, None
+	NI ActiveX Container (64-bit), 14.0.5, 10.06.2019, None
+	NI Error Reporting 2014, 14.0.379, 10.06.2019, None
+	NI SSL Support, 14.5.10, 10.06.2019, None
+	Oracle VM VirtualBox 5.2.8, 5.2.8, 10.01.2019, None
+	NI LabVIEW 2013 SP1 Run-Time Engine Non-English Support., 13.1.99, 10.06.2019, None
+	NI mDNS Responder 14.0.0, 14.00.49152, 10.06.2019, None
+	hppP1100P1560P1600SeriesLaserJetService, 001.001.0.0, 04.04.2014, None
+	Драйверы Рутокен, 4.8.00.0000, 08.07.2022, None
+	NI .NET Framework 4.0, 4.01.49152, 10.06.2019, None
+	Adobe Reader X - Russian, 10.0.0, 07.02.2014, C:\Program Files (x86)\Adobe\Reader 10.0\Reader\
+	NI LabVIEW 2013 Run-Time Engine Web Server, 13.5.27, 10.06.2019, None
+	NI Logos 5.6, 5.6.257, 10.06.2019, None
+	NI Visual C++ 2010 Redistributable Package, 10.10.16385, 10.06.2019, None
+	NI Security Update (KB 67L8LCQW) (64-bit), 1.0.29.0, 10.06.2019, None
+	NI Logos 5.6 (64-bit), 5.6.257, 10.06.2019, None
+	NI System State Publisher (64-bit), 14.1.7, 10.06.2019, None
+	NI LabVIEW 2012 Real-Time NBFifo, 13.0.336, 10.06.2019, None
+	Dazzle Video Capture DVC100 X64 Driver 1.06, 1.06.0000, 23.07.2014, C:\Program Files (x86)\Pinnacle\Dazzle Video Capture DVC100 X64 Driver 1.06\
+	Math Kernel Libraries, 14.0.6, 10.06.2019, None
+	PDF Settings CS6, 11.0, 07.04.2022, None
+	КриптоПро CSP, 4.0.9944, 11.07.2022, C:\Program Files (x86)\Crypto Pro\CSP\
+	NI VC2010SP1MSMs x86, 10.0.100, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 Network Streams Library (64-bit), 13.0.2278, 10.06.2019, None
+	Pinnacle Studio 17, 17.2.0.246, 23.07.2014, None
+	NI LabVIEW Runtime Interop 2014, 14.1.101, 10.06.2019, None
+	NI Math Kernel Libraries, 1.0.861.0, 10.06.2019, None
+	Kaspersky Small Office Security, 21.1.15.500, 01.01.2009, C:\Program Files (x86)\Kaspersky Lab\Kaspersky Small Office Security 21.1\
+	NI Update Service 2014, 14.0.34, 10.06.2019, None
+	NI-RPC 14.0.0f0, 14.00.49152, 10.06.2019, None
+	NI LabVIEW-Multisim Co-simulation Plug-in 14.0 for LabVIEW 2013, 14.0.593, 10.06.2019, None
+	NI LabVIEW Run-Time Engine 2013 SP1 f6, 13.1.125, 10.06.2019, None
+	Microsoft_VC80_CRT_x86, 8.0.50727.4053, 07.04.2022, None
+	NI LabWindows/CVI 2013 SP2 Network Streams Library, 13.0.2278, 10.06.2019, None
+	KeePassXC, 2.6.6, 06.04.2022, C:\Program Files\KeePassXC\
+	NI USI 14.0.0, 14.0.05640, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 Analysis Library (64-bit), 13.0.2278, 10.06.2019, None
+	NI LabVIEW Run-Time Engine Interop 2013, 13.1.125, 10.06.2019, None
+	LibreOffice 7.3.5.2, 7.3.5.2, 16.08.2022, C:\Program Files\LibreOffice\
+	NI Error Reporting Interface 14.0, 14.0.241, 10.06.2019, None
+	NI Multisim API Toolkit for LabVIEW 2014, 14.0.593, 10.06.2019, None
+	Math Kernel Libraries, 13.0.13, 10.06.2019, None
+	Software Updater, 4.3.7, 06.04.2022, None
+	hppusgP1100P1560P1600Series, 1.0.0.1, 04.04.2014, None
+	NI Error Reporting Interface 14.0 for Windows (64-bit), 14.0.241, 10.06.2019, None
+	NI-Mesa, 13.0.3, 10.06.2019, None
+	NI USI 14.0.0 64-bit, 14.0.05640, 10.06.2019, None
+	NI SSL LabVIEW RTE 2014 Support, 14.0.376, 10.06.2019, None
+	NI TDM Streaming 14.0, 14.0.43, 10.06.2019, None
+	NI EulaDepot, 14.50.214, 10.06.2019, None
+	NI Curl 14.0.0 (64-bit), 14.0.294, 10.06.2019, None
+	Руководства EPSON, 1.41.0.0, 06.04.2022, None
+	Microsoft Visual C++ 2022 X64 Additional Runtime - 14.31.31103, 14.31.31103, 08.04.2022, None
+	NI Circuit Design Suite 14.0 Pro, 14.0.593, 10.06.2019, None
+	NI Circuit Design Suite 14.0 Pro Licenses, 14.0.593, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 .NET Library (64-bit), 13.0.2278, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 Low-Level Driver (Updated), 13.0.2278, 10.06.2019, None
+	NI-Mesa, 13.0.3, 10.06.2019, None
+	NI LabVIEW 2012 Real-Time NBFifo, 14.0.386, 10.06.2019, None
+	Microsoft .NET Framework 4.5.1, 4.5.50938, 04.04.2014, None
+	NI Authentication 2014SP1 (64-bit), 14.5.5, 10.06.2019, None
+	Microsoft Visual C++ 2005 Redistributable, 8.0.61001, 23.07.2014, None
+	NI Multisim API Toolkit for LabVIEW 2013, 14.0.593, 10.06.2019, None
+	Yandex, 21.5.0.582, 08.07.2022, None
+	NI LabWindows/CVI 2013 SP2 Analysis Library, 13.0.2278, 10.06.2019, None
+	Microsoft Visual C++ 2015 x86 Additional Runtime - 14.0.24215, 14.0.24215, 19.08.2022, None
+	LibreOffice 7.3 Help Pack (Russian), 7.3.5.2, 16.08.2022, C:\Program Files\LibreOffice\
+	Microsoft Visual C++ 2008 Redistributable - x86 9.0.30729.4148, 9.0.30729.4148, 23.07.2014, None
+	NI Measurement Studio ComponentWorks 3D Graph, 8.6.10603, 10.06.2019, None
+	NI Curl 2014, 14.0.295, 10.06.2019, None
+	Microsoft XNA Framework Redistributable 3.1, 3.1.10527.0, 08.04.2022, None
+	NI MAX Remote Configuration 64-bit Installer 14.0, 14.00.49152, 10.06.2019, None
+	Microsoft Visual C++ 2013 x64 Additional Runtime - 12.0.40649, 12.0.40649, 26.03.2019, None
+	Adobe Flash Player 26 PPAPI, 26.0.0.131, 08.07.2022, C:\Windows\SysWOW64\Macromed\Flash\
+	NI MAX Remote Configuration Installer 14.0, 14.00.49152, 10.06.2019, None
+	NI SSL LabVIEW RTE 2013 SP1 Support, 13.5.27, 10.06.2019, None
+	NI Trace Engine, 14.0.177, 10.06.2019, None
+	NI Help Assistant 2.0 (64bit), 2.0.3, 10.06.2019, None
+	Microsoft .NET Framework 1.1, 1.1.4322, 27.06.2017, None
+	paint.net, 4.3.10, 07.04.2022, None
+	NI LabWindows/CVI Shared Run-Time Engine 2013 SP2, 13.0.2278, 10.06.2019, None
+	PDF-XChange Editor, 7.0.325.1, 07.04.2022, C:\Program Files\Tracker Software\
+	NI Logos64 XT Support, 5.6.253, 10.06.2019, None
+	8GadgetPack, 34.0.0, 13.05.2022, None
+	NI System Web Server Base 2014 SP1 (64-bit), 14.5.6, 10.06.2019, None
+	NI System API Windows 32-bit 14.0.0, 14.0.302, 10.06.2019, None
+	КриптоПро ЭЦП Browser plug-in, 2.0.14590, 10.08.2022, C:\Program Files (x86)\Crypto Pro\CAdES Browser Plug-in\
+	NI LabWindows/CVI Run-Time Engine 2013 SP2 (Updated), 13.0.2278, 10.06.2019, None
+	Java Auto Updater, 2.8.111.14, 27.06.2017, None
+	NI System API Windows 64-bit 14.0.0, 14.0.302, 10.06.2019, None
+	NI Help Assistant 2.0, 2.0.3, 10.06.2019, None
+	NI LabWindows/CVI 2013 SP2 Network Variable Library (64-bit), 13.0.2278, 10.06.2019, None
+	Oracle Data Provider for .NET Help, 11.1.0600, 29.06.2017, None
+	NI LabVIEW Runtime 2014 SP1 Non-English Support., 14.1.96, 10.06.2019, None
