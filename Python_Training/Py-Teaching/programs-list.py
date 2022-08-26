@@ -23,14 +23,15 @@ def GetFullPrograms():
 	a = set()
 	for x in programs:
 		on_date_str = dateTimeToStr(strToDateTime(x.InstallDate, "%Y%m%d"), "%d.%m.%Y")
-		yield f"{x.Name}, {x.Version}, {on_date_str}, {x.InstallLocation}"
+		#yield f"{x.Name}, {x.Version}, {on_date_str}, {x.InstallLocation}"
+		yield (f"{x.Name}", f"{x.Version}", f"{on_date_str}", f"{x.InstallLocation}")
 
 def main():
-	full_programs = GetFullPrograms()
+	full_programs = sorted(GetFullPrograms(), key=lambda x: x[0])
 	with open('programs.txt', 'w') as f:
 		f.write(f"Windows programs:\n")
 		for i in full_programs:
-			f.write(f"\t{i}\n")
+			f.write(f"\t{', '.join(i)}\n")
 
 if __name__ == '__main__':
 	main()
