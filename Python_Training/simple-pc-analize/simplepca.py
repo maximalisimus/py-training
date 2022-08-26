@@ -141,6 +141,16 @@ def GetIPAddress() -> str:
 			yield f"{ip}/{subnet},"
 			yield f"Gateway: {gateway}"
 
+def GetSoundDevice():
+	sounddevice = OnWinmgmts('Win32_SoundDevice ')
+	for x in sounddevice:
+		yield f"{x.ProductName}"
+
+def GetUSBController():
+	usbcontroller = OnWinmgmts('Win32_USBController ')
+	for x in usbcontroller:
+		yield f"{x.Name}"
+
 def FastOnePing(addr: str, count = 4, interval: float = 0.5, pocket_size: int = 64, timeout: float = 2, source: str = None):
 	out_text = []
 	try:
@@ -308,7 +318,7 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 				isMemoryInfo: bool = True, isNetAdapterInfo: bool = True,
 				isHosts: bool = True, isDisks: bool = True,
 				isUserInfo: bool = True, isNetName: bool = True,
-				isIPinfo: bool = True):
+				isIPinfo: bool = True, isSound: bool = True, isUSB: bool = True):
 	all_users = list_users()
 	username = GetUserName()
 	cpu_info = GetCPUType()
@@ -316,12 +326,14 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 	on_memory = GetMemory()
 	networks = GetNetAdapter()
 	myip = GetIPAddress()
+	sound = GetSoundDevice()
+	usb = GetUSBController()
 	if isHosts: on_hosts = GetHostData()
 		
 	global default_out_color
 	
 	iswritebase = isBasicInfo + isCPUinfo + isVideoCardInfo + isMemoryInfo + isNetAdapterInfo + \
-				isHosts + isDisks + isUserInfo + isNetName + isIPinfo
+				isHosts + isDisks + isUserInfo + isNetName + isIPinfo + isSound + isUSB
 	if iswritebase > 0:
 		if default_out_color:
 			print(Fore.RED + 'Writing PC information to a log file.' + Fore.RESET)
@@ -395,6 +407,22 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 			f.write('Network adapters:\n')
 			for i in networks:
 				f.write(f"\t{i}\n")
+		if isSound:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Sound Devices info.' + Fore.RESET)
+			else:
+				print('\tWriting Sound Devices info.')
+			f.write('Sound Device:\n')
+			for i in sound:
+				f.write(f"\t{i}\n")
+		if isUSB:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting USB Controllers info.' + Fore.RESET)
+			else:
+				print('\tWriting USB Controllers info.')
+			f.write('USB Controllers:\n')
+			for i in usb:
+				f.write(f"\t{i}\n")
 		f.write('\n')
 		if isHosts:
 			if default_out_color:
@@ -464,6 +492,8 @@ def createParser():
 	group2.add_argument('-nvi', '--novideoinfo', action='store_false', default=True,  help='Do not display detailed information about video cards.')
 	group2.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
 	group2.add_argument('-nni', '--nonetworkinfo', action='store_false', default=True,  help='Do not display detailed information about network adapters.')
+	group2.add_argument('-nsd', '--nosounddevice', action='store_false', default=True,  help='Do not display detailed information about sound devices.')
+	group2.add_argument('-nuc', '--nousbcontrollers', action='store_false', default=True,  help='Do not display detailed information about usb controllers.')
 	
 	group3 = parser.add_argument_group('ping', 'Changing the ping settings.')
 	group3.add_argument("-pf", '--pingfile', dest="pingfile", metavar='PINGFILE', type=str, default='', help='A file with a list for ping addresses.')
@@ -484,7 +514,7 @@ def createParser():
 	del structure_file
 	group4.add_argument('-move', choices=kabinets, help='Select the kabinet or departament.')
 	
-	return parser
+	return parser, group1, group2, group3, group4
 
 def main():
 	global programs_dir
@@ -493,7 +523,7 @@ def main():
 	
 	init()
 	
-	parser = createParser()
+	parser, gr1, gr2, gr3, gr4 = createParser()
 	
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
@@ -512,7 +542,8 @@ def main():
 	WriteBaseInfo(logfile, local_disk, args.nobasicinfo, 
 				args.nocpuinfo, args.novideoinfo, args.nomemoryinfo, 
 				args.nonetworkinfo, args.nohostfile, args.nodiskinfo,
-				args.nouserinfo, args.nonetworkname, args.noipinfo)
+				args.nouserinfo, args.nonetworkname, args.noipinfo,
+				args.nosounddevice, args.nousbcontrollers)
 	
 	isqueryinfo = args.nodefrag + args.nosmart
 	
