@@ -129,7 +129,17 @@ def GetNetAdapter():
 	for x in netadapter:
 		if x.PhysicalAdapter:
 			yield f"{x.Name}, {x.MACAddress}, {x.AdapterType}" + \
-				f", Enabled {x.NetEnabled}"
+				f",\n\t\tncpa.cpl \"{x.NetConnectionID}\", Enabled {x.NetEnabled}"
+
+def GetIPAddress() -> str:
+	netadapter = OnWinmgmts('Win32_NetworkAdapterConfiguration')
+	for x in netadapter:
+		if x.IPAddress != None:
+			ip = str(x.IPAddress).replace('(','').replace(')','').replace(',','').replace("'","")
+			subnet = str(x.IPSubnet).replace('(','').replace(')','').replace(',','').replace("'","")
+			gateway = str(x.DefaultIPGateway).replace('(','').replace(')','').replace(',','').replace("'","")
+			yield f"{ip}/{subnet},"
+			yield f"Gateway: {gateway}"
 
 def FastOnePing(addr: str, count = 4, interval: float = 0.5, pocket_size: int = 64, timeout: float = 2, source: str = None):
 	out_text = []
@@ -297,19 +307,21 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 				isCPUinfo: bool = True, isVideoCardInfo: bool = True,
 				isMemoryInfo: bool = True, isNetAdapterInfo: bool = True,
 				isHosts: bool = True, isDisks: bool = True,
-				isUserInfo: bool = True, isNetName: bool = True):
+				isUserInfo: bool = True, isNetName: bool = True,
+				isIPinfo: bool = True):
 	all_users = list_users()
 	username = GetUserName()
 	cpu_info = GetCPUType()
 	video_info = GetVideoControllerInfo()
 	on_memory = GetMemory()
 	networks = GetNetAdapter()
+	myip = GetIPAddress()
 	if isHosts: on_hosts = GetHostData()
 		
 	global default_out_color
 	
 	iswritebase = isBasicInfo + isCPUinfo + isVideoCardInfo + isMemoryInfo + isNetAdapterInfo + \
-				isHosts + isDisks + isUserInfo + isNetName
+				isHosts + isDisks + isUserInfo + isNetName + isIPinfo
 	if iswritebase > 0:
 		if default_out_color:
 			print(Fore.RED + 'Writing PC information to a log file.' + Fore.RESET)
@@ -343,6 +355,14 @@ def WriteBaseInfo(LogFile: str, ListDisks: tuple, isBasicInfo: bool = True,
 			else:
 				print('\tWriting Network Name info.')
 			f.write(f"Network Name: {platform.node()}\n")
+		if isIPinfo:
+			if default_out_color:
+				print(Fore.CYAN + '\tWriting Local IP info.' + Fore.RESET)
+			else:
+				print('\tWriting Local IP info.')
+			f.write(f"IP Info:\n")
+			for i in myip:
+				f.write(f"\t{i}\n")
 		if isCPUinfo:
 			if default_out_color:
 				print(Fore.CYAN + '\tWriting CPU info.' + Fore.RESET)
@@ -412,7 +432,8 @@ class Arguments:
 				f"\tnoping: {self.noping},\n\tnoprinters: {self.noprinters},\n\tnodefrag: {self.nodefrag},\n\tnosmart: {self.nosmart},\n" + \
 				f"\tnobasicinfo: {self.nobasicinfo},\n" + \
 				f"\tnohostfile: {self.nohostfile},\n\tnodiskinfo: {self.nodiskinfo},\n\tnouserinfo: {self.nouserinfo},\n" + \
-				f"\tnonetworkname: {self.nonetworkname},\n\tnocpuinfo: {self.nocpuinfo},\n\tnovideoinfo: {self.novideoinfo},\n" + \
+				f"\tnonetworkname: {self.nonetworkname}\n, noipinfo: {self.noipinfo},\n" + \
+				f"\tnocpuinfo: {self.nocpuinfo},\n\tnovideoinfo: {self.novideoinfo},\n" + \
 				f"\tnomemoryinfo: {self.nomemoryinfo},\n\tnonetworkinfo: {self.nonetworkinfo},\n" + \
 				f"\tpingfile: {self.pingfile},\n" + \
 				f"\toncount: {self.oncount},\n\toninterval: {self.oninterval},\n\tonsize: {self.onsize},\n" + \
@@ -438,6 +459,7 @@ def createParser():
 	group2.add_argument ('-ndi', '--nodiskinfo', action='store_false', default=True, help='Do not read or write computer disk sizes.')
 	group2.add_argument('-nui', '--nouserinfo', action='store_false', default=True,  help='Do not display information about system users.')
 	group2.add_argument('-nnn', '--nonetworkname', action='store_false', default=True,  help='Do not output the network name of the computer.')
+	group2.add_argument('-nii', '--noipinfo', action='store_false', default=True,  help='Do not output information about the local IP address.')
 	group2.add_argument('-nci', '--nocpuinfo', action='store_false', default=True,  help='Do not output detailed information about the processor.')
 	group2.add_argument('-nvi', '--novideoinfo', action='store_false', default=True,  help='Do not display detailed information about video cards.')
 	group2.add_argument('-nmi', '--nomemoryinfo', action='store_false', default=True,  help='Do not output detailed information about RAM.')
@@ -490,7 +512,7 @@ def main():
 	WriteBaseInfo(logfile, local_disk, args.nobasicinfo, 
 				args.nocpuinfo, args.novideoinfo, args.nomemoryinfo, 
 				args.nonetworkinfo, args.nohostfile, args.nodiskinfo,
-				args.nouserinfo, args.nonetworkname)
+				args.nouserinfo, args.nonetworkname, args.noipinfo)
 	
 	isqueryinfo = args.nodefrag + args.nosmart
 	
