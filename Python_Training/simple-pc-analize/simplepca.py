@@ -238,19 +238,23 @@ def GetUserName() -> str:
 	user2 = os.getlogin()
 	return user1 if user1 == user2 else str(user1 + ' or ' + user2)
 
+def GetFileConfig(on_file: str, default_file: str) -> str:
+	if on_file != '':
+		tmpfile = pathlib.Path(on_file)
+		if tmpfile.exists():
+			return str(tmpfile.resolve())
+		else:
+			return str(pathlib.Path(PREFIX).joinpath(default_file).resolve())
+	else:
+		return str(pathlib.Path(PREFIX).joinpath(default_file).resolve())
+
 def GetPingList(onFile: str = '') -> tuple:
 	global default_out_color
 	if default_out_color:
 		print(Fore.YELLOW + 'Loading a list of addresses for pings.' + Fore.RESET)
 	else:
 		print('Loading a list of addresses for pings.')
-	if onFile == '':
-		ping_file = str(pathlib.Path().cwd().joinpath('ping-list.txt').resolve())
-	else:
-		if pathlib.Path(onFile).exists():
-			ping_file = str(pathlib.Path(onFile).resolve())
-		else:
-			ping_file = str(pathlib.Path().cwd().joinpath('ping-list.txt').resolve())
+	ping_file = GetFileConfig(onFile, 'ping-list.txt')
 	list_ping = ''
 	with open(ping_file, 'r') as f:
 		list_ping = tuple(map(lambda x: x.replace('\n',''), f.readlines()))
@@ -289,16 +293,6 @@ def GetQuarterName() -> str:
 	on_month = int(GetDateTime('%m'))
 	quarter_name = GetQurter(on_month) + '-' + on_date
 	return quarter_name
-
-def GetFileConfig(on_file: str, default_file: str) -> str:
-	if on_file != '':
-		tmpfile = pathlib.Path().cwd().joinpath(on_file)
-		if tmpfile.exists():
-			return str(tmpfile.resolve())
-		else:
-			return str(pathlib.Path().cwd().joinpath(default_file).resolve())
-	else:
-		return str(pathlib.Path().cwd().joinpath(default_file).resolve())
 
 def GetHostData() -> str:
 	global default_out_color
@@ -471,6 +465,7 @@ class Arguments:
 
 def createParser():
 	global progname
+	global default_structure_file
 	parser = argparse.ArgumentParser(prog=progname,description='Simple PC Analysis')
 	parser.add_argument ('-v', '--version', action='version', version=f'{progname} {__version__}',  help='Version.')
 	parser.add_argument ('-nc', '--nocolorout', action='store_false', default=True, help='Discolor informational messages.')
