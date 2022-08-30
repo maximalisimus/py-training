@@ -6,17 +6,25 @@
 			font-family: #FONTS;
 			background-color: #BGCOLOR;
 		}
+		table tbody tr:nth-child(odd) {
+			background-color: #ODDEVEN;/* #C9E4F6 фон нечетных строк */
+		}
+		table tbody tr:nth-child(even) {
+			background-color: white;/* фон четных строк */
+		}
 	</style>
 </head>
 <body>
 	<h1>Index of #DIRS</h1>
 	<hr>
 	<table>
-		<col width="800">
-		<col width="200">
-		<col width="80">
+		<col width="900px">
+		<col width="150px">
+		<col width="150px">
+		<col width="50px">
 		<tr>
 			<th align="left">Filename</th>
+			<th align="left">Premissions</th>
 			<th align="left">Last modified</th>
 			<th align="left">Size</th>
 		</tr>
