@@ -1,0 +1,66 @@
+{
+  "Device": {
+    "Unknown": "Unknown Drive type can't be determined.",
+    "Local": "Fixed Drive has fixed (nonremovable) media. This includes all hard drives, including hard drives that are removable.",
+    "USB": "Removable Drive has removable media. This includes all floppy drives and many other varieties of storage devices.",
+    "Network": "Remote Network drives. This includes drives shared anywhere on a network.",
+    "CDROM": "CDROM Drive is a CD-ROM. No distinction is made between read-only and read/write CD-ROM drives.",
+    "RAM": "RAMDisk Drive is a block of random access memory (RAM) on the local computer that behaves like a disk drive.",
+    "NO_ROOT": "The root directory does not exist."
+  },
+  "Functions": {
+    "ListofTypeDisk": "Requesting information about disks in the system.",
+    "list_users": "Getting a list of system users.",
+    "GetPingList": "Loading a list of addresses for pings.",
+    "MakeDirs": "Creating subdirectories for logs.",
+    "GetQurter": {
+      "1": "1st-quarter",
+      "2": "2nd-quarter",
+      "3": "3rd-quarter",
+      "4": "4th-quarter"
+    },
+    "GetHostData": "Analysis of the hosts file ...",
+    "WriteBaseInfo": {
+      "info": "Writing basic PC information to a log file ...",
+      "Hosts": "File hosts:\n",
+      "Disks": {
+        "info": "Local disk information:\n",
+        "Disk": "\tDisk",
+        "Total": "\t\tTotal: ",
+        "Used": "\t\tUsed: ",
+        "Free": "\t\tFree: "
+      }
+    },
+    "createParser": {
+      "Version": "Version",
+      "NoHosts": "Do not read and write data from the hosts file.",
+      "NoDiskInfo": "Do not read or write computer disk sizes.",
+      "NoPing": "Do not read or write ping data.",
+      "NoPrinters": "Do not list printers.",
+      "NoDefrag": "Do not read and write disks fragmentation data.",
+      "NoSmart": "Do not read or write S.M.A.R.T. disks data.",
+      "PingFile": "A file with a list for ping addresses.",
+      "NoColor": "Discolor informational messages."
+    },
+    "main": {
+      "subparsers": {
+        "Title": "Logs",
+        "Desc": "Change the log output folder.",
+        "Help": "commands",
+        "parser_a": {
+          "help": "Changing the location of logs.",
+          "NoDataYear": "Do not sort log files by year.",
+          "NoQarter": "Do not sort log files by quarters."
+        },
+        "Move": "Select the kabinet or departament."
+      },
+      "info": "Request for extended PC information.",
+      "printers": "Getting a list of printers.",
+      "ping": "Ping of lists.",
+      "defrag": "Analysis of disks defragmentation ...",
+      "smart": "Analysis of S.M.A.R.T. information about disks in the system.",
+      "Log": "\nWriting the received data to a log file ...",
+      "Fine": "\nThe system analysis has been successfully completed !"
+    }
+  }
+}
