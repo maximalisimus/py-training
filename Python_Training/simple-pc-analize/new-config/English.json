@@ -1,0 +1,167 @@
+{
+  "size_format": {
+    "1": "B",
+    "2": "KB",
+    "3": "MB",
+    "4": "GB",
+    "5": "TB"
+  },
+  "FastOnePing": {
+    "NameLookupError": {
+      "1": "PING",
+      "2": "bytes of data.\nReply from",
+      "3": "\nNot available..."
+    },
+    "SocketErrors": "SocketPermissionError, SocketAddressError or ICMPSocketError:",
+    "ElseError": "Unknown error. The error name:",
+    "Data": {
+      "1": "PING",
+      "2": "bytes of data.",
+      "3": "bytes from addr",
+      "4": "time",
+      "5": "ping statistics",
+      "6": "packets transmitted",
+      "7": "received",
+      "8": "packet loss",
+      "9": "Aproximate rount trip times in milli-seconds:",
+      "10": "Minimum",
+      "11": "ms, Maximum",
+      "12": "ms, Average",
+      "13": "ms, Jitter"
+    }
+  },
+  "Device": {
+    "Unknown": "Unknown Drive type can't be determined.",
+    "Local": "Fixed Drive has fixed (nonremovable) media. This includes all hard drives, including hard drives that are removable.",
+    "USB": "Removable Drive has removable media. This includes all floppy drives and many other varieties of storage devices.",
+    "Network": "Remote Network drives. This includes drives shared anywhere on a network.",
+    "CDROM": "CDROM Drive is a CD-ROM. No distinction is made between read-only and read/write CD-ROM drives.",
+    "RAM": "RAMDisk Drive is a block of random access memory (RAM) on the local computer that behaves like a disk drive.",
+    "NO_ROOT": "The root directory does not exist."
+  },
+  "Functions": {
+    "ListofTypeDisk": "Requesting information about disks in the system.",
+    "list_users": "Getting a list of system users.",
+    "GetPingList": "Loading a list of addresses for pings.",
+    "MakeDirs": "Creating subdirectories for logs.",
+    "GetQurter": {
+      "1": "1st-quarter",
+      "2": "2nd-quarter",
+      "3": "3rd-quarter",
+      "4": "4th-quarter"
+    },
+    "GetHostData": "Analysis of the hosts file ...",
+    "WriteBaseInfo": {
+      "info": "Writing basic PC information to a log file ...",
+      "userinfo": {
+        "info": "\tWriting Users info.",
+        "1": "Users:",
+        "2": "User login:"
+      },
+      "networkuser": {
+        "info": "\tWriting Network Name info.",
+        "msg": "Network Name:"
+      },
+      "ipinfo": {
+        "info": "\tWriting Local IP info.",
+        "msg": "IP Info:\n"
+      },
+      "cpu": {
+        "info": "\tWriting CPU info.",
+        "msg": "CPU INFO: \n"
+      },
+      "video": {
+        "info": "\tWriting VideoCard info.",
+        "msg": "VideoCards:\n"
+      },
+      "memory": {
+        "info": "\tWriting Memory info.",
+        "msg": "Memory:\n"
+      },
+      "netadapter": {
+        "info": "\tWriting Network Adapaters info.",
+        "msg": "Network adapters:\n"
+      },
+      "soung": {
+        "info": "\tWriting Sound Devices info.",
+        "msg": "Sound Device:\n"
+      },
+      "usb": {
+        "info": "\tWriting USB Controllers info.",
+        "msg": "USB Controllers:\n"
+      },
+      "hosts": {
+        "info": "\tWriting Hosts file info.",
+        "msg": "File hosts:\n"
+      },
+      "disks": {
+        "info": "\tWriting Disks info.",
+        "msg": "Local disk information:\n",
+        "1": "Disk",
+        "2": "Total",
+        "3": "Used",
+        "4": "Free"
+      }
+    },
+    "createParser": {
+      "version": "Version.",
+      "nocolorout": "Discolor informational messages.",
+      "group1": {
+        "1": "extend",
+        "2": "Changing the receipt of extended information about PC disks.",
+        "noping": "Do not read or write ping data.",
+        "noprinters": "Do not list printers.",
+        "nodefrag": "Do not read and write disks fragmentation data.",
+        "nosmart": "Do not read or write S.M.A.R.T. disks data."
+      },
+      "group2": {
+        "1": "basic",
+        "2": "Changing the output of basic information.",
+        "nobasicinfo": "Do not record basic information.",
+        "nohostfile": "Do not read and write data from the hosts file.",
+        "nodiskinfo": "Do not read or write computer disk sizes.",
+        "nouserinfo": "Do not display information about system users.",
+        "nonetworkname": "Do not output the network name of the computer.",
+        "noipinfo": "Do not output information about the local IP address.",
+        "nocpuinfo": "Do not output detailed information about the processor.",
+        "novideoinfo": "Do not display detailed information about video cards.",
+        "nomemoryinfo": "Do not output detailed information about RAM.",
+        "nonetworkinfo": "Do not display detailed information about network adapters.",
+        "nosounddevice": "Do not display detailed information about sound devices.",
+        "nousbcontrollers": "Do not display detailed information about usb controllers."
+      },
+      "group3": {
+        "1": "ping",
+        "2": "Changing the ping settings.",
+        "pingfile": "A file with a list for ping addresses.",
+        "oncount": "Number of echo requests to send.",
+        "oninterval": "The interval in seconds between sending each packet.",
+        "onsize": "Send buffer size.",
+        "srcaddr": "Source address to use.",
+        "ontimeout": "The maximum waiting time for receiving a reply in seconds."
+      },
+      "group4": {
+        "1": "log",
+        "2": "Changing the location of logs.",
+        "nodatayear": "Do not sort log files by year.",
+        "noqarter": "Do not sort log files by quarters.",
+        "move": "Select the kabinet or departament."
+      }
+    },
+    "main": {
+      "info": "Getting a list of printers.",
+      "ping": "Loading the address ping function.",
+      "defrag": "Analysis of disks defragmentation ...",
+      "disk_msg": "Analysis disk",
+      "smart": "Analysis of S.M.A.R.T. information about disks in the system.",
+      "write": {
+        "info": "\nWriting the received data to a log file ...",
+        "printers": "\n\nList of printers:\n",
+        "pings": "\n\nList of pings:\n",
+        "ping_msg": "\nPing of lists:",
+        "ping_msg_part": "Ping of"
+      },
+      "fine": "\nThe system analysis has been successfully completed !"
+    }
+  }
+}
