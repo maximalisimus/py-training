@@ -6,25 +6,37 @@
 			font-family: #FONTS;
 			background-color: #BGCOLOR;
 		}
-		table tbody tr:nth-child(odd) {
-			background-color: #ODDEVEN;/* #C9E4F6 фон нечетных строк */
+		table.magic {
+			display: inline-block;
+			width: 100%;
 		}
-		table tbody tr:nth-child(even) {
-			background-color: white;/* фон четных строк */
+		table.magic tr th.cl1 {
+			width: 70%;
+		}
+		table.magic tr th.cl2 {
+			width: 150px;
+		}
+		table.magic tr th.cl3 {
+			width: 150px;
+		}
+		table.magic tr th.cl4 {
+			width: 100px;
+		}
+		table.magic tbody tr:nth-child(odd) {
+			background-color: white;/* #ODDEVEN фон нечетных строк */
+		}
+		table.magic tbody tr:nth-child(even) {
+			background-color: #C9E4F6;/* фон четных строк */
 		}
 	</style>
 </head>
 <body>
 	<h1>Index of #DIRS</h1>
 	<hr>
-	<table>
-		<col width="900px">
-		<col width="150px">
-		<col width="150px">
-		<col width="50px">
+	<table class="magic">
 		<tr>
-			<th align="left">Filename</th>
-			<th align="left">Premissions</th>
-			<th align="left">Last modified</th>
-			<th align="left">Size</th>
+			<th class="cl1" align="left">Filename</th>
+			<th class="cl2" align="left">Premissions</th>
+			<th class="cl3" align="left">Last modified</th>
+			<th class="cl4" align="left">Size</th>
 		</tr>
