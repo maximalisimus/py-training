@@ -74,10 +74,24 @@ def ReadIcons(file_icons: str = "icons.json") -> dict:
 		data = json.load(fp)
 	return data
 
+def CheckSTR(in_str: str, OnKey: str) -> bool:
+	for x in in_str.split(','):
+		if OnKey == x:
+			return True
+	return False
+
+def SearchDict(OnDict: dict, onKey: str):
+	for key, value in OnDict.items():
+		if CheckSTR(value, onKey):
+			return key
+	return None
+
 def main():
 	# WriteBasicIcons()
 	data = ReadIcons()
-	print(data['standart'])
+	pattern = 'pl'
+	a = SearchDict(data['others'], pattern)
+	print(a)
 
 if __name__ == '__main__':
 	main()
