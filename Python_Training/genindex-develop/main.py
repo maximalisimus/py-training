@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import random
 import json
 
 def WriteBasicIcons(file_icons: str = "icons.json"):
@@ -13,11 +14,21 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 			"others": {
 				"b5i9v": "arj,zip,rar,gz,gz2,xz,7z,bz2,tar,zip,cab",
 				"b5j7k": "iso,mds,mdf,ccd,img,sub,cue,nrg,bwt,bwi,bws,cdi",
-				"b7m2o": "bmp,jpeg,jpg,png,gif,tiff,svg,webdm,ico,cdr,eps,wmf",
+				"b7m2o": "bmp,jpeg,jpg,png,gif,tiff,svg,webdm,ico,cdr,eps,tex",
+				"9y1g9": "xcf,gpl",
+				"z1u3f": "psd,pdd,atn,abr,asl",
+				"7l6i7": "dxf",
+				"4u5x3": "FBX",
+				"3x7d5": "max",
+				"r3c4d": "SKP",
+				"w6i3n": "eps",
+				"a3g4e": "emf",
+				"3d8n2": "wmf",
 				"c3t4s": "hlp",
 				"d5g1v": "chm",
 				"d5r4o": "mp3,wav,ogg,flac",
 				"d7f2o": "mp4,avi,3gp,wmv,webm,mpeg,divx,mkv,m4v",
+				"4l0c4": "aup",
 				"w1t3b": "flv",
 				"f4t3t": "deb",
 				"f9j6j": "rpm",
@@ -38,6 +49,7 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 				"l9k2n": "c",
 				"m7t2p": "cpp",
 				"n9o2x": "h",
+				"p6l3m": "ino",
 				"o6i7b": "log",
 				"o8j5k": "html,htm,hta",
 				"p4f4q": "css",
@@ -58,7 +70,7 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 				"t0l5m": "desktop",
 				"p7m9c": "info,nfo",
 				"g7z2i": "dll,so,0,1,2",
-				"n2b2e": "xml,msc",
+				"n2b2e": "xml,msc,ps",
 				"h7o6j": "json",
 				"k0e1m": "lic,license",
 				"y8w8p": "man",
@@ -87,18 +99,50 @@ def CheckSTR(in_str: str, OnKey: str) -> bool:
 			return True
 	return False
 
-def SearchDict(OnDict: dict, onKey: str):
+def SearchDictValue(OnDict: dict, onKey: str):
 	for key, value in OnDict.items():
 		if CheckSTR(value, onKey):
 			return key
 	return None
 
+def isDictKey(OnDict: dict, onKey: str):
+	for key in OnDict.keys():
+		if onKey == key:
+			return True
+	return False
+
+def RandName(OnDict: dict):
+	alphabet1 = ''.join([chr(x).lower() for x in range(65,91)])
+	sel = (True, False)
+	output = ''
+	def GenName():
+		rez = ''
+		if random.choice(sel):
+			rez = random.choice(alphabet1) + \
+					str(random.randint(0, 9)) + \
+					random.choice(alphabet1) + \
+					str(random.randint(0, 9)) + \
+					random.choice(alphabet1)
+		else:
+			rez = str(random.randint(0, 9)) + \
+					random.choice(alphabet1) + \
+					str(random.randint(0, 9)) + \
+					random.choice(alphabet1) + \
+					str(random.randint(0, 9))
+		return rez
+	output = GenName()
+	while isDictKey(OnDict, output):
+		output = GenName()
+	return output
+
 def main():
-	# WriteBasicIcons()
+	WriteBasicIcons()
 	data = ReadIcons()
-	pattern = 'pl'
-	a = SearchDict(data['others'], pattern)
-	print(a)
+	#pattern = 'pl'
+	#a = SearchDictValue(data['others'], pattern)
+	#print(a)
+	on_name = RandName(data['others'])
+	print(on_name)
 
 if __name__ == '__main__':
 	main()
