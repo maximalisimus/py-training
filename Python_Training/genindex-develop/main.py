@@ -23,7 +23,7 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 				"f9j6j": "rpm",
 				"g5f7m": "patch",
 				"g9j9d": "pdf",
-				"h2y4h": "doc,docx"
+				"h2y4h": "doc,docx",
 				"1c3f2": "odt",
 				"i8k2z": "xls,xlsx",
 				"2a7h0": "ods",
