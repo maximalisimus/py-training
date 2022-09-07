@@ -99,7 +99,9 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 				"x2i7d": "user",
 				"z0w2a": "STL,stl,wrl,dae,vrm,vrml",
 				"k1w4m": "fcstd",
-				"l5g6m": "blend,blende1,blende2,blend3,blend4,blend5"
+				"l5g6m": "blend,blende1,blende2,blend3,blend4,blend5",
+				"8w4v9": "glade",
+				"p0g0h": "veg"
 			}
 	}
 	with open(file_icons, "w") as fp:
