@@ -97,7 +97,7 @@ def WriteBasicIcons(file_icons: str = "icons.json"):
 				"2f7y2": "kicad_pcb,pcb",
 				"i9h7p": "lgr,pho,GTL,GBL,GBS,GTS,GBO,GTO,GBP,GTP,GKO,GPT,GPB,GM1,GM2,GM3,GM4,GM5,GM6,GM7,GM8,GM9",
 				"x2i7d": "user",
-				"z0w2a": "STL,stl,wrl,dae,vrm,vrml",
+				"z0w2a": "stl,wrl,dae,vrm,vrml",
 				"k1w4m": "fcstd",
 				"l5g6m": "blend,blende1,blende2,blend3,blend4,blend5",
 				"8w4v9": "glade",
@@ -115,7 +115,7 @@ def ReadIcons(file_icons: str = "icons.json") -> dict:
 
 def CheckSTR(in_str: str, OnKey: str) -> bool:
 	for x in in_str.split(','):
-		if OnKey == x:
+		if OnKey.lower() == x.lower():
 			return True
 	return False
 
@@ -156,13 +156,13 @@ def RandName(OnDict: dict):
 	return output
 
 def main():
-	WriteBasicIcons()
+	#WriteBasicIcons()
 	data = ReadIcons()
-	#pattern = 'pl'
-	#a = SearchDictValue(data['others'], pattern)
-	#print(a)
-	on_name = RandName(data['others'])
-	print(on_name)
+	pattern = 'vdi'
+	a = SearchDictValue(data['others'], pattern)
+	print(a)
+	#on_name = RandName(data['others'])
+	#print(on_name)
 
 if __name__ == '__main__':
 	main()
