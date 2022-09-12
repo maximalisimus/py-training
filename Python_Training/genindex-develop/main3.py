@@ -20,14 +20,17 @@ class Arguments:
 	
 	def __repr__(self):
 		return f"{self.__class__}:  (\n" + \
-				f"\tFonts: {fonts},\n" + \
-				f"\tBGColor: {bgcolor},\n" + \
-				f"\tEvenOdd: {evenodd},\n" + \
-				f"\tOddEven: {oddeven},\n" + \
-				f"\tSkip Dirs: {skip_dirs},\n" + \
-				f"\tSkip Files: {skip_files},\n" + \
-				f"\tSave configs: {save},\n" + \
-				f"\tReset configs: {reset}"
+				f"\tFonts: {self.fonts},\n" + \
+				f"\tBGColor: {self.bgcolor},\n" + \
+				f"\tEvenOdd: {self.evenodd},\n" + \
+				f"\tOddEven: {self.oddeven},\n" + \
+				f"\tSkip Dirs: {self.skip_dirs},\n" + \
+				f"\tSkip Files: {self.skip_files},\n" + \
+				f"\tSave configs: {self.save},\n" + \
+				f"\tReset configs: {self.reset},\n" + \
+				f"\tDirs: {self.dirs},\n" + \
+				f"\tGenerate Icon Flag: {self.generate},\n" + \
+				f"\tWrite Html Flag: {self.write}"
 
 def createParser():
 	parser = argparse.ArgumentParser(prog=progname,description='GenIndex - create apindex file.')
