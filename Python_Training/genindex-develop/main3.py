@@ -100,14 +100,14 @@ def WriteBasicIcons(file_icons: str = "template/icons.json"):
 				"back_icon": "back"
 			},
 			"others": {
-				"b5i9v": "arj,xz,cab",
+				"b5i9v": "arj,xz,cab,001,cpio,wim,swm,esd,fat,ntfs,dmg,hfs,xar,squashfs,apfs",
 				"o2u3c": "tar",
-				"e4z2n": "bz2,bzip,bz",
+				"e4z2n": "bz2,bzip,bz,bzip2,tbz2,tbz",
 				"q7p4o": "rar",
 				"6z3e8": "7z",
-				"s1v5p": "zip",
-				"i7h2r": "gz,gz2",
-				"2p2l6": "lzma",
+				"s1v5p": "zip,z",
+				"i7h2r": "gz,gz2,tgz,tpz,txz,taz",
+				"2p2l6": "lzma,lzh,lha",
 				"b5j7k": "iso,mds,mdf,ccd,img,sub,cue,nrg,bwt,bwi,bws,cdi",
 				"b7m2o": "bmp,jpeg,jpg,png,gif,tiff,svg,webdm,ico,cdr,eps,tex",
 				"9y1g9": "xcf,gpl",
@@ -277,25 +277,9 @@ def main():
 	#on_args = ReadConfig()
 	# print(on_args)
 	data = ReadIcons()
-	pattern = 'rar'
-	a = tuple( filter( lambda x: pattern.lower() == x[1].lower(), map( tuple, data['others'].items() ) ) )[0][0]
+	pattern = 'zip'
+	a = SearchDictValue(data['others'], pattern)
 	print(a)
-	# a = SearchDictValue(data['others'], pattern)
-	# print(a)
 
 if __name__ == '__main__':
 	main()
-
-'''
-def CheckSTR(in_str: str, OnKey: str) -> bool:
-	for x in in_str.split(','):
-		if OnKey.lower() == x.lower():
-			return True
-	return False
-
-def SearchDictValue(OnDict: dict, onKey: str):
-	for key, value in OnDict.items():
-		if CheckSTR(value, onKey):
-			return key
-	return None
-'''
