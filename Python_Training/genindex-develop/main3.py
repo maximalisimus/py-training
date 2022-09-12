@@ -93,7 +93,7 @@ def main():
 	config['HTML']['bgcolor'] = args.bgcolor
 	config['HTML']['evenodd'] = args.evenodd
 	config['HTML']['oddeven'] = args.oddeven
-	config['SKIP']['dirs'] = args.skip_files
+	config['SKIP']['dirs'] = args.skip_dirs
 	config['SKIP']['files'] = args.skip_files
 	if args.save:
 		WriteConfig(config)
