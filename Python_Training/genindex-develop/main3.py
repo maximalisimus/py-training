@@ -71,7 +71,7 @@ def SkipConfig() -> dict:
 
 def WriteDefaultConfig(parser):
 	global config_file
-	parser['DEFAULT'] = DefaultConfig()
+	parser['HTML'] = DefaultConfig()
 	parser['SKIP'] = SkipConfig()
 	with open(config_file, 'w') as configfile:
 		parser.write(configfile)
@@ -89,16 +89,18 @@ def main():
 	parser, gr1, gr2, gr3, gr4 = createParser()
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
-	config['DEFAULT']['fonts'] = args.fonts
-	config['DEFAULT']['bgcolor'] = args.bgcolor
-	config['DEFAULT']['evenodd'] = args.evenodd
-	config['DEFAULT']['oddeven'] = args.oddeven
+	config['HTML']['fonts'] = args.fonts
+	config['HTML']['bgcolor'] = args.bgcolor
+	config['HTML']['evenodd'] = args.evenodd
+	config['HTML']['oddeven'] = args.oddeven
 	config['SKIP']['dirs'] = args.skip_files
 	config['SKIP']['files'] = args.skip_files
 	if args.save:
 		WriteConfig(config)
 	if args.reset:
 		WriteDefaultConfig(config)
+	# print(dict(config.items('HTML')))
+	# print(dict(config.items('SKIP')))
 	pass
 
 if __name__ == '__main__':
