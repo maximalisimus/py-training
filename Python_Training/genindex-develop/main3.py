@@ -214,16 +214,23 @@ def SearchDictValue(OnDict: dict, onKey: str):
 			return key
 	return None
 
+'''
 def isDictKey(OnDict: dict, onKey: str):
 	for key in OnDict.keys():
 		if onKey == key:
 			return True
 	return False
+'''
 
 def RandName(OnDict: dict):
 	alphabet1 = ''.join([chr(x).lower() for x in range(65,91)])
 	sel = (True, False)
 	output = ''
+	def isDictKey(OnDict: dict, onKey: str):
+		for key in OnDict.keys():
+			if onKey == key:
+				return True
+		return False
 	def GenName():
 		rez = ''
 		if random.choice(sel):
@@ -267,12 +274,28 @@ def ReadConfig() -> Arguments:
 	return args
 
 def main():
-	on_args = ReadConfig()
+	#on_args = ReadConfig()
 	# print(on_args)
-	# data = ReadIcons()
-	# pattern = 'vdi'
+	data = ReadIcons()
+	pattern = 'rar'
+	a = tuple( filter( lambda x: pattern.lower() == x[1].lower(), map( tuple, data['others'].items() ) ) )[0][0]
+	print(a)
 	# a = SearchDictValue(data['others'], pattern)
 	# print(a)
 
 if __name__ == '__main__':
 	main()
+
+'''
+def CheckSTR(in_str: str, OnKey: str) -> bool:
+	for x in in_str.split(','):
+		if OnKey.lower() == x.lower():
+			return True
+	return False
+
+def SearchDictValue(OnDict: dict, onKey: str):
+	for key, value in OnDict.items():
+		if CheckSTR(value, onKey):
+			return key
+	return None
+'''
