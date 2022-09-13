@@ -26,10 +26,10 @@ def stampToStr(timeStamp: int, strFormat = "%d.%m.%Y-%H:%M:%S") -> str:
 	datestr = dateTime.strftime(strFormat)
 	return datestr
 
-p = pathlib.Path( 'Python-portable-3.8.9-x64.bat' )
+p = pathlib.Path( 'main.py' )
 
 print(filemode(p.stat().st_mode))
 print(size_format(p.stat().st_size))
 strFormat = "%d.%m.%Y-%H:%M:%S"
-print(stampToStr(p.stat().st_mtime, "%d.%m.%Y"))
+print(stampToStr(p.stat().st_mtime, "%d-%b-%Y %H:%M"))
 
