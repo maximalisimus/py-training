@@ -16,7 +16,7 @@ PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 config_file = PREFIX.joinpath('config.ini')
 
 class Arguments:
-	
+		
 	def __getattr__(self, attrname):
 		return None
 	
@@ -30,8 +30,11 @@ class Arguments:
 				f"\tSkip Files: {self.skip_files},\n" + \
 				f"\tSave configs: {self.save},\n" + \
 				f"\tReset configs: {self.reset},\n" + \
+				f"\tReset Icons: {self.reseticons}\n" + \
 				f"\tDirs: {self.dirs},\n" + \
 				f"\tGenerate Icon Flag: {self.generate},\n" + \
+				f"\tInput icons: {self.inputicon},\n" + \
+				f"\tList extensions: {self.ext},\n" + \
 				f"\tWrite Html Flag: {self.write}"
 
 def createParser():
@@ -50,10 +53,13 @@ def createParser():
 	group3 = parser.add_argument_group('Save', 'Save paramters.')
 	group3.add_argument('-s', '--save', action='store_true', default=False, help='Save configs.')
 	group3.add_argument('-r', '--reset', action='store_true', default=False, help='Reset settings to Default config.')
+	group3.add_argument('-ri', '--reseticons', action='store_true', default=False, help='Reset icons settings to Default config.')
 	
 	group4 = parser.add_argument_group('Actions', 'Action paramters.')
 	group4.add_argument("-d", '--dirs', dest="dirs", metavar='DIRS', type=str, default='./', help='Select the folder.')
 	group4.add_argument('-g', '--generate', action='store_true', default=False, help='Generate Generate new name for icon file.')
+	group4.add_argument('-i', '--inputicon', action='store_true', default=False, help='Icon input file.')
+	group4.add_argument("-ext", '--ext', dest="ext", metavar='EXT', type=str, default='', help='Comma-separated list of extensions without spaces.')
 	group4.add_argument('-w', '--write', action='store_true', default=False, help='Perform recording index.html files to the specified directory.')
 	return parser, group1, group2, group3, group4
 
@@ -90,6 +96,11 @@ def ConfigOnConfig(parser, arguments: Arguments):
 	parser['HTML']['oddeven'] = arguments.oddeven
 	parser['SKIP']['dirs'] = arguments.skip_dirs
 	parser['SKIP']['files'] = arguments.skip_files
+
+def WriteIcons(data_icons: dict, file_icons: str = "template/icons.json"):
+	global PREFIX
+	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "r", "w") as fp:
+		json.dump(data_icons, fp, indent=2)
 
 def WriteBasicIcons(file_icons: str = "template/icons.json"):
 	global PREFIX
@@ -214,14 +225,6 @@ def SearchDictValue(OnDict: dict, onKey: str):
 			return key
 	return None
 
-'''
-def isDictKey(OnDict: dict, onKey: str):
-	for key in OnDict.keys():
-		if onKey == key:
-			return True
-	return False
-'''
-
 def RandName(OnDict: dict):
 	alphabet1 = ''.join([chr(x).lower() for x in range(65,91)])
 	sel = (True, False)
@@ -266,6 +269,9 @@ def ReadConfig() -> Arguments:
 	if args.reset:
 		WriteDefaultConfig(config)
 		sys.exit(0)
+	if args.reseticons:
+		WriteBasicIcons()
+		sys.exit(0)
 	if args.generate:
 		data = ReadIcons()
 		on_name = RandName(data['others'])
@@ -274,12 +280,13 @@ def ReadConfig() -> Arguments:
 	return args
 
 def main():
-	#on_args = ReadConfig()
+	on_args = ReadConfig()
 	# print(on_args)
-	data = ReadIcons()
-	pattern = 'zip'
-	a = SearchDictValue(data['others'], pattern)
-	print(a)
+	#data = ReadIcons()
+	#pattern = 'zip'
+	#a = SearchDictValue(data['others'], pattern)
+	#print(a)
+	pass
 
 if __name__ == '__main__':
 	main()
