@@ -13,7 +13,7 @@ progname = 'genindex'
 
 PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 
-config_file = PREFIX.joinpath('config.ini')
+config_file = PREFIX.joinpath('config.ini').resolve()
 
 class Arguments:
 		
@@ -47,8 +47,8 @@ def createParser():
 	group1.add_argument("-o", '--oddeven', dest="oddeven", metavar='ODDEVEN', type=str, default='#C9E4F6', help='Color of even lines of the Html page.')
 	
 	group2 = parser.add_argument_group('Skip', 'SKIP paramters.')
-	group2.add_argument("-sd", '--skip_dirs', dest="skip_dirs", metavar='SKIP_DRIS', type=str, default='git,.git', help='Skip Directories.')
-	group2.add_argument("-sf", '--skip_files', dest="skip_files", metavar='SKIP_FILES', type=str, default='', help='Skip Files.')
+	group2.add_argument("-sd", '--skip_dirs', dest="skip_dirs", metavar='SKIP_DRIS', action="extend", nargs="+", help='Skip Directories.')
+	group2.add_argument("-sf", '--skip_files', dest="skip_files", metavar='SKIP_FILES', action="extend", nargs="+", help='Skip Files.')
 	
 	group3 = parser.add_argument_group('Save', 'Save paramters.')
 	group3.add_argument('-s', '--save', action='store_true', default=False, help='Save configs.')
@@ -63,7 +63,7 @@ def createParser():
 	group4.add_argument('-w', '--write', action='store_true', default=False, help='Perform recording index.html files to the specified directory.')
 	return parser, group1, group2, group3, group4
 
-def DefaultConfig() -> dict:
+def HTMLConfig() -> dict:
 	return {
 			"fonts": 'sans-serif',
 			"bgcolor": 'white',
@@ -73,13 +73,13 @@ def DefaultConfig() -> dict:
 
 def SkipConfig() -> dict:
 	return {
-			"dirs": 'git,.git',
+			"dirs": '.git',
 			"files": ''
 			}
 
 def WriteDefaultConfig(parser):
 	global config_file
-	parser['HTML'] = DefaultConfig()
+	parser['HTML'] = HTMLConfig()
 	parser['SKIP'] = SkipConfig()
 	with open(config_file, 'w') as configfile:
 		parser.write(configfile)
@@ -90,12 +90,30 @@ def WriteConfig(parser):
 		parser.write(configfile)
 
 def ConfigOnConfig(parser, arguments: Arguments):
-	parser['HTML']['fonts'] = arguments.fonts
-	parser['HTML']['bgcolor'] = arguments.bgcolor
-	parser['HTML']['evenodd'] = arguments.evenodd
-	parser['HTML']['oddeven'] = arguments.oddeven
-	parser['SKIP']['dirs'] = arguments.skip_dirs
-	parser['SKIP']['files'] = arguments.skip_files
+	if arguments.fonts != 'sans-serif':
+		parser['HTML']['fonts'] = arguments.fonts
+	else:
+		arguments.fonts = parser['HTML']['fonts']
+	if arguments.bgcolor != 'white':
+		parser['HTML']['bgcolor'] = arguments.bgcolor
+	else:
+		arguments.bgcolor = parser['HTML']['bgcolor']
+	if arguments.evenodd != 'white':
+		parser['HTML']['evenodd'] = arguments.evenodd
+	else:
+		arguments.evenodd = parser['HTML']['evenodd']
+	if arguments.oddeven != '#C9E4F6':
+		parser['HTML']['oddeven'] = arguments.oddeven
+	else:
+		arguments.oddeven = parser['HTML']['oddeven']
+	if arguments.skip_dirs:
+		parser['SKIP']['dirs'] = ','.join(arguments.skip_dirs)
+	else:
+		arguments.skip_dirs = str(parser['SKIP']['dirs']).split(',')
+	if arguments.skip_files:
+		parser['SKIP']['files'] = ','.join(arguments.skip_files)
+	else:
+		arguments.skip_files = str(parser['SKIP']['files']).split(',')
 
 def WriteIcons(data_icons: dict, file_icons: str = "template/icons.json"):
 	global PREFIX
@@ -258,18 +276,25 @@ def RandName(OnDict: dict):
 def ReadConfig() -> Arguments:
 	global PREFIX
 	global config_file
-	config = configparser.ConfigParser()
-	if config.sections() == []:
-		config.read(config_file)
+	
 	parser, gr1, gr2, gr3, gr4 = createParser()
 	args = Arguments()
 	parser.parse_args(namespace=Arguments)
-	ConfigOnConfig(config, args)
-	if args.save:
-		WriteConfig(config)
-		sys.exit(0)
 	if args.reset:
 		WriteDefaultConfig(config)
+		sys.exit(0)
+	
+	config = configparser.ConfigParser()
+	if config.sections() == []:
+		if config_file.exists():
+			config.read(config_file)
+		else:
+			config['HTML'] = HTMLConfig()
+			config['SKIP'] = SkipConfig()
+	ConfigOnConfig(config, args)
+	
+	if args.save:
+		WriteConfig(config)
 		sys.exit(0)
 	if args.reseticons:
 		WriteBasicIcons()
@@ -293,10 +318,10 @@ def ReadConfig() -> Arguments:
 def main():
 	on_args = ReadConfig()
 	# print(on_args)
-	#data = ReadIcons()
-	#pattern = 'zip'
-	#a = SearchDictValue(data['others'], pattern)
-	#print(a)
+	# data = ReadIcons()
+	# pattern = 'zip'
+	# a = SearchDictValue(data['others'], pattern)
+	# print(a)
 	pass
 
 if __name__ == '__main__':
