@@ -60,7 +60,6 @@ def createParser():
 	group4.add_argument('-g', '--generate', action='store_true', default=False, help='Generate Generate new name for icon file.')
 	group4.add_argument('-i', '--icon', dest="icon", metavar='ICON', type=str, default='', help='Icon input file.')
 	group4.add_argument("-ext", '--extensions', dest="extensions", metavar='EXTENSIONS', action="extend", nargs="+", help='A list of extensions separated by spaces.')
-	#group4.add_argument("-ext", '--ext', dest="ext", metavar='EXT', type=str, default='', help='Comma-separated list of extensions without spaces.')
 	group4.add_argument('-w', '--write', action='store_true', default=False, help='Perform recording index.html files to the specified directory.')
 	return parser, group1, group2, group3, group4
 
