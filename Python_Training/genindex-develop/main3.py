@@ -33,8 +33,8 @@ class Arguments:
 				f"\tReset Icons: {self.reseticons}\n" + \
 				f"\tDirs: {self.dirs},\n" + \
 				f"\tGenerate Icon Flag: {self.generate},\n" + \
-				f"\tInput icons: {self.inputicon},\n" + \
-				f"\tList extensions: {self.ext},\n" + \
+				f"\tInput icons: {self.icon},\n" + \
+				f"\tList extensions: {self.extensions},\n" + \
 				f"\tWrite Html Flag: {self.write}"
 
 def createParser():
@@ -58,8 +58,9 @@ def createParser():
 	group4 = parser.add_argument_group('Actions', 'Action paramters.')
 	group4.add_argument("-d", '--dirs', dest="dirs", metavar='DIRS', type=str, default='./', help='Select the folder.')
 	group4.add_argument('-g', '--generate', action='store_true', default=False, help='Generate Generate new name for icon file.')
-	group4.add_argument('-i', '--inputicon', action='store_true', default=False, help='Icon input file.')
-	group4.add_argument("-ext", '--ext', dest="ext", metavar='EXT', type=str, default='', help='Comma-separated list of extensions without spaces.')
+	group4.add_argument('-i', '--icon', dest="icon", metavar='ICON', type=str, default='', help='Icon input file.')
+	group4.add_argument("-ext", '--extensions', dest="extensions", metavar='EXTENSIONS', action="extend", nargs="+", help='A list of extensions separated by spaces.')
+	#group4.add_argument("-ext", '--ext', dest="ext", metavar='EXT', type=str, default='', help='Comma-separated list of extensions without spaces.')
 	group4.add_argument('-w', '--write', action='store_true', default=False, help='Perform recording index.html files to the specified directory.')
 	return parser, group1, group2, group3, group4
 
@@ -99,7 +100,7 @@ def ConfigOnConfig(parser, arguments: Arguments):
 
 def WriteIcons(data_icons: dict, file_icons: str = "template/icons.json"):
 	global PREFIX
-	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "r", "w") as fp:
+	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "w") as fp:
 		json.dump(data_icons, fp, indent=2)
 
 def WriteBasicIcons(file_icons: str = "template/icons.json"):
@@ -200,7 +201,8 @@ def WriteBasicIcons(file_icons: str = "template/icons.json"):
 				"k1w4m": "fcstd",
 				"l5g6m": "blend,blende1,blende2,blend3,blend4,blend5",
 				"8w4v9": "glade",
-				"p0g0h": "veg"
+				"p0g0h": "veg",
+				"6p3x3": "reg"
 			}
 	}
 	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "r", "w") as fp:
@@ -255,6 +257,7 @@ def RandName(OnDict: dict):
 	return output
 
 def ReadConfig() -> Arguments:
+	global PREFIX
 	global config_file
 	config = configparser.ConfigParser()
 	if config.sections() == []:
@@ -275,7 +278,16 @@ def ReadConfig() -> Arguments:
 	if args.generate:
 		data = ReadIcons()
 		on_name = RandName(data['others'])
-		print(on_name)
+		if args.icon and args.extensions:
+			input_icon = pathlib.Path(args.icon).resolve()
+			if input_icon.exists():
+				new_name = PREFIX.joinpath('template').joinpath('img.tmpl').joinpath(on_name + input_icon.suffix).resolve()
+				if args.write:
+					input_icon.replace(new_name)
+					data['others'][on_name] = ','.join(args.extensions)
+					WriteIcons(data)
+		else:
+			print(on_name)
 		sys.exit(0)
 	return args
 
