@@ -205,7 +205,7 @@ def WriteBasicIcons(file_icons: str = "template/icons.json"):
 				"6p3x3": "reg"
 			}
 	}
-	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "r", "w") as fp:
+	with open(pathlib.Path(PREFIX).joinpath(file_icons).resolve(), "w") as fp:
 		json.dump(data, fp, indent=2)
 
 def ReadIcons(file_icons: str = "template/icons.json") -> dict:
