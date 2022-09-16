@@ -281,6 +281,14 @@ class Files:
 			data = json.load(fp)
 		return data
 
+	@staticmethod
+	def GetFileSuffix(List_Files, suffixes: str):
+		if List_Files != None:
+			for x in List_Files:
+				if suffixes == pathlib.Path(x).suffix:
+					return pathlib.Path(x).resolve()
+		return None
+
 def createParser():
 	parser = argparse.ArgumentParser(prog=progname,description='GenIndex - create apindex file.')
 	group1 = parser.add_argument_group('Default', 'Default paramters.')
@@ -294,13 +302,13 @@ def createParser():
 	group2.add_argument("-sd", '--skip_dirs', dest="skip_dirs", metavar='SKIP_DRIS', action="extend", nargs="+", help='Skip Directories.')
 	group2.add_argument("-sf", '--skip_files', dest="skip_files", metavar='SKIP_FILES', action="extend", nargs="+", help='Skip Files.')
 	
-	group3 = parser.add_argument_group('Save', 'Save paramters.')
+	group3 = parser.add_argument_group('Save', 'Save parameters.')
 	group3.add_argument('-s', '--save', action='store_true', default=False, help='Save configs.')
 	group3.add_argument('-r', '--reset', action='store_true', default=False, help='Reset settings to Default config.')
 	group3.add_argument('-si', '--saveicons', action='store_true', default=False, help='Save icons settings to config.')
 	group3.add_argument('-ri', '--reseticons', action='store_true', default=False, help='Reset icons settings to Default config.')
-	group3.add_argument("-out", '--output', dest="output", metavar='OUTPUT', type=str, default='None', help='Output File.')
-	group3.add_argument("-in", '--input', dest="input", metavar='INPUT', type=str, default='None', help='Input File.')
+	group3.add_argument("-out", '--output', dest="output", metavar='OUTPUT', action="extend", nargs="+", help='Output File.')
+	group3.add_argument("-in", '--input', dest="input", metavar='INPUT', action="extend", nargs="+", help='Input File.')
 	
 	group4 = parser.add_argument_group('Actions', 'Action paramters.')
 	group4.add_argument("-d", '--dirs', dest="dirs", metavar='DIRS', type=str, default='./', help='Select the folder.')
@@ -321,9 +329,8 @@ def ReadConfig() -> Arguments:
 	
 	config = configparser.ConfigParser()
 	if config.sections() == []:
-		in_file = pathlib.Path(args.input).resolve()
-		if args.input != 'None' and in_file.exists() and in_file.suffix == '.ini':
-			config.read(pathlib.Path(args.input).resolve())
+		if Files.GetFileSuffix(args.input,'.ini') != None:
+			config.read(Files.GetFileSuffix(args.input,'.ini'))
 		elif Defaults.config_file.exists():
 			config.read(Defaults.config_file)
 		else:
@@ -332,19 +339,19 @@ def ReadConfig() -> Arguments:
 	Files.ConfigOnConfig(config, args)
 	
 	if args.save:
-		if args.output != 'None': Files.WriteConfig(config, args.output)
+		if Files.GetFileSuffix(args.output,'.ini') != None: Files.WriteConfig(config, Files.GetFileSuffix(args.output,'.ini'))
 		else: Files.WriteConfig(config)
 		sys.exit(0)
 	if args.saveicons:
-		data = Files.ReadIcons(args.input) if args.input != 'None' else Files.ReadIcons()
-		if args.output != 'None': Files.WriteIcons(data, args.output)
+		data = Files.ReadIcons(Files.GetFileSuffix(args.input,'.json')) if Files.GetFileSuffix(args.input,'.json') != None else Files.ReadIcons()
+		if Files.GetFileSuffix(args.output,'.json') != None: Files.WriteIcons(data, Files.GetFileSuffix(args.output,'.json'))
 		else: Files.WriteIcons(data)
 		sys.exit(0)
 	if args.reseticons:
 		Files.WriteDefaultIcons()
 		sys.exit(0)
 	if args.generate:
-		data = Files.ReadIcons(args.input) if args.input != 'None' else Files.ReadIcons()
+		data = Files.ReadIcons(Files.GetFileSuffix(args.input,'.json')) if Files.GetFileSuffix(args.input,'.json') != None else Files.ReadIcons()
 		on_name = Operations.RandName(data['others'])
 		if args.icon and args.extensions:
 			input_icon = pathlib.Path(args.icon).resolve()
@@ -353,7 +360,7 @@ def ReadConfig() -> Arguments:
 				if args.write:
 					input_icon.replace(new_name)
 					data['others'][on_name] = ','.join(args.extensions)
-					if args.output != 'None': Files.WriteIcons(data, args.output)
+					if Files.GetFileSuffix(args.output,'.json') != None: Files.WriteIcons(data, Files.GetFileSuffix(args.output,'.json'))
 					else: Files.WriteIcons(data)
 		else:
 			print(on_name)
