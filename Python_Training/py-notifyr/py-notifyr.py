@@ -182,7 +182,7 @@ def main():
 				icon = icon_image, fonts = ('Arial', 16, Weight.normal), 
 				fg_color = 'black', bg_color = '#FFFADD', 
 				scale = (2, 2), text = "My Text!", 
-				pos_x = PositionX.Right, pos_y = PositionY.Bottom,
+				pos_x = PositionX.Right, pos_y = PositionY.Top,
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
 if __name__ == '__main__':
