@@ -3,14 +3,42 @@
 
 import tkinter as tk
 import pathlib
+from enum import Enum
+
+class NoValue(Enum):
+
+	def __repr__(self):
+		return f"{self.__class__}: {self.name}"
+	
+	def __str__(self):
+		return f"{self.name}"
+	
+	def __call__(self):
+		return f"{self.value}"
+
+class Weight(NoValue):
+	normal = 'normal'
+	bold = 'bold'
+
+class PositionX(NoValue):
+	Left = 'left'
+	Right = 'right'
+	Center = 'center'
+
+class PositionY(NoValue):
+	Top = 'top'
+	Center = 'center'
+	Bottom = 'Bottom'
 
 class Window:
 	
 	def __init__(self, title: str = 'Apps', on_time: int = 10000,
-				icon = '', fonts: tuple=('Arial', 14, 'bold'), 
+				icon = '', fonts: tuple=('Arial', 14, Weight.normal), 
 				fg_color: str = 'black', bg_color: str = '#FFFADD', 
 				text: str = 'Hello World!', 
-				scale: tuple = (1, 1),
+				scale: tuple = (1, 1), 
+				pos_x: PositionX = PositionX.Right,
+				pos_y: PositionY = PositionY.Top,
 				alpha: float = 1.0, top: int = 0, left: int = 0):
 		'''
 			Function init tkinter Apps
@@ -61,7 +89,7 @@ class Window:
 		self.label_1 = tk.Label(self.root, text=f"",
 							bg=bg_color,
 							fg=fg_color,
-							font=(fonts[0], fonts[1], fonts[2]),
+							font=(fonts[0], fonts[1], fonts[2].value),
 							anchor='sw',
 							justify=tk.CENTER
 							)
@@ -80,9 +108,33 @@ class Window:
 		self.label_2.grid(row=1, column=1)
 		
 		# Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top
-		pos_width = self.root.winfo_screenwidth() - self.root.winfo_width() - 200 - left
-		pos_height = 15 - top
+		pos_width = 0
+		pos_height = 0
 		self.root.geometry()
+		if pos_x == PositionX.Right:
+			pos_width = self.root.winfo_screenwidth() - self.root.winfo_width() - 50 - left
+			if pos_y == PositionY.Center:
+				pos_height = int(self.root.winfo_screenheight()/2) - int(self.root.winfo_height()/2) + top
+			if pos_y == PositionY.Top:
+				pos_height = 15 + top
+			if pos_y == PositionY.Bottom:
+				pos_height = self.root.winfo_screenheight() - int(self.root.winfo_height()/2) - 30 - top
+		if pos_x == PositionX.Center:
+			pos_width = int(self.root.winfo_screenwidth()/2) - int(self.root.winfo_width()/2) - left
+			if pos_y == PositionY.Center:
+				pos_height = int(self.root.winfo_screenheight()/2) - int(self.root.winfo_height()/2) + top
+			if pos_y == PositionY.Top:
+				pos_height = 15 + top
+			if pos_y == PositionY.Bottom:
+				pos_height = self.root.winfo_screenheight() - int(self.root.winfo_height()/2) - 30 - top
+		if pos_x == PositionX.Left:
+			pos_width = left + 30
+			if pos_y == PositionY.Center:
+				pos_height = int(self.root.winfo_screenheight()/2) - int(self.root.winfo_height()/2) + top
+			if pos_y == PositionY.Top:
+				pos_height = 15 + top
+			if pos_y == PositionY.Bottom:
+				pos_height = self.root.winfo_screenheight() - int(self.root.winfo_height()/2) - 30 - top
 		self.root.geometry(f"+{pos_width}+{pos_height}")
 		self.root.minsize(100, 50)
 		self.root.maxsize(640, 480)
@@ -127,9 +179,10 @@ class Window:
 def main():
 	icon_image = str(pathlib.Path('test1.png').resolve())
 	win = Window(title = 'My App',
-				icon = icon_image, fonts = ('Arial', 16, 'normal'), 
+				icon = icon_image, fonts = ('Arial', 16, Weight.normal), 
 				fg_color = 'black', bg_color = '#FFFADD', 
 				scale = (2, 2), text = "My Text!", 
+				pos_x = PositionX.Right, pos_y = PositionY.Bottom,
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
 if __name__ == '__main__':
