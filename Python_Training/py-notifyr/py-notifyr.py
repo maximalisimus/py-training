@@ -7,36 +7,78 @@ import pathlib
 class Window:
 	
 	def __init__(self, title: str = 'Apps', height: int = 200, width: int = 100, on_time: int = 10000,
-				logo = '', icon = '', fonts: tuple=('Arial', 14, 'bold'), text_color: str = 'black', scale: tuple = (1, 1), 
-				text: str = 'Hello World!', top: int = 0, left: int = 0): # on_time: int = 10000
-		self.on_time = on_time
+				logo = '', icon = '', fonts: tuple=('Arial', 14, 'bold'), 
+				fg_color: str = 'black', bg_color: str = '#FFFADD', scale: tuple = (1, 1), 
+				text: str = 'Hello World!', alpha: float = 1.0, top: int = 0, left: int = 0):
+		'''
+			Function init tkinter Apps
+		'''
+		
+		# TKinter Global
 		self.root = tk.Tk()
 		self.root.title(title)
+		self.root.configure(bg=bg_color)
 		
+		# Transparent Form parameters
+		self.root.resizable(0,0)
+		#self.root.attributes(toolwindow=1)
+		self.root.overrideredirect(1)
+		self.root.wm_attributes("-topmost", 1)
+		self.root.wait_visibility(self.root)
+		
+		# Logo application
 		photo = tk.PhotoImage(file = logo)
 		self.root.wm_iconphoto(False, photo)
 		
+		# Button on Close
+		self.close_icon = tk.PhotoImage(file = 'close-icon.png')
+		self.close_icon = self.close_icon.subsample(1, 1)
+		self.btn1 = tk.Button(text="", justify=tk.CENTER,
+						borderwidth=0, 
+						bg=bg_color,
+						fg=fg_color,
+						highlightcolor='white',
+						activebackground='white',
+						highlightthickness = 0,
+						image=self.close_icon,
+						command=self.root.destroy)
+		self.btn1.grid(row=0, column=2)
+		
+		# Header
+		self.label_3 = tk.Label(self.root, text=title,
+							bg=bg_color,
+							fg=fg_color,
+							font=(fonts[0], fonts[1], 'bold'),
+							anchor='sw',
+							justify=tk.CENTER
+							)
+		self.label_3.grid(row=0, column=0)
+		
+		# Icon on forms (image)
 		self.image = tk.PhotoImage(file=icon)
 		self.image = self.image.subsample(*scale)
 		self.label_1 = tk.Label(self.root, text=f"",
-							fg=text_color,
+							bg=bg_color,
+							fg=fg_color,
 							font=(fonts[0], fonts[1], fonts[2]),
 							anchor='sw',
 							justify=tk.CENTER
 							)
-		
 		self.label_1.image = self.image
 		self.label_1['image'] = self.label_1.image
-		self.label_1.grid(row=0, column=0)
+		self.label_1.grid(row=1, column=0)
+		
+		# Text notify
 		self.label_2 = tk.Label(self.root, text=text,
-							fg=text_color,
+							bg=bg_color,
+							fg=fg_color,
 							font=(fonts[0], fonts[1], fonts[2]),
 							anchor='sw',
 							justify=tk.CENTER
 							)
+		self.label_2.grid(row=1, column=1)
 		
-		self.label_2.grid(row=0, column=1)
-		
+		# Position Forms: Left = Desktop.width - Form.Width - your_X; and Top = 15 - your_y
 		pos_width = self.root.winfo_screenwidth() - width - 200 - left
 		pos_height = 15 - top #win.winfo_screenheight() - height - 10
 		self.root.geometry()
@@ -45,20 +87,20 @@ class Window:
 		self.root.maxsize(640, 480)
 		self.root.resizable(0,0)
 		
-		self.root.wm_attributes("-topmost", 1)
-		
+		# Timer on destroy form parameters and functions
 		self.timer_flag = True
+		self.on_time = on_time
 		self.counter = 0.1
-		self.count = 1.0
+		self.count = alpha
 		self.update_clock()
 		
-		self.root.wait_visibility(self.root)
-		self.root.attributes('-alpha', 1.0)
+		# Global Form LOOP - visibility
 		self.root.mainloop()
 	
 	def update_clock(self):
+		''' Timer on TKinter - finish to destroy application '''
 		if not self.timer_flag:
-			if self.count <= 0.3:
+			if self.count <= 0.1:
 				self.root.destroy()
 			else:
 				self.count = float(f"{(self.count - self.counter):.1f}")
@@ -66,6 +108,7 @@ class Window:
 			self.root.after(100, self.update_clock)
 		else:
 			self.timer_flag = False
+			self.root.attributes('-alpha', self.count)
 			self.root.after(self.on_time, self.update_clock)
 
 def main():
@@ -73,8 +116,8 @@ def main():
 	icon_image = str(pathlib.Path('icon.png').resolve())
 	win = Window(title = 'My App', width = 100, height = 200, 
 				icon = icon_image, logo = icon_logo, fonts = ('Arial', 16, 'normal'), 
-				text_color = 'black', scale = (2, 2), text = "My Text!", 
-				on_time = 5000, top = 0, left = 0)
+				fg_color = 'black', bg_color = '#FFFADD', scale = (2, 2), text = "My Text!", 
+				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
 if __name__ == '__main__':
 	main()
