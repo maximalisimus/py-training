@@ -7,7 +7,7 @@ import pathlib
 class Window:
 	
 	def __init__(self, title: str = 'Apps', height: int = 200, width: int = 100, on_time: int = 10000,
-				logo = '', icon = '', fonts: tuple=('Arial', 14, 'bold'), 
+				icon = '', fonts: tuple=('Arial', 14, 'bold'), 
 				fg_color: str = 'black', bg_color: str = '#FFFADD', scale: tuple = (1, 1), 
 				text: str = 'Hello World!', alpha: float = 1.0, top: int = 0, left: int = 0):
 		'''
@@ -26,10 +26,6 @@ class Window:
 		self.root.wm_attributes("-topmost", 1)
 		self.root.wait_visibility(self.root)
 		
-		# Logo application
-		photo = tk.PhotoImage(file = logo)
-		self.root.wm_iconphoto(False, photo)
-		
 		# Button on Close
 		self.close_icon = tk.PhotoImage(file = 'close-icon.png')
 		self.close_icon = self.close_icon.subsample(1, 1)
@@ -41,7 +37,8 @@ class Window:
 						activebackground='white',
 						highlightthickness = 0,
 						image=self.close_icon,
-						command=self.root.destroy)
+						command=self.root.destroy
+						)
 		self.btn1.grid(row=0, column=2)
 		
 		# Header
@@ -50,7 +47,9 @@ class Window:
 							fg=fg_color,
 							font=(fonts[0], fonts[1], 'bold'),
 							anchor='sw',
-							justify=tk.CENTER
+							justify=tk.CENTER,
+							padx=10,
+							pady=0
 							)
 		self.label_3.grid(row=0, column=0)
 		
@@ -81,7 +80,7 @@ class Window:
 		# Position Forms: Left = Desktop.width - Form.Width - your_X; and Top = 15 - your_y
 		pos_width = self.root.winfo_screenwidth() - width - 200 - left
 		pos_height = 15 - top #win.winfo_screenheight() - height - 10
-		self.root.geometry()
+		self.root.geometry(f"{height + 30}x{ width + 10}")
 		self.root.geometry(f"+{pos_width}+{pos_height}")
 		self.root.minsize(100, 50)
 		self.root.maxsize(640, 480)
@@ -112,10 +111,9 @@ class Window:
 			self.root.after(self.on_time, self.update_clock)
 
 def main():
-	icon_logo = str(pathlib.Path('logo.png').resolve())
 	icon_image = str(pathlib.Path('icon.png').resolve())
 	win = Window(title = 'My App', width = 100, height = 200, 
-				icon = icon_image, logo = icon_logo, fonts = ('Arial', 16, 'normal'), 
+				icon = icon_image, fonts = ('Arial', 16, 'normal'), 
 				fg_color = 'black', bg_color = '#FFFADD', scale = (2, 2), text = "My Text!", 
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
