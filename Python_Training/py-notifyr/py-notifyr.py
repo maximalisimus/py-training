@@ -19,16 +19,37 @@ class NoValue(Enum):
 class Weight(NoValue):
 	normal = 'normal'
 	bold = 'bold'
+	
+	@classmethod
+	def GetWeight(cls, weight):
+		for x in cls:
+			if weight == x:
+				return x
+		return None
 
 class PositionX(NoValue):
 	Left = 'left'
 	Right = 'right'
 	Center = 'center'
+	
+	@classmethod
+	def GetPos(cls, pos):
+		for x in cls:
+			if pos == x:
+				return x
+		return None
 
 class PositionY(NoValue):
 	Top = 'top'
 	Center = 'center'
 	Bottom = 'Bottom'
+	
+	@classmethod
+	def GetPos(cls, pos):
+		for x in cls:
+			if pos == x:
+				return x
+		return None
 
 class Window:
 	
