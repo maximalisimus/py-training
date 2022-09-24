@@ -6,10 +6,12 @@ import pathlib
 
 class Window:
 	
-	def __init__(self, title: str = 'Apps', height: int = 200, width: int = 100, on_time: int = 10000,
+	def __init__(self, title: str = 'Apps', on_time: int = 10000,
 				icon = '', fonts: tuple=('Arial', 14, 'bold'), 
-				fg_color: str = 'black', bg_color: str = '#FFFADD', scale: tuple = (1, 1), 
-				text: str = 'Hello World!', alpha: float = 1.0, top: int = 0, left: int = 0):
+				fg_color: str = 'black', bg_color: str = '#FFFADD', 
+				text: str = 'Hello World!', 
+				scale: tuple = (1, 1),
+				alpha: float = 1.0, top: int = 0, left: int = 0):
 		'''
 			Function init tkinter Apps
 		'''
@@ -77,10 +79,10 @@ class Window:
 							)
 		self.label_2.grid(row=1, column=1)
 		
-		# Position Forms: Left = Desktop.width - Form.Width - your_X; and Top = 15 - your_y
-		pos_width = self.root.winfo_screenwidth() - width - 200 - left
-		pos_height = 15 - top #win.winfo_screenheight() - height - 10
-		self.root.geometry(f"{height + 30}x{ width + 10}")
+		# Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top
+		pos_width = self.root.winfo_screenwidth() - self.root.winfo_width() - 200 - left
+		pos_height = 15 - top
+		self.root.geometry()
 		self.root.geometry(f"+{pos_width}+{pos_height}")
 		self.root.minsize(100, 50)
 		self.root.maxsize(640, 480)
@@ -124,9 +126,10 @@ class Window:
 
 def main():
 	icon_image = str(pathlib.Path('icon.png').resolve())
-	win = Window(title = 'My App', width = 100, height = 200, 
+	win = Window(title = 'My App',
 				icon = icon_image, fonts = ('Arial', 16, 'normal'), 
-				fg_color = 'black', bg_color = '#FFFADD', scale = (2, 2), text = "My Text!", 
+				fg_color = 'black', bg_color = '#FFFADD', 
+				scale = (2, 2), text = "My Text!", 
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
 if __name__ == '__main__':
