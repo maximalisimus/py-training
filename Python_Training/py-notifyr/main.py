@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import tkinter as tk
+import sys
 import pathlib
+import json
+import configparser
+import argparse
+import tkinter as tk
+from os import getpid
 from enum import Enum
+import threading
 
 class NoValue(Enum):
 
@@ -35,7 +41,7 @@ class PositionX(NoValue):
 	@classmethod
 	def GetPos(cls, pos):
 		for x in cls:
-			if pos == x:
+			if pos.value == x.value:
 				return x
 		return None
 
@@ -43,11 +49,11 @@ class PositionY(NoValue):
 	Top = 'top'
 	Center = 'center'
 	Bottom = 'Bottom'
-	
+
 	@classmethod
 	def GetPos(cls, pos):
 		for x in cls:
-			if pos == x:
+			if pos.value == x.value:
 				return x
 		return None
 
@@ -205,17 +211,63 @@ class Window:
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 
-def main():
+class Defaults:
+	
+	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
+	config_file = PREFIX.joinpath('config.ini').resolve()
+
+class Files:
+	
+	@staticmethod
+	def WriteJson(data_json: dict, file_json: str = 'pid.json'):
+		with open(Defaults.PREFIX.joinpath(file_json).resolve(), "w") as fp:
+			json.dump(data_json, fp, indent=2)
+
+	@staticmethod
+	def ReadJson(file_json: str = 'pid.json') -> dict:
+		data = ''
+		with open(Defaults.PREFIX.joinpath(file_json).resolve(), "r") as fp:
+			data = json.load(fp)
+		return data
+
+	@staticmethod
+	def GetFileSuffix(List_Files, suffixes: str):
+		if List_Files != None:
+			for x in List_Files:
+				if suffixes == pathlib.Path(x).suffix:
+					return pathlib.Path(x).resolve()
+		return None
+
+def BuildWindow(on_x: int, on_y: int, on_width: int, on_height: int):
 	icon_image = str(pathlib.Path('test1.png').resolve())
-	on_width = 110
-	on_height = 70
-	win = Window(title = 'Apps',
-				icon = '', fonts = ('Arial', 16, Weight.normal), 
+	win = Window(title = 'My App',
+				icon = icon_image, fonts = ('Arial', 16, Weight.normal), 
 				fg_color = 'black', bg_color = '#FFFADD', 
-				scale = (2, 2), text = "Info", 
-				pos_x = PositionX.Right, pos_y = PositionY.Top,
-				width = on_width, height = on_height,
+				scale = (2, 2), text = "My Text!", 
+				pos_x = on_x, pos_y = on_y, width = on_width, height = on_height,
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
+
+def JsonProcess(on_x: int, on_y: int, on_width: int, on_height: int):
+	data = {
+			f"{getpid()}": {
+							'pos_x': f"{on_x.value}",
+							'pos_y': f"{on_y.value}",
+							'wight': f"{on_width}",
+							'height': f"{on_height}"
+							}		
+			}
+	print(data)
+
+def main():
+	on_pos_x = PositionX.Right
+	on_pos_y = PositionY.Top
+	w = 220
+	h = 100
+	#thread_win = threading.Thread(target=BuildWindow, args=(on_pos_x, on_pos_y, w, h))
+	thread_json = threading.Thread(target=JsonProcess, args=(on_pos_x, on_pos_y, w, h))
+	#thread_win.start()
+	thread_json.start()
+	pass
 
 if __name__ == '__main__':
 	main()
