@@ -254,7 +254,7 @@ def JsonProcess(on_x: int, on_y: int, on_width: int, on_height: int):
 							'pos_y': f"{on_y.value}",
 							'wight': f"{on_width}",
 							'height': f"{on_height}"
-							}		
+							}
 			}
 	print(data)
 
