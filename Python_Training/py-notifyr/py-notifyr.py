@@ -125,7 +125,7 @@ class Window:
 		self.root.attributes('-alpha', self.count)
 
 def main():
-	icon_image = str(pathlib.Path('icon.png').resolve())
+	icon_image = str(pathlib.Path('test1.png').resolve())
 	win = Window(title = 'My App',
 				icon = icon_image, fonts = ('Arial', 16, 'normal'), 
 				fg_color = 'black', bg_color = '#FFFADD', 
