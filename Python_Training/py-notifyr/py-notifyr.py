@@ -86,6 +86,7 @@ class Window:
 		self.root.maxsize(640, 480)
 		self.root.resizable(0,0)
 		
+		# Show an opaque form when hovering over the mouse
 		self.root.bind("<Enter>", self.on_enter)
 		self.root.bind("<Leave>", self.on_leave)
 		
@@ -114,9 +115,11 @@ class Window:
 			self.root.after(self.on_time, self.update_clock)
 	
 	def on_enter(self, event):
+		''' Form focused '''
 		self.root.attributes('-alpha', 1.0)
 	
 	def on_leave(self, enter):
+		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 
 def main():
