@@ -86,6 +86,9 @@ class Window:
 		self.root.maxsize(640, 480)
 		self.root.resizable(0,0)
 		
+		self.root.bind("<Enter>", self.on_enter)
+		self.root.bind("<Leave>", self.on_leave)
+		
 		# Timer on destroy form parameters and functions
 		self.timer_flag = True
 		self.on_time = on_time
@@ -109,6 +112,12 @@ class Window:
 			self.timer_flag = False
 			self.root.attributes('-alpha', self.count)
 			self.root.after(self.on_time, self.update_clock)
+	
+	def on_enter(self, event):
+		self.root.attributes('-alpha', 1.0)
+	
+	def on_leave(self, enter):
+		self.root.attributes('-alpha', self.count)
 
 def main():
 	icon_image = str(pathlib.Path('icon.png').resolve())
