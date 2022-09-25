@@ -73,7 +73,10 @@ class Arguments:
 		self.alpha = args[12] if len(args) >= 13 else kwargs.get('alpha', 1.0)
 		self.top = args[13] if len(args) >= 14 else kwargs.get('top', 0)
 		self.left = args[14] if len(args) >= 15 else kwargs.get('left', 0)
-
+	
+	def __getattr__(self, attrname):
+		return None
+	
 	def __repr__(self):
 		return f"{self.__class__}:" + \
 				f"\n\tTitle: {self.title}" + \
