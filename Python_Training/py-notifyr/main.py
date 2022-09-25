@@ -252,7 +252,7 @@ class Defaults:
 				}
 	
 	@staticmethod
-	def GetDefaultWorker() - dict:
+	def GetDefaultWorker() -> dict:
 		return {'unlock': True}
 
 class Files:
@@ -312,6 +312,7 @@ def AppsConfig(pos_x: int, pos_y: int, on_width: int, on_height: int):
 	data['pos_x'] = PositionX.GetPos(data['pos_x'])
 	data['pos_y'] = PositionY.GetPos(data['pos_y'])
 	# 1116 15
+	print(data)
 	pass
 
 def main():
