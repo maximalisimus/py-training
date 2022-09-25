@@ -9,7 +9,7 @@ import argparse
 import tkinter as tk
 from enum import Enum
 import threading
-
+from os import getpid
 import time
 
 env_event = threading.Event()
@@ -84,7 +84,9 @@ class Window:
 		global screen_height
 		global position_x
 		global position_y
+		global worker_event
 		global env_event
+		worker_event.clear()
 		env_event.clear()
 		
 		# TKinter Global
@@ -210,6 +212,7 @@ class Window:
 		
 		# Global Form LOOP - visibility
 		self.root.mainloop()
+		worker_event.set()
 	
 	def update_clock(self):
 		''' Timer on TKinter - finish to destroy application '''
@@ -247,7 +250,7 @@ class Defaults:
 				'pos_y': f"{PositionY.Top.value}",
 				'x': f"0",
 				'y': f"0",
-				'wight': f"110",
+				'width': f"110",
 				'height': f"70"
 				}
 	
@@ -299,18 +302,10 @@ def AppsConfig(pos_x: int, pos_y: int, on_width: int, on_height: int):
 	global Left
 	global env_event
 	global worker_event
+	# getpid()
 	# env_event.wait()
 	# data = Files.ReadJson('pid.json')
 	# worker = Files.ReadJson('worker.json')
-	global worker_event
-	worker = Files.ReadJson('worker.json')
-	while not worker['unlock']:
-		time.sleep(1)
-		worker = Files.ReadJson('worker.json')
-		worker_event.clear()
-	data = Files.ReadJson('pid.json')
-	data['pos_x'] = PositionX.GetPos(data['pos_x'])
-	data['pos_y'] = PositionY.GetPos(data['pos_y'])
 	# 1116 15
 	pass
 
