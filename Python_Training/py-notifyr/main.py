@@ -294,7 +294,7 @@ def AppsConfig(pos_x: int, pos_y: int, on_width: int, on_height: int):
 	# global env_event
 	#global worker_event
 	# env_event.wait()
-	#Files.WriteJson(data, 'pid.json')
+	# data = Files.ReadJson('pid.json')
 	# worker = Files.ReadJson('worker.json')
 	pass
 
