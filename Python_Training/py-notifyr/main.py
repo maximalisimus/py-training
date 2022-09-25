@@ -7,13 +7,13 @@ import json
 import configparser
 import argparse
 import tkinter as tk
-from os import getpid
 from enum import Enum
 import threading
 
 import time
 
-event = threading.Event()
+env_event = threading.Event()
+worker_event = threading.Event()
 screen_width = 0
 screen_height = 0
 position_x = 0
@@ -82,8 +82,10 @@ class Window:
 		global screen_height
 		global position_x
 		global position_y
-		global event
-		event.clear()
+		global env_event
+		global worker_event
+		worker_event.wait()
+		env_event.clear()
 		
 		# TKinter Global
 		self.root = tk.Tk()
@@ -193,7 +195,7 @@ class Window:
 		
 		position_x = pos_width
 		position_y = pos_height
-		event.set()
+		env_event.set()
 		
 		# Show an opaque form when hovering over the mouse
 		self.root.bind("<Enter>", self.on_enter)
@@ -212,7 +214,7 @@ class Window:
 	def update_clock(self):
 		''' Timer on TKinter - finish to destroy application '''
 		if not self.timer_flag:
-			if self.count <= 0.1:
+			if self.count <= 0.0:
 				self.root.destroy()
 			else:
 				self.count = float(f"{(self.count - self.counter):.1f}")
@@ -235,18 +237,35 @@ class Defaults:
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
+	
+	@staticmethod
+	def GetDefaultData() -> dict:
+		return {
+				'screen_width': '1366',
+				'scree_height': '768',
+				'pos_x': f"{PositionX.Right}",
+				'pos_y': f"{PositionY.Top}",
+				'x': f"1116",
+				'y': f"15",
+				'wight': f"220",
+				'height': f"100"
+				}
+	
+	@staticmethod
+	def GetDefaultWorker() - dict:
+		return {'block': True}
 
 class Files:
 	
 	@staticmethod
-	def WriteJson(data_json: dict, file_json: str = 'pid.json'):
-		with open(Defaults.PREFIX.joinpath(file_json).resolve(), "w") as fp:
+	def WriteJson(data_json: dict, file_json: str = 'object.json'):
+		with open(pathlib.Path(file_json).resolve(), "w") as fp:
 			json.dump(data_json, fp, indent=2)
 
 	@staticmethod
-	def ReadJson(file_json: str = 'pid.json') -> dict:
+	def ReadJson(file_json: str = 'object.json') -> dict:
 		data = ''
-		with open(Defaults.PREFIX.joinpath(file_json).resolve(), "r") as fp:
+		with open(pathlib.Path(file_json).resolve(), "r") as fp:
 			data = json.load(fp)
 		return data
 
@@ -267,48 +286,27 @@ def BuildWindow(on_x: int, on_y: int, on_width: int, on_height: int):
 				pos_x = on_x, pos_y = on_y, width = on_width, height = on_height,
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
-def JsonProcess(on_x: int, on_y: int, on_width: int, on_height: int):
-	# getpid()
+def AppsConfig(pos_x: int, pos_y: int, on_width: int, on_height: int):
 	# global screen_width
 	# global screen_height
 	# global position_x
 	# global position_y
-	# global event
-	# event.wait()
-	data = {
-			'global': {
-						'screen_width': '1366',
-						'scree_height': '768',
-						'pos_x': f"{on_x.value}",
-						'pos_y': f"{on_y.value}",
-						},
-			'private': {
-						f"30182": {
-									'x': f"1116",
-									'y': f"15",
-									'wight': f"220",
-									'height': f"100"
-									},
-						f"30233": {
-									'x': f"1116",
-									'y': f"125",
-									'wight': f"220",
-									'height': f"100"
-									},
-						}
-			}
-	print(data)
-	print(len(data['private'].keys()))
+	# global env_event
+	#global worker_event
+	# env_event.wait()
+	#Files.WriteJson(data, 'pid.json')
+	# worker = Files.ReadJson('worker.json')
+	pass
 
 def main():
 	on_pos_x = PositionX.Right
 	on_pos_y = PositionY.Top
 	w = 220
 	h = 100
+	thread_json_config = threading.Thread(target=AppsConfig, args=(on_pos_x, on_pos_y, w, h))
 	#thread_win = threading.Thread(target=BuildWindow, args=(on_pos_x, on_pos_y, w, h))
-	thread_json = threading.Thread(target=JsonProcess, args=(on_pos_x, on_pos_y, w, h))
+	thread_json_config.start()
 	#thread_win.start()
-	thread_json.start()
 	#time.sleep(5)
 	pass
 
