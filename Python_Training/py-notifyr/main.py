@@ -11,6 +11,8 @@ from os import getpid
 from enum import Enum
 import threading
 
+import time
+
 event = threading.Event()
 screen_width = 0
 screen_height = 0
@@ -296,6 +298,7 @@ def main():
 	thread_json = threading.Thread(target=JsonProcess, args=(on_pos_x, on_pos_y, w, h))
 	#thread_win.start()
 	thread_json.start()
+	#time.sleep(5)
 	pass
 
 if __name__ == '__main__':
