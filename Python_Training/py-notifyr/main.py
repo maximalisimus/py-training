@@ -11,6 +11,10 @@ from os import getpid
 from enum import Enum
 import threading
 
+event = threading.Event()
+screen_width = 0
+screen_height = 0
+
 class NoValue(Enum):
 
 	def __repr__(self):
@@ -70,6 +74,10 @@ class Window:
 		'''
 			Function init tkinter Apps
 		'''
+		global screen_width
+		global screen_height
+		global event
+		event.clear()
 		
 		# TKinter Global
 		self.root = tk.Tk()
@@ -141,6 +149,9 @@ class Window:
 		
 		# Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top
 		# and Window size
+		screen_width = self.root.winfo_screenwidth()
+		screen_height = self.root.winfo_screenheight()
+		event.set()
 		pos_width = 0
 		pos_height = 0
 		self.width = width
@@ -248,15 +259,33 @@ def BuildWindow(on_x: int, on_y: int, on_width: int, on_height: int):
 				on_time = 5000, alpha = 1.0, top = 0, left = 0)
 
 def JsonProcess(on_x: int, on_y: int, on_width: int, on_height: int):
+	# getpid()
+	# global screen_width
+	# global screen_height
+	# global event
+	# event.wait()
 	data = {
-			f"{getpid()}": {
-							'pos_x': f"{on_x.value}",
-							'pos_y': f"{on_y.value}",
-							'wight': f"{on_width}",
-							'height': f"{on_height}"
-							}
+			'global': {
+						'screen_width': '1366',
+						'scree_height': '768',
+						},
+			'private': {
+						f"30182": {
+									'pos_x': f"{on_x.value}",
+									'pos_y': f"{on_y.value}",
+									'wight': f"{on_width}",
+									'height': f"{on_height}"
+									},
+						f"30233": {
+									'pos_x': f"{on_x.value}",
+									'pos_y': f"{on_y.value}",
+									'wight': f"{on_width}",
+									'height': f"{on_height}"
+									},
+						}
 			}
 	print(data)
+	print(len(data['private'].keys()))
 
 def main():
 	on_pos_x = PositionX.Right
