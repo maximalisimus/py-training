@@ -18,6 +18,8 @@ screen_width = 0
 screen_height = 0
 position_x = 0
 position_y = 0
+Top = 0
+Left = 0
 
 class NoValue(Enum):
 
@@ -35,9 +37,9 @@ class Weight(NoValue):
 	bold = 'bold'
 	
 	@classmethod
-	def GetWeight(cls, weight):
+	def GetWeight(cls, weight: str):
 		for x in cls:
-			if weight == x:
+			if weight == x.value:
 				return x
 		return None
 
@@ -47,9 +49,9 @@ class PositionX(NoValue):
 	Center = 'center'
 	
 	@classmethod
-	def GetPos(cls, pos):
+	def GetPos(cls, pos: str):
 		for x in cls:
-			if pos.value == x.value:
+			if pos == x.value:
 				return x
 		return None
 
@@ -59,9 +61,9 @@ class PositionY(NoValue):
 	Bottom = 'Bottom'
 
 	@classmethod
-	def GetPos(cls, pos):
+	def GetPos(cls, pos: str):
 		for x in cls:
-			if pos.value == x.value:
+			if pos == x.value:
 				return x
 		return None
 
@@ -83,8 +85,6 @@ class Window:
 		global position_x
 		global position_y
 		global env_event
-		global worker_event
-		worker_event.wait()
 		env_event.clear()
 		
 		# TKinter Global
@@ -243,12 +243,12 @@ class Defaults:
 		return {
 				'screen_width': '1366',
 				'scree_height': '768',
-				'pos_x': f"{PositionX.Right}",
-				'pos_y': f"{PositionY.Top}",
-				'x': f"1116",
-				'y': f"15",
-				'wight': f"220",
-				'height': f"100"
+				'pos_x': f"{PositionX.Right.value}",
+				'pos_y': f"{PositionY.Top.value}",
+				'x': f"0",
+				'y': f"0",
+				'wight': f"110",
+				'height': f"70"
 				}
 	
 	@staticmethod
@@ -278,24 +278,40 @@ class Files:
 		return None
 
 def BuildWindow(on_x: int, on_y: int, on_width: int, on_height: int):
+	global Top
+	global Left
+	global worker_event
+	worker_event.wait()
 	icon_image = str(pathlib.Path('test1.png').resolve())
 	win = Window(title = 'My App',
 				icon = icon_image, fonts = ('Arial', 16, Weight.normal), 
 				fg_color = 'black', bg_color = '#FFFADD', 
 				scale = (2, 2), text = "My Text!", 
 				pos_x = on_x, pos_y = on_y, width = on_width, height = on_height,
-				on_time = 5000, alpha = 1.0, top = 0, left = 0)
+				on_time = 5000, alpha = 1.0, top = Top, left = Left)
 
 def AppsConfig(pos_x: int, pos_y: int, on_width: int, on_height: int):
-	# global screen_width
-	# global screen_height
-	# global position_x
-	# global position_y
-	# global env_event
-	# global worker_event
+	global screen_width
+	global screen_height
+	global position_x
+	global position_y
+	global Top
+	global Left
+	global env_event
+	global worker_event
 	# env_event.wait()
 	# data = Files.ReadJson('pid.json')
 	# worker = Files.ReadJson('worker.json')
+	global worker_event
+	worker = Files.ReadJson('worker.json')
+	while not worker['unlock']:
+		time.sleep(1)
+		worker = Files.ReadJson('worker.json')
+		worker_event.clear()
+	data = Files.ReadJson('pid.json')
+	data['pos_x'] = PositionX.GetPos(data['pos_x'])
+	data['pos_y'] = PositionY.GetPos(data['pos_y'])
+	# 1116 15
 	pass
 
 def main():
@@ -303,6 +319,8 @@ def main():
 	on_pos_y = PositionY.Top
 	w = 220
 	h = 100
+	top = 0
+	left = 0
 	thread_json_config = threading.Thread(target=AppsConfig, args=(on_pos_x, on_pos_y, w, h))
 	#thread_win = threading.Thread(target=BuildWindow, args=(on_pos_x, on_pos_y, w, h))
 	thread_json_config.start()
