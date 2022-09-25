@@ -16,6 +16,8 @@ import time
 event = threading.Event()
 screen_width = 0
 screen_height = 0
+position_x = 0
+position_y = 0
 
 class NoValue(Enum):
 
@@ -78,6 +80,8 @@ class Window:
 		'''
 		global screen_width
 		global screen_height
+		global position_x
+		global position_y
 		global event
 		event.clear()
 		
@@ -153,28 +157,27 @@ class Window:
 		# and Window size
 		screen_width = self.root.winfo_screenwidth()
 		screen_height = self.root.winfo_screenheight()
-		event.set()
 		pos_width = 0
 		pos_height = 0
 		self.width = width
 		self.height = height
 		self.root.geometry(f"{self.width}x{self.height}")
 		if pos_x == PositionX.Right:
-			pos_width = self.root.winfo_screenwidth() - self.width - 30 - left
+			pos_width = self.root.winfo_screenwidth() - self.width - 30 + left
 			if pos_y == PositionY.Center:
 				pos_height = int(self.root.winfo_screenheight()/2) - self.height + top
 			if pos_y == PositionY.Top:
 				pos_height = 15 + top
 			if pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.height - 30 - top
+				pos_height = self.root.winfo_screenheight() - self.height - 30 + top
 		if pos_x == PositionX.Center:
-			pos_width = int(self.root.winfo_screenwidth()/2) - int(self.width/2) - left
+			pos_width = int(self.root.winfo_screenwidth()/2) - int(self.width/2) + left
 			if pos_y == PositionY.Center:
 				pos_height = int(self.root.winfo_screenheight()/2) - self.height + top
 			if pos_y == PositionY.Top:
 				pos_height = 15 + top
 			if pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.height - 30 - top
+				pos_height = self.root.winfo_screenheight() - self.height - 30 + top
 		if pos_x == PositionX.Left:
 			pos_width = left + 30
 			if pos_y == PositionY.Center:
@@ -182,11 +185,15 @@ class Window:
 			if pos_y == PositionY.Top:
 				pos_height = 15 + top
 			if pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.height - 30 - top
+				pos_height = self.root.winfo_screenheight() - self.height - 30 + top
 		self.root.geometry(f"+{pos_width}+{pos_height}")
 		self.root.minsize(110, 70)
 		self.root.maxsize(800, 600)
 		self.root.resizable(0,0)
+		
+		position_x = pos_width
+		position_y = pos_height
+		event.set()
 		
 		# Show an opaque form when hovering over the mouse
 		self.root.bind("<Enter>", self.on_enter)
@@ -264,25 +271,29 @@ def JsonProcess(on_x: int, on_y: int, on_width: int, on_height: int):
 	# getpid()
 	# global screen_width
 	# global screen_height
+	# global position_x
+	# global position_y
 	# global event
 	# event.wait()
 	data = {
 			'global': {
 						'screen_width': '1366',
 						'scree_height': '768',
+						'pos_x': f"{on_x.value}",
+						'pos_y': f"{on_y.value}",
 						},
 			'private': {
 						f"30182": {
-									'pos_x': f"{on_x.value}",
-									'pos_y': f"{on_y.value}",
-									'wight': f"{on_width}",
-									'height': f"{on_height}"
+									'x': f"1116",
+									'y': f"15",
+									'wight': f"220",
+									'height': f"100"
 									},
 						f"30233": {
-									'pos_x': f"{on_x.value}",
-									'pos_y': f"{on_y.value}",
-									'wight': f"{on_width}",
-									'height': f"{on_height}"
+									'x': f"1116",
+									'y': f"125",
+									'wight': f"220",
+									'height': f"100"
 									},
 						}
 			}
