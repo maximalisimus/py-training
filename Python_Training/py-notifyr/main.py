@@ -253,7 +253,7 @@ class Defaults:
 	
 	@staticmethod
 	def GetDefaultWorker() - dict:
-		return {'block': True}
+		return {'unlock': True}
 
 class Files:
 	
