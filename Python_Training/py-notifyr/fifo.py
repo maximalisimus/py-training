@@ -8,7 +8,7 @@ from os import mkfifo
 def main():
 	# pathlib.Path.home()
 	FIFO = pathlib.Path(sys.argv[0]).parent.joinpath('pipe1').resolve()
-	if not FIFO.exists:
+	if not FIFO.exists():
 		mkfifo(FIFO)
 	print("Opening FIFO...")
 	with open(FIFO) as fifo:
@@ -19,6 +19,7 @@ def main():
 				print("Writer closed")
 				break
 			print(f"{data}")
+	FIFO.unlink(missing_ok=True)
 
 if __name__ == '__main__':
 	main()
