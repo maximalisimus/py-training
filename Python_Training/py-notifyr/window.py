@@ -114,8 +114,6 @@ class Window:
 		''' Function init tkinter Apps '''
 		self.args = on_args	
 		self.root = tk.Tk()
-		#self.frame_top = tk.Frame(self.root, width = self.args.width, bg=self.args.bg_color)
-		#self.frame_bottom = tk.Frame(self.root, width = self.args.width, bg=self.args.bg_color)
 		
 		# Window Functions builds
 		self.__CreateTitle()
