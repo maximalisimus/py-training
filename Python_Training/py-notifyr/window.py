@@ -39,9 +39,16 @@ class Weight(NoValue):
 	bold = 'bold'
 	
 	@classmethod
-	def GetWeight(cls, weight: str):
+	def GetWeightValue(cls, weight: str):
 		for x in cls:
 			if weight == x.value:
+				return x
+		return None
+
+	@classmethod
+	def GetWeightName(cls, pos):
+		for x in cls:
+			if os == x:
 				return x
 		return None
 
@@ -57,6 +64,13 @@ class PositionX(NoValue):
 				return x
 		return None
 
+	@classmethod
+	def GetPosName(cls, pos):
+		for x in cls:
+			if os == x:
+				return x
+		return None
+
 class PositionY(NoValue):
 	Top = 'top'
 	Center = 'center'
@@ -66,6 +80,13 @@ class PositionY(NoValue):
 	def GetPosValue(cls, pos: str):
 		for x in cls:
 			if pos == x.value:
+				return x
+		return None
+
+	@classmethod
+	def GetPosName(cls, pos):
+		for x in cls:
+			if os == x:
 				return x
 		return None
 
@@ -80,7 +101,7 @@ class Arguments:
 		self.icon = pathlib.Path(args[3]).resolve() if len(args) >= 4 else kwargs.get('icon', '')
 		self.fonts = list(str(args[4]).split(',')) if len(args) >= 5 else list(str(kwargs.get('fonts','Arial,14,normal')).split(','))
 		self.fonts[1] = int(self.fonts[1])
-		self.fonts[2] = Weight.GetWeight(self.fonts[2])
+		self.fonts[2] = Weight.GetWeightValue(self.fonts[2])
 		self.fonts = tuple(self.fonts)
 		self.fg_color = args[5] if len(args) >= 6 else kwargs.get('fg_color', 'black')
 		self.bg_color = args[6] if len(args) >= 7 else kwargs.get('bg_color', '#FFFADD')
