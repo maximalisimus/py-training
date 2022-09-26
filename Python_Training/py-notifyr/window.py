@@ -20,6 +20,8 @@ position_x = 0
 position_y = 0
 Top = 0
 Left = 0
+Width = 0
+Height = 0
 
 class NoValue(Enum):
 
@@ -49,7 +51,7 @@ class PositionX(NoValue):
 	Center = 'center'
 	
 	@classmethod
-	def GetPos(cls, pos: str):
+	def GetPosValue(cls, pos: str):
 		for x in cls:
 			if pos == x.value:
 				return x
@@ -61,7 +63,7 @@ class PositionY(NoValue):
 	Bottom = 'Bottom'
 
 	@classmethod
-	def GetPos(cls, pos: str):
+	def GetPosValue(cls, pos: str):
 		for x in cls:
 			if pos == x.value:
 				return x
@@ -83,13 +85,14 @@ class Arguments:
 		self.fg_color = args[5] if len(args) >= 6 else kwargs.get('fg_color', 'black')
 		self.bg_color = args[6] if len(args) >= 7 else kwargs.get('bg_color', '#FFFADD')
 		self.scale = tuple(map(int, str(args[7]).split(',')))  if len(args) >= 8 else tuple(map(int, str(kwargs.get('scale', '1,1')).split(',')))
-		self.width = args[8] if len(args) >= 9 else kwargs.get('width', 200)
-		self.height = args[9] if len(args) >= 10 else kwargs.get('height', 100)
-		self.pos_x = PositionX.GetPos(args[10]) if len(args) >= 11 else PositionX.GetPos(kwargs.get('pos_x', 'right'))
-		self.pos_y = PositionY.GetPos(args[11]) if len(args) >= 12 else PositionY.GetPos(kwargs.get('pos_y', 'top'))
-		self.alpha = args[12] if len(args) >= 13 else kwargs.get('alpha', 1.0)
-		self.top = args[13] if len(args) >= 14 else kwargs.get('top', 0)
-		self.left = args[14] if len(args) >= 15 else kwargs.get('left', 0)
+		self.pos_x = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('pos_x', 'right'))
+		self.pos_y = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('pos_y', 'top'))
+		
+		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
+		self.width = 0
+		self.height = 0
+		self.top = 0
+		self.left = 0
 	
 	def __getattr__(self, attrname):
 		return None
@@ -112,7 +115,7 @@ class Window:
 	
 	def __init__(self, on_args: Arguments = Arguments()):
 		''' Function init tkinter Apps '''
-		self.args = on_args	
+		self.args = on_args
 		self.root = tk.Tk()
 		
 		# Window Functions builds
@@ -245,58 +248,61 @@ class Window:
 			self.label_2.grid(row=1, column=0)
 			self.label_2.place(relx=0.0, rely=0.5)
 	
+	def __CalcPositionY(self):
+		''' Calculate Position Top (y) '''
+		if self.args.pos_y == PositionY.Top:
+			self.args.top = 15
+		elif self.args.pos_y == PositionY.Center:
+			self.args.top = int(self.screen_height/2) - int(self.args.height/2)
+		else:
+			self.args.top = self.screen_height - self.args.height - 30
+	
+	def __CalcPosition(self):
+		''' Calculate Position Left (x) '''
+		if self.args.pos_x == PositionX.Left:
+			self.args.left = 15
+		elif self.args.pos_x == PositionX.Center:
+			self.args.left = int(self.screen_width/2) - int(self.args.width/2)
+		else:
+			self.args.left = self.screen_width - self.args.width - 15
+		self.__CalcPositionY()
+	
 	def __CreatePosition(self):
-		''' 
+		'''
 			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
 			and Window size
 		'''
 		self.screen_width = self.root.winfo_screenwidth()
 		self.screen_height = self.root.winfo_screenheight()
-		pos_width = 0
-		pos_height = 0
+		self.root.geometry()
+		self.root.update_idletasks()
+		form_size = self.root.geometry()
+		self.args.width = tuple(map(int, form_size.split('+')[0].split('x')))[0] + 10
+		self.args.height = tuple(map(int, form_size.split('+')[0].split('x')))[1] + 10
 		self.root.geometry(f"{self.args.width}x{self.args.height}")
-		if self.args.pos_x == PositionX.Right:
-			pos_width = self.root.winfo_screenwidth() - self.args.width - 30 + self.args.left
-			if self.args.pos_y == PositionY.Center:
-				pos_height = int(self.root.winfo_screenheight()/2) - self.args.height + self.args.top
-			if self.args.pos_y == PositionY.Top:
-				pos_height = 15 + self.args.top
-			if self.args.pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.args.height - 30 + self.args.top
-		if self.args.pos_x == PositionX.Center:
-			pos_width = int(self.root.winfo_screenwidth()/2) - int(self.args.width/2) + self.args.left
-			if pos_y == PositionY.Center:
-				pos_height = int(self.root.winfo_screenheight()/2) - self.args.height + self.args.top
-			if self.args.pos_y == PositionY.Top:
-				pos_height = 15 + self.args.top
-			if self.args.pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.args.height - 30 + self.args.top
-		if self.args.pos_x == PositionX.Left:
-			pos_width = self.args.left + 30
-			if self.args.pos_y == PositionY.Center:
-				pos_height = int(self.root.winfo_screenheight()/2) - self.args.height + self.args.top
-			if self.args.pos_y == PositionY.Top:
-				pos_height = 15 + top
-			if self.args.pos_y == PositionY.Bottom:
-				pos_height = self.root.winfo_screenheight() - self.args.height - 30 + self.args.top
-		self.root.geometry(f"+{pos_width}+{pos_height}")
+		
+		self.__CalcPosition()
+		
+		self.root.geometry(f"+{self.args.left}+{self.args.top}")
 		self.root.minsize(110, 70)
-		self.root.maxsize(800, 600)
+		self.root.maxsize(self.screen_width, self.screen_height-30)
 		self.root.resizable(0,0)
-		self.position_x = pos_width
-		self.position_y = pos_height		
 		global screen_width
 		global screen_height
 		global position_x
 		global position_y
+		global Width
+		global Height
 		global Top
 		global Left
 		screen_width = self.screen_width
 		screen_height = self.screen_height
-		position_x = pos_width
-		position_y = pos_height
+		position_x = self.args.pos_x
+		position_y = self.args.pos_y
 		Top = self.args.top
 		Left = self.args.left
+		Width = self.args.width
+		Height = self.args.height
 
 class Defaults:
 	
@@ -326,17 +332,18 @@ class Files:
 		return None
 
 def main():
+	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000)
+	win = Window(args)
 	'''
 	global screen_width
 	global screen_height
 	global position_x
 	global position_y
+	global Width
+	global Height
 	global Top
 	global Left
 	'''
-	# icon='test1.png'
-	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', width=430, height=100)
-	win = Window(args)
 	win.FormTimer_Init()
 	win.Run()
 	pass
