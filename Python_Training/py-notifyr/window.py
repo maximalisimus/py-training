@@ -114,6 +114,8 @@ class Window:
 		''' Function init tkinter Apps '''
 		self.args = on_args	
 		self.root = tk.Tk()
+		#self.frame_top = tk.Frame(self.root, width = self.args.width, bg=self.args.bg_color)
+		#self.frame_bottom = tk.Frame(self.root, width = self.args.width, bg=self.args.bg_color)
 		
 		# Window Functions builds
 		self.__CreateTitle()
@@ -122,14 +124,13 @@ class Window:
 		self.__CreateHeader()
 		self.__CreateIcon()
 		self.__CreateText()
+		self.__ElementPack()
 		self.__CreatePosition()
 		
 		# Show an opaque form when hovering over the mouse
 		self.root.bind("<Enter>", self.on_enter)
 		self.root.bind("<Leave>", self.on_leave)
-		
-		self.__FormTimer_Init()
-	
+			
 	def update_clock(self):
 		''' Timer on TKinter - finish to destroy application '''
 		if not self.timer_flag:
@@ -144,6 +145,14 @@ class Window:
 			self.root.attributes('-alpha', self.count)
 			self.root.after(self.on_time, self.update_clock)
 	
+	def FormTimer_Init(self):
+		''' Timer on destroy form parameters and functions '''
+		self.timer_flag = True
+		self.on_time = self.args.on_time
+		self.counter = 0.1
+		self.count = self.args.alpha
+		self.update_clock()
+	
 	def on_enter(self, event):
 		''' Form focused '''
 		self.root.attributes('-alpha', 1.0)
@@ -151,6 +160,10 @@ class Window:
 	def on_leave(self, enter):
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
+	
+	def Run(self):
+		''' Global Form LOOP - visibility '''
+		self.root.mainloop()
 	
 	def __CreateTitle(self):
 		''' TKinter Title '''
@@ -168,8 +181,8 @@ class Window:
 		''' Button on Close '''
 		self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('close-icon.png'))
 		self.close_icon = self.close_icon.subsample(1, 1)
-		self.btn1 = tk.Button(text="", justify=tk.CENTER,
-						borderwidth=0, 
+		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
+						borderwidth=0,
 						bg=self.args.bg_color,
 						fg=self.args.fg_color,
 						highlightcolor='white',
@@ -178,7 +191,6 @@ class Window:
 						image=self.close_icon,
 						command=self.root.destroy
 						)
-		self.btn1.grid(row=0, column=2)
 	
 	def __CreateHeader(self):
 		''' Header '''
@@ -186,12 +198,10 @@ class Window:
 							bg=self.args.bg_color,
 							fg=self.args.fg_color,
 							font=(self.args.fonts[0], self.args.fonts[1], 'bold'),
-							anchor='sw',
 							justify=tk.CENTER,
 							padx=10,
 							pady=0
 							)
-		self.label_3.grid(row=0, column=0)
 
 	def __CreateIcon(self):
 		''' Icon on forms (image) '''
@@ -201,7 +211,6 @@ class Window:
 							bg=self.args.bg_color,
 							fg=self.args.fg_color,
 							font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2].value),
-							anchor='sw',
 							justify=tk.CENTER
 							)
 		self.label_1.image = self.image
@@ -209,20 +218,35 @@ class Window:
 	
 	def __CreateText(self):
 		''' Text notify '''
-		self.label_2 = tk.Label(self.root, text=self.args.text,
-							bg=self.args.bg_color,
-							fg=self.args.fg_color,
-							font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
-							anchor='sw',
-							justify=tk.CENTER
-							)
-		
+		if self.args.icon != '':
+			self.label_2 = tk.Label(self.root, text=self.args.text,
+								bg=self.args.bg_color,
+								fg=self.args.fg_color,
+								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
+								justify=tk.CENTER
+								)
+		else:
+			self.label_2 = tk.Label(self.root, text=self.args.text,
+								bg=self.args.bg_color,
+								fg=self.args.fg_color,
+								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
+								justify=tk.CENTER,
+								padx=5,
+								pady=0
+								)
+	
+	def __ElementPack(self):
+		''' Elements send to Form '''
+		self.label_3.grid(row=0, column=0)
+		self.btn1.place(relx=0.92, rely=0.0)
+		#self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
 			self.label_1.grid(row=1, column=0)
 			self.label_2.grid(row=1, column=1)
 		else:
 			self.label_2.grid(row=1, column=0)
-
+			self.label_2.place(relx=0.0, rely=0.5)
+	
 	def __CreatePosition(self):
 		''' 
 			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
@@ -275,18 +299,6 @@ class Window:
 		position_y = pos_height
 		Top = self.args.top
 		Left = self.args.left
-
-	def __FormTimer_Init(self):
-		''' Timer on destroy form parameters and functions '''
-		self.timer_flag = True
-		self.on_time = self.args.on_time
-		self.counter = 0.1
-		self.count = self.args.alpha
-		self.update_clock()
-	
-	def Run(self):
-		''' Global Form LOOP - visibility '''
-		self.root.mainloop()
 
 class Defaults:
 	
@@ -341,7 +353,10 @@ def main():
 	global Top
 	global Left
 	'''
-	win = Window()
+	# icon='test1.png'
+	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', width=430, height=100)
+	win = Window(args)
+	win.FormTimer_Init()
 	win.Run()
 	pass
 
