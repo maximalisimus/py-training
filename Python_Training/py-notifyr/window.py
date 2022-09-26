@@ -149,6 +149,7 @@ class Window:
 		self.__CreatePosition()
 		
 		# Show an opaque form when hovering over the mouse
+		self.__FormTimer_Init()
 		self.root.bind("<Enter>", self.on_enter)
 		self.root.bind("<Leave>", self.on_leave)
 			
@@ -166,13 +167,12 @@ class Window:
 			self.root.attributes('-alpha', self.count)
 			self.root.after(self.on_time, self.update_clock)
 	
-	def FormTimer_Init(self):
+	def __FormTimer_Init(self):
 		''' Timer on destroy form parameters and functions '''
 		self.timer_flag = True
 		self.on_time = self.args.on_time
 		self.counter = 0.1
 		self.count = self.args.alpha
-		self.update_clock()
 	
 	def on_enter(self, event):
 		''' Form focused '''
@@ -287,6 +287,13 @@ class Window:
 			self.args.left = self.screen_width - self.args.width - 15
 		self.__CalcPositionY()
 	
+	def EditPosition(self, move_left: int = 0, move_top: int = 0):
+		''' Change new position form '''
+		self.args.left += move_left
+		self.args.top += move_top
+		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.root.update_idletasks()
+		
 	def __CreatePosition(self):
 		'''
 			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
@@ -354,17 +361,20 @@ class Files:
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000)
 	win = Window(args)
+	#print(win.args.width, win.args.height, win.args.left, win.args.top)
+	#win.EditPosition(-422, 204)
+	#print(win.args.width, win.args.height, win.args.left, win.args.top)
 	'''
-	global screen_width
-	global screen_height
+	# global screen_width
+	# global screen_height
 	global position_x
 	global position_y
 	global Width
 	global Height
-	global Top
-	global Left
+	# global Top
+	# global Left
 	'''
-	win.FormTimer_Init()
+	win.update_clock()
 	win.Run()
 	pass
 
