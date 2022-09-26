@@ -304,23 +304,6 @@ class Defaults:
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
-	
-	@staticmethod
-	def GetDefaultData() -> dict:
-		return {
-				'screen_width': '1366',
-				'scree_height': '768',
-				'pos_x': f"{PositionX.Right.value}",
-				'pos_y': f"{PositionY.Top.value}",
-				'x': f"0",
-				'y': f"0",
-				'width': f"110",
-				'height': f"70"
-				}
-	
-	@staticmethod
-	def GetDefaultWorker() -> dict:
-		return {'unlock': True}
 
 class Files:
 	
