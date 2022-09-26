@@ -87,7 +87,6 @@ class Arguments:
 		self.scale = tuple(map(int, str(args[7]).split(',')))  if len(args) >= 8 else tuple(map(int, str(kwargs.get('scale', '1,1')).split(',')))
 		self.pos_x = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('pos_x', 'right'))
 		self.pos_y = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('pos_y', 'top'))
-		
 		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
 		self.width = 0
 		self.height = 0
