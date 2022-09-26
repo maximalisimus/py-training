@@ -238,7 +238,7 @@ class Window:
 	def __ElementPack(self):
 		''' Elements send to Form '''
 		self.label_3.grid(row=0, column=0)
-		self.btn1.place(relx=0.92, rely=0.0)
+		self.btn1.place(relx=0.915, rely=0.0)
 		#self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
 			self.label_1.grid(row=1, column=0)
