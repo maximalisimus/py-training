@@ -365,14 +365,14 @@ def main():
 	#win.EditPosition(-422, 204)
 	#print(win.args.width, win.args.height, win.args.left, win.args.top)
 	'''
-	# global screen_width
-	# global screen_height
+	global screen_width
+	global screen_height
 	global position_x
 	global position_y
 	global Width
 	global Height
-	# global Top
-	# global Left
+	global Top
+	global Left
 	'''
 	win.update_clock()
 	win.Run()
