@@ -19,7 +19,6 @@ def main():
 				print("Writer closed")
 				break
 			print(f"{data}")
-			#print('Read: "{0}"'.format(data))
 
 if __name__ == '__main__':
 	main()
