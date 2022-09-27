@@ -92,7 +92,7 @@ class PositionY(NoValue):
 
 class Arguments:
 	
-	__slots__ = 'title text on_time icon fonts fg_color bg_color scale width height pos_x pos_y alpha top left'.split()
+	__slots__ = 'title text on_time icon fonts fg_color bg_color scale width height pos_x pos_y alpha top left move_x move_y'.split()
 	
 	def __init__(self, *args, **kwargs):
 		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
@@ -109,6 +109,8 @@ class Arguments:
 		self.pos_x = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('pos_x', 'right'))
 		self.pos_y = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('pos_y', 'top'))
 		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
+		self.move_x = args[11] if len(args) >= 12 else kwargs.get('move_x', 0)
+		self.move_y = args[12] if len(args) >= 13 else kwargs.get('move_y', 0)
 		self.width = 0
 		self.height = 0
 		self.top = 0
@@ -129,7 +131,8 @@ class Arguments:
 				f"\n\tScale: {self.scale}, width: {self.width}, height: {self.height}," + \
 				f"\n\tPos X: {self.pos_x}, Pos Y: {self.pos_y}," + \
 				f"\n\tAlpha: {self.alpha}," + \
-				f"\n\tTop: {self.top}, Left: {self.left}"
+				f"\n\tTop: {self.top}, Left: {self.left}," + \
+				f"\n\tMove X: {self.move_x}, Move Y: {self.move_y}"
 
 class Window:
 	
@@ -293,7 +296,7 @@ class Window:
 		self.args.top += move_top
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
 		self.root.update_idletasks()
-		
+	
 	def __CreatePosition(self):
 		'''
 			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
@@ -311,6 +314,10 @@ class Window:
 		self.__CalcPosition()
 		
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		
+		if self.args.move_x != 0 or self.args.move_y != 0:
+			self.EditPosition(self.args.move_x, self.args.move_y)
+		
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height-30)
 		self.root.resizable(0,0)
@@ -359,8 +366,12 @@ class Files:
 		return None
 
 def main():
-	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000)
+	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000,
+					pos_x=PositionX.Left.value, pos_y = PositionY.Bottom.value, move_x = 0, move_y = -10
+					)
 	win = Window(args)
+	# For Windows Bottom EditPosition
+	#win.EditPosition(0, -10)
 	#print(win.args.width, win.args.height, win.args.left, win.args.top)
 	#win.EditPosition(-422, 204)
 	#print(win.args.width, win.args.height, win.args.left, win.args.top)
