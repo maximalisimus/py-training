@@ -293,10 +293,16 @@ class Window:
 			self.args.left = self.screen_width - self.args.width - 15
 		self.__CalcPositionY()
 	
-	def EditPosition(self, move_left: int = 0, move_top: int = 0):
+	def RelativePosition(self, move_left: int = 0, move_top: int = 0):
 		''' Change new position form '''
 		self.args.left += move_left
 		self.args.top += move_top
+		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.root.update_idletasks()
+	
+	def RealPosition(self, x: int, y: int):
+		self.args.left = x
+		self.args.top = y
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
 		self.root.update_idletasks()
 	
@@ -401,6 +407,8 @@ def main():
 			'Top': 15
 			}
 	'''
+	#win.RelativePosition(0,102)
+	#win.RealPosition(0,0)
 	win.Run()
 	pass
 

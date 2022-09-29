@@ -77,6 +77,13 @@ class PositionY(NoValue):
 				return x
 		return None
 
+class Defaults:
+	
+	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
+	config_file = PREFIX.joinpath('config.ini').resolve()
+	VirtX = {'left': 1, 'center': 1, 'right': 0 }
+	VirtY = { 'top': 1, 'center': 1, 'bottom': 0 }
+
 class Files:
 
 	@staticmethod
@@ -99,18 +106,10 @@ def main():
 			'Left': 939,
 			'Top': 15
 			}
-	
-	VirtX = {
-			'left': 0,
-			'center': 0,
-			'right': 0
-			}
-	VirtY = {
-			'top': 0,
-			'center': 0,
-			'bottom': 0
-			}
-	
+	tmpx = data['Width'] + 10
+	tmpy = data['Height'] + 10
+	realx = 0
+	realy = 0		
 
 if __name__ == '__main__':
 	main()
