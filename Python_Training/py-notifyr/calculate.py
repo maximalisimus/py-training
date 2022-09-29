@@ -3,10 +3,12 @@
 
 import sys
 import pathlib
-from os import mkfifo
 import json
-
 from enum import Enum
+
+connected = False
+data_out = ''
+# event = multiprocessing.Event()
 
 class NoValue(Enum):
 
@@ -76,29 +78,41 @@ class PositionY(NoValue):
 		return None
 
 class Files:
+
+	@staticmethod
+	def JSONToSTR(data_json: dict) -> str:
+		return json.dumps(data_json, indent=2)
 	
 	@staticmethod
-	def WriteJson(data_json: dict, file_json: str = 'object.json'):
-		json_string = json.dumps(data_json, indent=2)
-		with open(pathlib.Path(file_json).resolve(), "w") as fp:
-			fp.write(json_string)
+	def STRToJSON(value: str) -> dict:
+		json.loads(value)
 
-	@staticmethod
-	def ReadJson(file_json: str = 'object.json') -> dict:
-		data = ''
-		with open(pathlib.Path(file_json).resolve(), "r") as fp:
-			data = json.loads(fp.read())
-		return data
 
 def main():
-	FIFO = pathlib.Path(sys.argv[0]).parent.joinpath('pipe1').resolve()
-	if not FIFO.exists():
-		mkfifo(FIFO)
-	data = Files.ReadJson(FIFO)
-	data['position_x'] = PositionX.GetPosValue(data['position_x'])
-	data['position_y'] = PositionY.GetPosValue(data['position_y'])
-	print(data)
-	#FIFO.unlink(missing_ok=True)
+	data = {
+			'screen_width': 1366,
+			'screen_height': 768,
+			'position_x': PositionX.Right.value,
+			'position_y': PositionY.Top.value,
+			'Width': 412,
+			'Height': 92,
+			'Left': 939,
+			'Top': 15
+			}
+	VirtX = {
+			'left': 0,
+			'center': 0,
+			'right': 0
+			}
+	VirtY = {
+			'top': 0,
+			'center': 0,
+			'bottom': 0
+			}
+	posx = PositionX.Right
+	posy = PositionY.Top
+	print(VirtX.get(posx.value,1))
+	print(VirtY.get(posy.value,1))
 
 if __name__ == '__main__':
 	main()
