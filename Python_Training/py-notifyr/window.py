@@ -90,6 +90,24 @@ class PositionY(NoValue):
 				return x
 		return None
 
+class TypePositionMove(NoValue):
+	Relative = 'relative'
+	Real = 'real'
+	
+	@classmethod
+	def GetTypePosValue(cls, pos: str):
+		for x in cls:
+			if pos == x.value:
+				return x
+		return None
+
+	@classmethod
+	def GetTypePosName(cls, pos):
+		for x in cls:
+			if os == x:
+				return x
+		return None
+
 class Defaults:
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
@@ -119,7 +137,7 @@ class Defaults:
 
 class Arguments:
 	
-	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey istimer'.split()
+	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey typepos istimer'.split()
 	
 	def __init__(self, *args, **kwargs):
 		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
@@ -138,7 +156,8 @@ class Arguments:
 		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
 		self.movex = args[11] if len(args) >= 12 else kwargs.get('movex', 0)
 		self.movey = args[12] if len(args) >= 13 else kwargs.get('movey', 0)
-		self.istimer = args[13] if len(args) >= 14 else kwargs.get('istimer', True)
+		self.typepos = TypePositionMove.GetTypePosValue(args[13]) if len(args) >= 14 else TypePositionMove.GetTypePosValue(kwargs.get('typepos', 'relative'))
+		self.istimer = args[14] if len(args) >= 15 else kwargs.get('istimer', True)
 		self.width = 0
 		self.height = 0
 		self.top = 0
@@ -160,7 +179,7 @@ class Arguments:
 				f"\n\tPos X: {self.posx}, Pos Y: {self.posy}," + \
 				f"\n\tAlpha: {self.alpha}," + \
 				f"\n\tTop: {self.top}, Left: {self.left}," + \
-				f"\n\tMove X: {self.movex}, Move Y: {self.movey}"
+				f"\n\tMove X: {self.movex}, Move Y: {self.movey}, Type Position Move: {self.typepos}"
 
 class Window:
 	
@@ -306,10 +325,10 @@ class Window:
 		self.args.left = Defaults.CalcPositionX(self.args.posx, self.screen_width, self.args.width)
 		self.args.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.args.height)
 	
-	def RelativePosition(self, move_left: int = 0, move_top: int = 0):
+	def RelativePosition(self, x: int = 0, y: int = 0):
 		''' Change new position form '''
-		self.args.left += move_left
-		self.args.top += move_top
+		self.args.left += x
+		self.args.top += y
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
 		self.root.update_idletasks()
 	
@@ -339,7 +358,10 @@ class Window:
 		self.root.update_idletasks()
 		
 		if self.args.movex != 0 or self.args.movey != 0:
-			self.EditPosition(self.args.movex, self.args.movey)
+			if self.args.typepos == TypePositionMove.Relative:
+				self.RelativePosition(self.args.movex, self.args.movey)
+			else:
+				self.RealPosition(self.args.movex, self.args.movey)
 		
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height-30)
@@ -385,8 +407,8 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
-					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = True
-					)
+					posx=PositionX.Right.value, posy = PositionY.Top.value
+					) # typepos = TypePositionMove.Relative.value
 	win = Window(args)
 	# For Windows Bottom EditPosition
 	#win.EditPosition(0, -10)
