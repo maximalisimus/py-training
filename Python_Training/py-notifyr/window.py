@@ -387,6 +387,19 @@ def main():
 	global Height
 	global Top
 	global Left
+	print(f"screen_width = {screen_width}, screen_height = {screen_height}")
+	print(f"position_x = {position_x}, position_y = {position_y}")
+	print(f"Width = {Width}, Height = {Height}, Left = {Left}, Top = {Top}")
+	data = {
+			'screen_width': 1366,
+			'screen_height': 768,
+			'position_x': PositionX.Right.value,
+			'position_y': PositionY.Top.value,
+			'Width': 412,
+			'Height': 92,
+			'Left': 939,
+			'Top': 15
+			}
 	'''
 	win.Run()
 	pass

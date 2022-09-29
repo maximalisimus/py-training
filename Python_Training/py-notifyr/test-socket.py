@@ -170,10 +170,10 @@ def main():
 			'screen_height': 768,
 			'position_x': PositionX.Right.value,
 			'position_y': PositionY.Top.value,
-			'Width': 200,
-			'Height': 100,
-			'Top': 15,
-			'Left': 960
+			'Width': 412,
+			'Height': 92,
+			'Left': 939,
+			'Top': 15
 			}
 	print('Start')
 	data_str = Files.JSONToSTR(data)
