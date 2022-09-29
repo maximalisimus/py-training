@@ -344,12 +344,16 @@ class Window:
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height-30)
 		self.root.resizable(0,0)
+		global screen_width
+		global screen_height
 		global position_x
 		global position_y
 		global Width
 		global Height
 		global Top
 		global Left
+		screen_width = self.screen_width
+		screen_height = self.screen_height
 		position_x = self.args.posx
 		position_y = self.args.posy
 		Top = self.args.top
