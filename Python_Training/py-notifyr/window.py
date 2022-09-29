@@ -137,7 +137,7 @@ class Defaults:
 
 class Arguments:
 	
-	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey typepos istimer'.split()
+	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale posx posy alpha movex movey typepos istimer'.split()
 	
 	def __init__(self, *args, **kwargs):
 		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
@@ -158,10 +158,6 @@ class Arguments:
 		self.movey = args[12] if len(args) >= 13 else kwargs.get('movey', 0)
 		self.typepos = TypePositionMove.GetTypePosValue(args[13]) if len(args) >= 14 else TypePositionMove.GetTypePosValue(kwargs.get('typepos', 'relative'))
 		self.istimer = args[14] if len(args) >= 15 else kwargs.get('istimer', True)
-		self.width = 0
-		self.height = 0
-		self.top = 0
-		self.left = 0
 	
 	def __getattr__(self, attrname):
 		return None
@@ -175,10 +171,9 @@ class Arguments:
 				f"\n\tFonts: {self.fonts}," + \
 				f"\n\tFG Color: {self.fgcolor}, " + \
 				f"BG Color: {self.bgcolor}, " + \
-				f"\n\tScale: {self.scale}, width: {self.width}, height: {self.height}," + \
+				f"\n\tScale: {self.scale}," + \
 				f"\n\tPos X: {self.posx}, Pos Y: {self.posy}," + \
 				f"\n\tAlpha: {self.alpha}," + \
-				f"\n\tTop: {self.top}, Left: {self.left}," + \
 				f"\n\tMove X: {self.movex}, Move Y: {self.movey}, Type Position Move: {self.typepos}"
 
 class Window:
@@ -322,20 +317,20 @@ class Window:
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
-		self.args.left = Defaults.CalcPositionX(self.args.posx, self.screen_width, self.args.width)
-		self.args.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.args.height)
+		self.left = Defaults.CalcPositionX(self.args.posx, self.screen_width, self.width)
+		self.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.height)
 	
 	def RelativePosition(self, x: int = 0, y: int = 0):
 		''' Change new position form '''
-		self.args.left += x
-		self.args.top += y
-		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.left += x
+		self.top += y
+		self.root.geometry(f"+{self.left}+{self.top}")
 		self.root.update_idletasks()
 	
 	def RealPosition(self, x: int, y: int):
-		self.args.left = x
-		self.args.top = y
-		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.left = x
+		self.top = y
+		self.root.geometry(f"+{self.left}+{self.top}")
 		self.root.update_idletasks()
 	
 	def __CreatePosition(self):
@@ -348,13 +343,15 @@ class Window:
 		self.root.geometry()
 		self.root.update_idletasks()
 		form_size = self.root.geometry()
-		self.args.width = tuple(map(int, form_size.split('+')[0].split('x')))[0] + 10
-		self.args.height = tuple(map(int, form_size.split('+')[0].split('x')))[1] + 10
-		self.root.geometry(f"{self.args.width}x{self.args.height}")
+		self.width = tuple(map(int, form_size.split('+')[0].split('x')))[0] + 10
+		self.height = tuple(map(int, form_size.split('+')[0].split('x')))[1] + 10
+		self.root.geometry(f"{self.width}x{self.height}")
+		self.left = 0
+		self.top = 0
 		
 		self.__CalcPosition()
 		
-		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.root.geometry(f"+{self.left}+{self.top}")
 		self.root.update_idletasks()
 		
 		if self.args.movex != 0 or self.args.movey != 0:
@@ -378,10 +375,10 @@ class Window:
 		screen_height = self.screen_height
 		position_x = self.args.posx
 		position_y = self.args.posy
-		Top = self.args.top
-		Left = self.args.left
-		Width = self.args.width
-		Height = self.args.height
+		Top = self.top
+		Left = self.left
+		Width = self.width
+		Height = self.height
 
 class Files:
 	
@@ -408,7 +405,7 @@ class Files:
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
 					posx=PositionX.Right.value, posy = PositionY.Top.value
-					) # typepos = TypePositionMove.Relative.value
+					) # typepos = TypePositionMove.Relative.value posx=PositionX.Right.value, posy = PositionY.Top.value
 	win = Window(args)
 	# For Windows Bottom EditPosition
 	#win.EditPosition(0, -10)
