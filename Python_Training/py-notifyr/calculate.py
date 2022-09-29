@@ -92,13 +92,14 @@ def main():
 	data = {
 			'screen_width': 1366,
 			'screen_height': 768,
-			'position_x': PositionX.Right.value,
-			'position_y': PositionY.Top.value,
+			'position_x': 'right',
+			'position_y': 'top',
 			'Width': 412,
 			'Height': 92,
 			'Left': 939,
 			'Top': 15
 			}
+	
 	VirtX = {
 			'left': 0,
 			'center': 0,
@@ -109,10 +110,7 @@ def main():
 			'center': 0,
 			'bottom': 0
 			}
-	posx = PositionX.Right
-	posy = PositionY.Top
-	print(VirtX.get(posx.value,1))
-	print(VirtY.get(posy.value,1))
+	
 
 if __name__ == '__main__':
 	main()
