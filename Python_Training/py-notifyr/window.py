@@ -371,7 +371,7 @@ class Files:
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
 					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = True
-					) # movex = 0, movey = -10, istimer = False
+					)
 	win = Window(args)
 	# For Windows Bottom EditPosition
 	#win.EditPosition(0, -10)
