@@ -6,10 +6,6 @@ import pathlib
 import json
 from enum import Enum
 
-connected = False
-data_out = ''
-# event = multiprocessing.Event()
-
 class NoValue(Enum):
 
 	def __repr__(self):
@@ -91,7 +87,6 @@ class Files:
 	@staticmethod
 	def STRToJSON(value: str) -> dict:
 		json.loads(value)
-
 
 def main():
 	data = {
