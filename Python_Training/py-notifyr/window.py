@@ -90,6 +90,33 @@ class PositionY(NoValue):
 				return x
 		return None
 
+class Defaults:
+	
+	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
+	config_file = PREFIX.joinpath('config.ini').resolve()
+
+	@staticmethod
+	def CalcPositionX(pos_x: PositionX, scr_width: int, width: int):
+		''' Calculate Position Left (x) '''
+		if pos_x == PositionX.Left:
+			calc_x = 15
+		elif pos_x == PositionX.Center:
+			calc_x = int(scr_width/2) - int(width/2)
+		else:
+			calc_x = scr_width - width - 15
+		return calc_x
+
+	@staticmethod
+	def CalcPositionY(pos_y: PositionY, scr_height: int, height: int):
+		''' Calculate Position Top (y) '''
+		if pos_y == PositionY.Top:
+			calc_y = 15
+		elif pos_y == PositionY.Center:
+			calc_y =  int(scr_height/2) - int(height/2)
+		else:
+			calc_y = scr_height - height - 30
+		return calc_y
+
 class Arguments:
 	
 	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey istimer'.split()
@@ -274,24 +301,10 @@ class Window:
 			self.label_2.grid(row=1, column=0)
 			self.label_2.place(relx=0.0, rely=0.5)
 	
-	def __CalcPositionY(self):
-		''' Calculate Position Top (y) '''
-		if self.args.posy == PositionY.Top:
-			self.args.top = 15
-		elif self.args.posy == PositionY.Center:
-			self.args.top = int(self.screen_height/2) - int(self.args.height/2)
-		else:
-			self.args.top = self.screen_height - self.args.height - 30
-	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
-		if self.args.posx == PositionX.Left:
-			self.args.left = 15
-		elif self.args.posx == PositionX.Center:
-			self.args.left = int(self.screen_width/2) - int(self.args.width/2)
-		else:
-			self.args.left = self.screen_width - self.args.width - 15
-		self.__CalcPositionY()
+		self.args.left = Defaults.CalcPositionX(self.args.posx, self.screen_width, self.args.width)
+		self.args.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.args.height)
 	
 	def RelativePosition(self, move_left: int = 0, move_top: int = 0):
 		''' Change new position form '''
@@ -323,6 +336,7 @@ class Window:
 		self.__CalcPosition()
 		
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
+		self.root.update_idletasks()
 		
 		if self.args.movex != 0 or self.args.movey != 0:
 			self.EditPosition(self.args.movex, self.args.movey)
@@ -330,27 +344,18 @@ class Window:
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height-30)
 		self.root.resizable(0,0)
-		global screen_width
-		global screen_height
 		global position_x
 		global position_y
 		global Width
 		global Height
 		global Top
 		global Left
-		screen_width = self.screen_width
-		screen_height = self.screen_height
 		position_x = self.args.posx
 		position_y = self.args.posy
 		Top = self.args.top
 		Left = self.args.left
 		Width = self.args.width
 		Height = self.args.height
-
-class Defaults:
-	
-	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
-	config_file = PREFIX.joinpath('config.ini').resolve()
 
 class Files:
 	

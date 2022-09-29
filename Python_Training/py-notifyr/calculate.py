@@ -77,6 +77,28 @@ class Defaults:
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
+	
+	@staticmethod
+	def CalcPositionX(pos_x: PositionX, scr_width: int, width: int):
+		''' Calculate Position Left (x) '''
+		if pos_x == PositionX.Left:
+			calc_x = 15
+		elif pos_x == PositionX.Center:
+			calc_x = int(scr_width/2) - int(width/2)
+		else:
+			calc_x = scr_width - width - 15
+		return calc_x
+
+	@staticmethod
+	def CalcPositionY(pos_y: PositionY, scr_height: int, height: int):
+		''' Calculate Position Top (y) '''
+		if pos_y == PositionY.Top:
+			calc_y = 15
+		elif pos_y == PositionY.Center:
+			calc_y =  int(scr_height/2) - int(height/2)
+		else:
+			calc_y = scr_height - height - 30
+		return calc_y
 
 class Files:
 
@@ -99,6 +121,20 @@ def main():
 			'Left': 939,
 			'Top': 15
 			}
+	print(Defaults.CalcPositionX(PositionX.Left, data['screen_width'], data['Width']))
+	print(Defaults.CalcPositionX(PositionX.Center, data['screen_width'], data['Width']))
+	print(Defaults.CalcPositionX(PositionX.Right, data['screen_width'], data['Width']))
+	print()
+	print(Defaults.CalcPositionY(PositionY.Top, data['screen_height'], data['Height']))
+	print(Defaults.CalcPositionY(PositionY.Center, data['screen_height'], data['Height']))
+	print(Defaults.CalcPositionY(PositionY.Bottom, data['screen_height'], data['Height']))
+	# 15
+	# 477
+	# 939
+	#
+	# 15
+	# 338
+	# 646
 	
 
 if __name__ == '__main__':
