@@ -361,7 +361,7 @@ class Window:
 				self.RealPosition(self.args.movex, self.args.movey)
 		
 		self.root.minsize(110, 70)
-		self.root.maxsize(self.screen_width, self.screen_height-30)
+		self.root.maxsize(self.screen_width, self.screen_height)
 		self.root.resizable(0,0)
 		global screen_width
 		global screen_height
