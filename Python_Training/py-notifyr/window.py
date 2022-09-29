@@ -92,12 +92,12 @@ class PositionY(NoValue):
 
 class Arguments:
 	
-	__slots__ = 'title text on_time icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey istimer'.split()
+	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey istimer'.split()
 	
 	def __init__(self, *args, **kwargs):
 		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
 		self.text = args[1] if len(args) >= 2 else kwargs.get('text', 'Ok!')
-		self.on_time = args[2] if len(args) >= 3 else kwargs.get('on_time', 10000)
+		self.ontime = args[2] if len(args) >= 3 else kwargs.get('ontime', 10000)
 		self.icon = pathlib.Path(args[3]).resolve() if len(args) >= 4 else kwargs.get('icon', '')
 		self.fonts = list(str(args[4]).split(',')) if len(args) >= 5 else list(str(kwargs.get('fonts','Arial,14,normal')).split(','))
 		self.fonts[1] = int(self.fonts[1])
@@ -124,7 +124,7 @@ class Arguments:
 		return f"{self.__class__}:" + \
 				f"\n\tTitle: {self.title}" + \
 				f"\n\tText: {self.text}" + \
-				f",\n\tTime: {self.on_time} ms, isTimer: {self.istimer}," + \
+				f",\n\tTime: {self.ontime} ms, isTimer: {self.istimer}," + \
 				f",\n\tIcon: {self.icon if self.icon != '' else None}," + \
 				f"\n\tFonts: {self.fonts}," + \
 				f"\n\tFG Color: {self.fgcolor}, " + \
@@ -169,7 +169,7 @@ class Window:
 		else:
 			self.timer_flag = False
 			self.root.attributes('-alpha', self.count)
-			self.root.after(self.on_time, self.update_clock)
+			self.root.after(self.args.ontime, self.update_clock)
 	
 	def __FormTimer_Init(self):
 		''' Timer on destroy form parameters and functions '''
@@ -369,8 +369,8 @@ class Files:
 		return None
 
 def main():
-	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000,
-					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = False
+	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
+					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = True
 					) # movex = 0, movey = -10, istimer = False
 	win = Window(args)
 	# For Windows Bottom EditPosition
