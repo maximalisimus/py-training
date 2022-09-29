@@ -92,7 +92,7 @@ class PositionY(NoValue):
 
 class Arguments:
 	
-	__slots__ = 'title text on_time icon fonts fg_color bg_color scale width height pos_x pos_y alpha top left move_x move_y'.split()
+	__slots__ = 'title text on_time icon fonts fgcolor bgcolor scale width height posx posy alpha top left movex movey istimer'.split()
 	
 	def __init__(self, *args, **kwargs):
 		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
@@ -103,14 +103,15 @@ class Arguments:
 		self.fonts[1] = int(self.fonts[1])
 		self.fonts[2] = Weight.GetWeightValue(self.fonts[2])
 		self.fonts = tuple(self.fonts)
-		self.fg_color = args[5] if len(args) >= 6 else kwargs.get('fg_color', 'black')
-		self.bg_color = args[6] if len(args) >= 7 else kwargs.get('bg_color', '#FFFADD')
+		self.fgcolor = args[5] if len(args) >= 6 else kwargs.get('fgcolor', 'black')
+		self.bgcolor = args[6] if len(args) >= 7 else kwargs.get('bgcolor', '#FFFADD')
 		self.scale = tuple(map(int, str(args[7]).split(',')))  if len(args) >= 8 else tuple(map(int, str(kwargs.get('scale', '1,1')).split(',')))
-		self.pos_x = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('pos_x', 'right'))
-		self.pos_y = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('pos_y', 'top'))
+		self.posx = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('posx', 'right'))
+		self.posy = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('posy', 'top'))
 		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
-		self.move_x = args[11] if len(args) >= 12 else kwargs.get('move_x', 0)
-		self.move_y = args[12] if len(args) >= 13 else kwargs.get('move_y', 0)
+		self.movex = args[11] if len(args) >= 12 else kwargs.get('movex', 0)
+		self.movey = args[12] if len(args) >= 13 else kwargs.get('movey', 0)
+		self.istimer = args[13] if len(args) >= 14 else kwargs.get('istimer', True)
 		self.width = 0
 		self.height = 0
 		self.top = 0
@@ -123,16 +124,16 @@ class Arguments:
 		return f"{self.__class__}:" + \
 				f"\n\tTitle: {self.title}" + \
 				f"\n\tText: {self.text}" + \
-				f",\n\tTime: {self.on_time} ms" + \
+				f",\n\tTime: {self.on_time} ms, isTimer: {self.istimer}," + \
 				f",\n\tIcon: {self.icon if self.icon != '' else None}," + \
 				f"\n\tFonts: {self.fonts}," + \
-				f"\n\tFG Color: {self.fg_color}, " + \
-				f"BG Color: {self.bg_color}, " + \
+				f"\n\tFG Color: {self.fgcolor}, " + \
+				f"BG Color: {self.bgcolor}, " + \
 				f"\n\tScale: {self.scale}, width: {self.width}, height: {self.height}," + \
-				f"\n\tPos X: {self.pos_x}, Pos Y: {self.pos_y}," + \
+				f"\n\tPos X: {self.posx}, Pos Y: {self.posy}," + \
 				f"\n\tAlpha: {self.alpha}," + \
 				f"\n\tTop: {self.top}, Left: {self.left}," + \
-				f"\n\tMove X: {self.move_x}, Move Y: {self.move_y}"
+				f"\n\tMove X: {self.movex}, Move Y: {self.movey}"
 
 class Window:
 	
@@ -187,12 +188,14 @@ class Window:
 	
 	def Run(self):
 		''' Global Form LOOP - visibility '''
+		if self.args.istimer:
+			self.update_clock()
 		self.root.mainloop()
 	
 	def __CreateTitle(self):
 		''' TKinter Title '''
 		self.root.title(self.args.title)
-		self.root.configure(bg=self.args.bg_color)
+		self.root.configure(bg=self.args.bgcolor)
 	
 	def __CreateTransparent(self):
 		''' Transparent Form parameters '''
@@ -207,8 +210,8 @@ class Window:
 		self.close_icon = self.close_icon.subsample(1, 1)
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 						borderwidth=0,
-						bg=self.args.bg_color,
-						fg=self.args.fg_color,
+						bg=self.args.bgcolor,
+						fg=self.args.fgcolor,
 						highlightcolor='white',
 						activebackground='white',
 						highlightthickness = 0,
@@ -219,8 +222,8 @@ class Window:
 	def __CreateHeader(self):
 		''' Header '''
 		self.label_3 = tk.Label(self.root, text=self.args.title,
-							bg=self.args.bg_color,
-							fg=self.args.fg_color,
+							bg=self.args.bgcolor,
+							fg=self.args.fgcolor,
 							font=(self.args.fonts[0], self.args.fonts[1], 'bold'),
 							justify=tk.CENTER,
 							padx=10,
@@ -232,8 +235,8 @@ class Window:
 		self.image = tk.PhotoImage(file=self.args.icon)
 		self.image = self.image.subsample(*self.args.scale)
 		self.label_1 = tk.Label(self.root, text=f"",
-							bg=self.args.bg_color,
-							fg=self.args.fg_color,
+							bg=self.args.bgcolor,
+							fg=self.args.fgcolor,
 							font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2].value),
 							justify=tk.CENTER
 							)
@@ -244,15 +247,15 @@ class Window:
 		''' Text notify '''
 		if self.args.icon != '':
 			self.label_2 = tk.Label(self.root, text=self.args.text,
-								bg=self.args.bg_color,
-								fg=self.args.fg_color,
+								bg=self.args.bgcolor,
+								fg=self.args.fgcolor,
 								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
 								justify=tk.CENTER
 								)
 		else:
 			self.label_2 = tk.Label(self.root, text=self.args.text,
-								bg=self.args.bg_color,
-								fg=self.args.fg_color,
+								bg=self.args.bgcolor,
+								fg=self.args.fgcolor,
 								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
 								justify=tk.CENTER,
 								padx=5,
@@ -273,18 +276,18 @@ class Window:
 	
 	def __CalcPositionY(self):
 		''' Calculate Position Top (y) '''
-		if self.args.pos_y == PositionY.Top:
+		if self.args.posy == PositionY.Top:
 			self.args.top = 15
-		elif self.args.pos_y == PositionY.Center:
+		elif self.args.posy == PositionY.Center:
 			self.args.top = int(self.screen_height/2) - int(self.args.height/2)
 		else:
 			self.args.top = self.screen_height - self.args.height - 30
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
-		if self.args.pos_x == PositionX.Left:
+		if self.args.posx == PositionX.Left:
 			self.args.left = 15
-		elif self.args.pos_x == PositionX.Center:
+		elif self.args.posx == PositionX.Center:
 			self.args.left = int(self.screen_width/2) - int(self.args.width/2)
 		else:
 			self.args.left = self.screen_width - self.args.width - 15
@@ -315,8 +318,8 @@ class Window:
 		
 		self.root.geometry(f"+{self.args.left}+{self.args.top}")
 		
-		if self.args.move_x != 0 or self.args.move_y != 0:
-			self.EditPosition(self.args.move_x, self.args.move_y)
+		if self.args.movex != 0 or self.args.movey != 0:
+			self.EditPosition(self.args.movex, self.args.movey)
 		
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height-30)
@@ -331,8 +334,8 @@ class Window:
 		global Left
 		screen_width = self.screen_width
 		screen_height = self.screen_height
-		position_x = self.args.pos_x
-		position_y = self.args.pos_y
+		position_x = self.args.posx
+		position_y = self.args.posy
 		Top = self.args.top
 		Left = self.args.left
 		Width = self.args.width
@@ -367,8 +370,8 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', on_time=5000,
-					pos_x=PositionX.Left.value, pos_y = PositionY.Bottom.value, move_x = 0, move_y = -10
-					)
+					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = False
+					) # movex = 0, movey = -10, istimer = False
 	win = Window(args)
 	# For Windows Bottom EditPosition
 	#win.EditPosition(0, -10)
@@ -385,7 +388,6 @@ def main():
 	global Top
 	global Left
 	'''
-	win.update_clock()
 	win.Run()
 	pass
 
