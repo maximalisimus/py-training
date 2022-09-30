@@ -24,6 +24,7 @@ Width = 0
 Height = 0
 
 class NoValue(Enum):
+	''' Base Enum class elements '''
 
 	def __repr__(self):
 		return f"{self.__class__}: {self.name}"
@@ -35,11 +36,13 @@ class NoValue(Enum):
 		return f"{self.value}"
 
 class Weight(NoValue):
+	''' Weight parameter fonts '''
 	normal = 'normal'
 	bold = 'bold'
 	
 	@classmethod
 	def GetWeightValue(cls, weight: str):
+		''' Get Weight to value elements '''
 		for x in cls:
 			if weight == x.value:
 				return x
@@ -47,18 +50,21 @@ class Weight(NoValue):
 
 	@classmethod
 	def GetWeightName(cls, pos):
+		''' Get Weight to name elements '''
 		for x in cls:
 			if os == x:
 				return x
 		return None
 
 class PositionX(NoValue):
+	''' Horizontal Position Desktop '''
 	Left = 'left'
 	Right = 'right'
 	Center = 'center'
 	
 	@classmethod
 	def GetPosValue(cls, pos: str):
+		''' Get PositionX to value elements '''
 		for x in cls:
 			if pos == x.value:
 				return x
@@ -66,18 +72,21 @@ class PositionX(NoValue):
 
 	@classmethod
 	def GetPosName(cls, pos):
+		''' Get PositionX to name elements '''
 		for x in cls:
 			if os == x:
 				return x
 		return None
 
 class PositionY(NoValue):
+	''' Vertical Position Desktop '''
 	Top = 'top'
 	Center = 'center'
-	Bottom = 'Bottom'
+	Bottom = 'bottom'
 
 	@classmethod
 	def GetPosValue(cls, pos: str):
+		''' Get PositionY to value elements '''
 		for x in cls:
 			if pos == x.value:
 				return x
@@ -85,6 +94,7 @@ class PositionY(NoValue):
 
 	@classmethod
 	def GetPosName(cls, pos):
+		''' Get PositionY to name elements '''
 		for x in cls:
 			if os == x:
 				return x
@@ -112,6 +122,8 @@ class Defaults:
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
+	koef_x = {'left': 1, 'center': 1, 'right': -1}
+	koef_y = {'top': 1, 'center': 1, 'bottom': -1}
 
 	@staticmethod
 	def CalcPositionX(pos_x: PositionX, scr_width: int, width: int):
@@ -136,6 +148,7 @@ class Defaults:
 		return calc_y
 
 class Arguments:
+	''' The class of the set of input parameters. '''
 	
 	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale posx posy alpha movex movey typepos istimer'.split()
 	
@@ -160,9 +173,11 @@ class Arguments:
 		self.istimer = args[14] if len(args) >= 15 else kwargs.get('istimer', True)
 	
 	def __getattr__(self, attrname):
+		''' Access to a non-existent variable. '''
 		return None
 	
 	def __repr__(self):
+		''' For Debug Function output paramters '''
 		return f"{self.__class__}:" + \
 				f"\n\tTitle: {self.title}" + \
 				f"\n\tText: {self.text}" + \
@@ -177,6 +192,7 @@ class Arguments:
 				f"\n\tMove X: {self.movex}, Move Y: {self.movey}, Type Position Move: {self.typepos}"
 
 class Window:
+	''' Tkinter class form. '''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
 		''' Function init tkinter Apps '''
@@ -246,7 +262,7 @@ class Window:
 		self.root.wait_visibility(self.root)
 	
 	def __CreateBtnClose(self):
-		''' Button on Close '''
+		''' Create Button on Close '''
 		self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('close-icon.png'))
 		self.close_icon = self.close_icon.subsample(1, 1)
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
@@ -261,7 +277,7 @@ class Window:
 						)
 	
 	def __CreateHeader(self):
-		''' Header '''
+		''' Create Header '''
 		self.label_3 = tk.Label(self.root, text=self.args.title,
 							bg=self.args.bgcolor,
 							fg=self.args.fgcolor,
@@ -272,7 +288,7 @@ class Window:
 							)
 
 	def __CreateIcon(self):
-		''' Icon on forms (image) '''
+		''' Crete Icon on forms (image) '''
 		self.image = tk.PhotoImage(file=self.args.icon)
 		self.image = self.image.subsample(*self.args.scale)
 		self.label_1 = tk.Label(self.root, text=f"",
@@ -285,7 +301,7 @@ class Window:
 		self.label_1['image'] = self.label_1.image
 	
 	def __CreateText(self):
-		''' Text notify '''
+		''' Create Text notify '''
 		if self.args.icon != '':
 			self.label_2 = tk.Label(self.root, text=self.args.text,
 								bg=self.args.bgcolor,
@@ -304,7 +320,7 @@ class Window:
 								)
 	
 	def __ElementPack(self):
-		''' Elements send to Form '''
+		''' Elements send (pack, place or grid standart class method) to Form '''
 		self.label_3.grid(row=0, column=0)
 		self.btn1.place(relx=0.915, rely=0.0)
 		#self.btn1.grid(row=0, column=2)
@@ -321,13 +337,14 @@ class Window:
 		self.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.height)
 	
 	def RelativePosition(self, x: int = 0, y: int = 0):
-		''' Change new position form '''
+		''' Change relative coordinate position form on left (x) and top (y) '''
 		self.left += x
 		self.top += y
 		self.root.geometry(f"+{self.left}+{self.top}")
 		self.root.update_idletasks()
 	
 	def RealPosition(self, x: int, y: int):
+		''' Change absolute coordinate position form on left (x) and top (y) '''		
 		self.left = x
 		self.top = y
 		self.root.geometry(f"+{self.left}+{self.top}")
@@ -384,11 +401,13 @@ class Files:
 	
 	@staticmethod
 	def WriteJson(data_json: dict, file_json: str = 'object.json'):
+		''' Write Json data in file '''
 		with open(pathlib.Path(file_json).resolve(), "w") as fp:
 			json.dump(data_json, fp, indent=2)
 
 	@staticmethod
 	def ReadJson(file_json: str = 'object.json') -> dict:
+		''' Read Json Data from File '''
 		data = ''
 		with open(pathlib.Path(file_json).resolve(), "r") as fp:
 			data = json.load(fp)
@@ -396,22 +415,38 @@ class Files:
 
 	@staticmethod
 	def GetFileSuffix(List_Files, suffixes: str):
+		''' Get for file suffix or extension file '''
 		if List_Files != None:
 			for x in List_Files:
 				if suffixes == pathlib.Path(x).suffix:
 					return pathlib.Path(x).resolve()
 		return None
 
+def CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: PositionX, pos_y: PositionY, 
+					width: int, height: int, left: int, top: int):
+	''' Calculation for new position to Form '''
+	virt_x = width + 10
+	virt_y = height + 10
+	real_x = virt_x * Defaults.koef_x[pos_x.value] + left
+	real_y = virt_y * Defaults.koef_y[pos_y.value] + top
+	if pos_y == PositionY.Bottom:
+		if real_y < 0:
+			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+		else:
+			real_x = left
+	else:
+		if (scr_height - real_y) < height:
+			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+		else:
+			real_x = left
+	return real_x, real_y
+
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
-					posx=PositionX.Right.value, posy = PositionY.Top.value
+					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = True
 					) # typepos = TypePositionMove.Relative.value posx=PositionX.Right.value, posy = PositionY.Top.value
 	win = Window(args)
-	# For Windows Bottom EditPosition
-	#win.EditPosition(0, -10)
-	#print(win.args.width, win.args.height, win.args.left, win.args.top)
-	#win.EditPosition(-422, 204)
-	#print(win.args.width, win.args.height, win.args.left, win.args.top)
 	'''
 	global screen_width
 	global screen_height
@@ -419,26 +454,17 @@ def main():
 	global position_y
 	global Width
 	global Height
-	global Top
 	global Left
-	print(f"screen_width = {screen_width}, screen_height = {screen_height}")
-	print(f"position_x = {position_x}, position_y = {position_y}")
-	print(f"Width = {Width}, Height = {Height}, Left = {Left}, Top = {Top}")
-	data = {
-			'screen_width': 1366,
-			'screen_height': 768,
-			'position_x': PositionX.Right.value,
-			'position_y': PositionY.Top.value,
-			'Width': 412,
-			'Height': 92,
-			'Left': 939,
-			'Top': 15
-			}
-	'''
+	global Top
+	print(f"Left = {Left}, Top = {Top}")
+	new_x, new_y = CalcNewPosition(screen_width, screen_height, position_x, position_y, Width, Height, 15, 34)
+	print(screen_width, screen_height, Width, Height)
+	print(f"Left = {new_x}, Top = {new_y}")
 	#win.RelativePosition(0,102)
-	#win.RealPosition(0,0)
+	win.RealPosition(15,34)
+	#win.RealPosition(437,646)
+	'''
 	win.Run()
-	pass
 
 if __name__ == '__main__':
 	main()
