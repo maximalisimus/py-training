@@ -10,7 +10,6 @@ import tkinter as tk
 from tkinter import font as fnt
 from enum import Enum
 import threading
-from os import getpid
 import time
 
 env_event = threading.Event()
@@ -38,8 +37,8 @@ class NoValue(Enum):
 
 class Weight(NoValue):
 	''' Weight parameter fonts '''
-	Normal = 'normal'
-	Bold = 'bold'
+	normal = 'normal'
+	bold = 'bold'
 	
 	@classmethod
 	def GetWeightValue(cls, value: str):
@@ -155,13 +154,13 @@ class Arguments:
 	''' The class of the set of input parameters. '''
 	
 	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
-				'TitleFont_Family', 'TitleFont_Size',  'TitleFont_Weight', 
-				'TitleFont_Underline', 'TitleFont_Slant', 'TitleFont_Overstrike', 
+				'TFFamily', 'TFSize',  'TFWeight', 
+				'TFUnderline', 'TFSlant', 'TFOverstrike', 
 				'TitleBG', 'TitleFG', 
-				'BodyFont_Family', 'BodyFont_Size', 'BodyFont_Weight', 
-				'BodyFont_Underline', 'BodyFont_Slant', 'BodyFont_Overstrike',
+				'BFFamily', 'BFSize', 'BFWeight', 
+				'BFUnderline', 'BFSlant', 'BFOverstrike',
 				'BodyBG', 'BodyFG', 
-				'Scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
+				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
 				'save', 'load', 'reset'
 				]
 	
@@ -171,23 +170,23 @@ class Arguments:
 		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime',10000)
 		self.isTimer = args[3] if len(args) >= 4 else kwargs.get('isTimer',True)
 		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','')
-		self.TitleFont_Family = args[5] if len(args) >= 6 else kwargs.get('TitleFont_Family','Arial')
-		self.TitleFont_Size = args[6] if len(args) >= 7 else kwargs.get('TitleFont_Size',14)
-		self.TitleFont_Weight = args[7] if len(args) >= 8 else kwargs.get('TitleFont_Weight','bold')
-		self.TitleFont_Underline = args[8] if len(args) >= 9 else kwargs.get('TitleFont_Underline',0)
-		self.TitleFont_Slant = args[9] if len(args) >= 10 else kwargs.get('TitleFont_Slant','roman')
-		self.TitleFont_Overstrike = args[10] if len(args) >= 11 else kwargs.get('TitleFont_Overstrike',0)
+		self.TFFamily = args[5] if len(args) >= 6 else kwargs.get('TFFamily','Arial')
+		self.TFSize = args[6] if len(args) >= 7 else kwargs.get('TFSize',14)
+		self.TFWeight = args[7] if len(args) >= 8 else kwargs.get('TFWeight','bold')
+		self.TFUnderline = args[8] if len(args) >= 9 else kwargs.get('TFUnderline',0)
+		self.TFSlant = args[9] if len(args) >= 10 else kwargs.get('TFSlant','roman')
+		self.TFOverstrike = args[10] if len(args) >= 11 else kwargs.get('TFOverstrike',0)
 		self.TitleBG = args[11] if len(args) >= 12 else kwargs.get('TitleBG','#FFFADD')
 		self.TitleFG = args[12] if len(args) >= 13 else kwargs.get('TitleFG','black')
-		self.BodyFont_Family = args[13] if len(args) >= 14 else kwargs.get('BodyFont_Family','Arial')
-		self.BodyFont_Size = args[14] if len(args) >= 15 else kwargs.get('BodyFont_Size',14)
-		self.BodyFont_Weight = args[15] if len(args) >= 16 else kwargs.get('BodyFont_Weight','normal')
-		self.BodyFont_Underline = args[16] if len(args) >= 17 else kwargs.get('BodyFont_Underline',0)
-		self.BodyFont_Slant = args[17] if len(args) >= 18 else kwargs.get('BodyFont_Slant','roman')
-		self.BodyFont_Overstrike = args[18] if len(args) >= 19 else kwargs.get('BodyFont_Overstrike',0)
+		self.BFFamily = args[13] if len(args) >= 14 else kwargs.get('BFFamily','Arial')
+		self.BFSize = args[14] if len(args) >= 15 else kwargs.get('BFSize',14)
+		self.BFWeight = args[15] if len(args) >= 16 else kwargs.get('BFWeight','normal')
+		self.BFUnderline = args[16] if len(args) >= 17 else kwargs.get('BFUnderline',0)
+		self.BFSlant = args[17] if len(args) >= 18 else kwargs.get('BFSlant','roman')
+		self.BFOverstrike = args[18] if len(args) >= 19 else kwargs.get('BFOverstrike',0)
 		self.BodyBG = args[19] if len(args) >= 20 else kwargs.get('BodyBG','#FFFADD')
 		self.BodyFG = args[20] if len(args) >= 21 else kwargs.get('BodyFG','black')
-		self.Scale = args[21] if len(args) >= 22 else kwargs.get('Scale', '1,1')
+		self.scale = args[21] if len(args) >= 22 else kwargs.get('scale', '1,1')
 		self.PosX = args[22] if len(args) >= 23 else kwargs.get('PosX', 'right')
 		self.PosY = args[23] if len(args) >= 24 else kwargs.get('PosY', 'top')
 		self.Alpha = args[24] if len(args) >= 25 else kwargs.get('Alpha', 1.0)
@@ -207,19 +206,19 @@ class Arguments:
 				f"\n\tOnTime = {self.OnTime}," + \
 				f"\n\tisTimer = {self.isTimer}," + \
 				f"\n\ticon = {self.icon}," + \
-				f"\n\tTitle Font Family = {self.TitleFont_Family}, Title Font size = {self.TitleFont_Size}," + \
-				f"\n\tTitle Font Weight = {self.TitleFont_Weight}, Title Font Underline = {self.TitleFont_Underline}," + \
-				f"\n\tTitle Font Slant: {self.TitleFont_Slant}, Title Font Overstrike = {self.TitleFont_Overstrike}," + \
+				f"\n\tTitle Font Family = {self.TFFamily}, Title Font size = {self.TFSize}," + \
+				f"\n\tTitle Font Weight = {self.TFWeight}, Title Font Underline = {self.TFUnderline}," + \
+				f"\n\tTitle Font Slant: {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
 				f"\n\tTitle BG = {self.TitleBG}, Title FG = {self.TitleFG}," + \
 				f"\n\tBody BG = {self.BodyBG}, Body FG = {self.BodyFG}," + \
-				f"\n\tBody Font Family = {self.BodyFont_Family}, Body Font Size = {self.BodyFont_Size}," + \
-				f"\n\tBody Font Weight = {self.BodyFont_Weight}, Body Font Underline = {self.BodyFont_Underline}," + \
-				f"\n\tBody Font Slant = {self.BodyFont_Slant}, Body Font Overstrike = {self.BodyFont_Overstrike}," + \
-				f"\n\tScale = ({self.Scale})," + \
+				f"\n\tBody Font Family = {self.BFFamily}, Body Font Size = {self.BFSize}," + \
+				f"\n\tBody Font Weight = {self.BFWeight}, Body Font Underline = {self.BFUnderline}," + \
+				f"\n\tBody Font Slant = {self.BFSlant}, Body Font Overstrike = {self.BFOverstrike}," + \
+				f"\n\tScale = ({self.scale})," + \
 				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
 				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
 
-class Notify:
+class Window:
 	''' Tkinter class form. '''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
@@ -227,11 +226,11 @@ class Notify:
 		self.args = on_args
 		self.root = tk.Tk()
 		
-		self.TitleFont = fnt.Font(family = self.args.TitleFont_Family, size = self.args.TitleFont_Size, weight = self.args.TitleFont_Weight)
-		self.TitleFont.configure(underline = self.args.TitleFont_Underline, slant = self.args.TitleFont_Slant, overstrike = self.args.TitleFont_Overstrike)
+		self.TitleFont = fnt.Font(family = self.args.TFFamily, size = self.args.TFSize, weight = self.args.TFWeight)
+		self.TitleFont.configure(underline = self.args.TFUnderline, slant = self.args.TFSlant, overstrike = self.args.TFOverstrike)
 		
-		self.BodyFont = fnt.Font(family = self.args.BidyFont_Family, size = self.args.BodyFont_Size, weight = self.args.BodyFont_Weight)
-		self.BodyFont.configure(underline = self.args.BodyFont_Underline, slant = self.args.BodyFont_Slant, overstrike = self.args.BodyFont_Overstrike)
+		self.BodyFont = fnt.Font(family = self.args.BFFamily, size = self.args.BFSize, weight = self.args.BFWeight)
+		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
 		# Window Functions builds
 		self.__CreateTitle()
@@ -265,7 +264,6 @@ class Notify:
 	def __FormTimer_Init(self):
 		''' Timer on destroy form parameters and functions '''
 		self.timer_flag = True
-		self.on_time = self.args.OnTime
 		self.counter = 0.1
 		self.count = self.args.Alpha
 	
@@ -277,7 +275,7 @@ class Notify:
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 	
-	def send(self):
+	def Run(self):
 		''' Global Form LOOP - visibility '''
 		if self.args.isTimer:
 			self.update_clock()
@@ -323,22 +321,19 @@ class Notify:
 
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
-		tmp_icon = pathlib.Path(self.args.icon).resolve()
-		self.on_icon = str(tmp_icon) if tmp_icon.exists() else ''
-		self.image = tk.PhotoImage(file=self.on_icon)
-		self.image = self.image.subsample(*self.args.Scale.split(','))
-		self.label_1 = tk.Label(self.root, text=f"",
+		self.image = tk.PhotoImage(file=self.args.icon)
+		self.image = self.image.subsample(*self.args.scale.split(','))
+		self.label_1 = tk.Label(self.root, text="", justify=tk.CENTER,
+							borderwidth=0,
 							bg=self.args.BodyBG,
-							fg=self.args.BodyFG,
-							font=self.BodyFont,
-							justify=tk.CENTER
+							fg=self.args.BodyFG
 							)
 		self.label_1.image = self.image
 		self.label_1['image'] = self.label_1.image
-		
+	
 	def __CreateText(self):
-		''' Create Text notify '''		
-		if self.args.on_icon != '':
+		''' Create Text notify '''
+		if self.args.icon != '':
 			self.label_2 = tk.Label(self.root, text=self.args.Message,
 								bg=self.args.BodyBG,
 								fg=self.args.BodyFG,
@@ -436,20 +431,6 @@ class Notify:
 class Files:
 	
 	@staticmethod
-	def WriteTextFile(on_text: str, on_file: str):
-		''' Write data in text file '''
-		with open(pathlib.Path(on_file).resolve(), "w") as fp:
-			fp.write(on_text)
-	
-	@staticmethod
-	def ReadTextFile(on_file: str) -> str:
-		''' Read Data from text File '''
-		on_text = ''
-		with open(pathlib.Path(on_file).resolve(), "r") as fp:
-			on_text = fp.read()
-		return on_text
-	
-	@staticmethod
 	def WriteJson(data_json: dict, file_json: str = 'object.json'):
 		''' Write Json data in file '''
 		with open(pathlib.Path(file_json).resolve(), "w") as fp:
@@ -473,14 +454,14 @@ class Files:
 		return None
 
 def CalcNewPosition(scr_width: int, scr_height: int, 
-					pos_x: PositionX, pos_y: PositionY, 
+					pos_x: str, pos_y: str, 
 					width: int, height: int, left: int, top: int):
 	''' Calculation for new position to Form '''
 	virt_x = width + 10
 	virt_y = height + 10
 	real_x = virt_x * Defaults.koef_x[pos_x.value] + left
 	real_y = virt_y * Defaults.koef_y[pos_y.value] + top
-	if pos_y == PositionY.Bottom:
+	if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
 		if real_y < 0:
 			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
 		else:
@@ -493,10 +474,10 @@ def CalcNewPosition(scr_width: int, scr_height: int,
 	return real_x, real_y
 
 def main():
-	args = Arguments(icon='test1.png', Scale='2,2', Title='Title!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value
-					) # isTimer = True, MoveX = 100, MoveY = 100, Relative = False
-	notification = Notify(args)
+	args = Arguments(icon='test1.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
+					)
+	win = Window(args)
 	'''
 	global screen_width
 	global screen_height
@@ -507,7 +488,7 @@ def main():
 	global Left
 	global Top
 	'''
-	notification.send()
+	win.Run()
 
 if __name__ == '__main__':
 	main()
