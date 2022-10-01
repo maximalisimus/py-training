@@ -9,11 +9,8 @@ import argparse
 import tkinter as tk
 from tkinter import font as fnt
 from enum import Enum
-import threading
 import time
 
-env_event = threading.Event()
-worker_event = threading.Event()
 screen_width = 0
 screen_height = 0
 position_x = 0
@@ -122,6 +119,28 @@ class PositionY(NoValue):
 		return None
 
 class Defaults:
+	''' Class Defaults 
+	
+		Info: The default value class.
+		Variables:
+			PREFIX: The directory where the program was launched from.
+			config_file: The default settings file, 
+				which is located in the same directory as the program itself.
+			koef_x: The X-axis coefficient used in calculating 
+				the new location of the form, 
+				if at least one has already been launched.
+			koef_y: The Y-axis coefficient used in calculating 
+				the new location of the form, 
+				if at least one has already been launched.
+		Methods:
+			CalcPositionX(pos_x: str, scr_width: int, width: int):
+				Calculation of the standard position by X (Left).
+				pos_x = left, center or right
+			
+			CalcPositionY(pos_y: str, scr_height: int, height: int):
+				Calculation of the standard position by Y (Top).
+				pos_y = top, center or bottom
+	'''
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
@@ -151,7 +170,38 @@ class Defaults:
 		return calc_y
 
 class Arguments:
-	''' The class of the set of input parameters. '''
+	''' The class of the set of input parameters. 
+	
+		Variables:
+			Title: Header Text,
+			Message: Text notify,
+			OnTime: The waiting time before the form closes automatically,
+			isTimer: The presence of a timer for automatically closing the application,
+			icon: Icon to display inside the notification,
+			TFFamily: Title Font Family,
+			TFSize: Title Font size
+			TFWeight: Title Font Weight (normal, bold), 
+			TFUnderline: Title Font Underline (0, 1),
+			TFSlant: Title Font Slant (italic, roman), 
+			TFOverstrike: Title Font Overstrike (0, 1),
+			TitleBG: Title Background Color, 
+			TitleFG: Title Foreground Color (Header, Title Text Color),
+			BodyBG: Body Background Color, 
+			BodyFG: Body Foreground Color (Message Text Color),
+			BFFamily: Body Font Family, 
+			BFSize: Body Font Size,
+			BFWeight: Body Font Weight (normal, bold), 
+			BFUnderline: Body Font Underline (0, 1),
+			BFSlant: Body Font Slant (italic, roman), 
+			BFOverstrike: Body Font Overstrike (0, 1),
+			scale: Zoom out of the icon ("1,1" of string),
+			PosX: Position on X (Left), 
+			PosY: Position on Y (Top), 
+			MoveX: Offset on the X-axis (Left), 
+			MoveY: Offset on the Y-axis (Top),
+			Alpha: Transparent (Alpha), 
+			Relative: Relative move position (True, False).
+	'''
 	
 	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
 				'TFFamily', 'TFSize',  'TFWeight', 
@@ -198,24 +248,6 @@ class Arguments:
 		''' Access to a non-existent variable. '''
 		return None
 	
-	def Info(self):
-		return f"\n\tTitle = Title," + \
-				f"\n\tText = Message," + \
-				f"\n\tOnTime = OnTime," + \
-				f"\n\tisTimer = isTimer," + \
-				f"\n\ticon = icon," + \
-				f"\n\tTitle Font Family = TFFamily, Title Font size = TFSize," + \
-				f"\n\tTitle Font Weight = TFWeight, Title Font Underline = TFUnderline," + \
-				f"\n\tTitle Font Slant: TFSlant, Title Font Overstrike = TFOverstrike," + \
-				f"\n\tTitle BG = TitleBG, Title FG = TitleFG," + \
-				f"\n\tBody BG = BodyBG, Body FG = BodyFG," + \
-				f"\n\tBody Font Family = BFFamily, Body Font Size = BFSize," + \
-				f"\n\tBody Font Weight = BFWeight, Body Font Underline = BFUnderline," + \
-				f"\n\tBody Font Slant = BFSlant, Body Font Overstrike = BFOverstrike," + \
-				f"\n\tScale = (scale)," + \
-				f"\n\tPosX = PosX, PosY = PosY, MoveX = MoveX, MoveY = MoveY," + \
-				f"\n\tTransparent (Alpha) = Alpha, Relative move position = Relative"
-	
 	def __repr__(self):
 		''' For Debug Function output paramters '''
 		return f"{self.__class__}:" + \
@@ -226,7 +258,7 @@ class Arguments:
 				f"\n\ticon = {self.icon}," + \
 				f"\n\tTitle Font Family = {self.TFFamily}, Title Font size = {self.TFSize}," + \
 				f"\n\tTitle Font Weight = {self.TFWeight}, Title Font Underline = {self.TFUnderline}," + \
-				f"\n\tTitle Font Slant: {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
+				f"\n\tTitle Font Slant = {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
 				f"\n\tTitle BG = {self.TitleBG}, Title FG = {self.TitleFG}," + \
 				f"\n\tBody BG = {self.BodyBG}, Body FG = {self.BodyFG}," + \
 				f"\n\tBody Font Family = {self.BFFamily}, Body Font Size = {self.BFSize}," + \
@@ -237,7 +269,33 @@ class Arguments:
 				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
 
 class Notify:
-	''' Tkinter class form. '''
+	''' Tkinter class form. 
+	
+		Info: The variables are exactly the same as in Arguments.
+			The class is not inherited from Tkinter!
+			The class is inherited from the Object type.
+		
+		Variables:
+			root: Tkinter form,
+			TitleFont: Title (Header) Form Fonts,
+			BodyFont: Body Form Fonts,
+			screen_width: Horizontal screen size.
+			screen_height: The vertical size of the screen.
+			width: The horizontal size of the form.
+			height: The vertical size of the form.
+			left: The position of the shape on the X-axis.
+			top: The position of the shape on the Y-axis.
+		
+		Methods:
+			RelativePosition(self, x: int = 0, y: int = 0): 
+				Change the position of the form in relative coordinates.
+			
+			RealPosition(self, x: int, y: int): 
+				Change the position of the form in absolute coordinates.
+			
+			send(self):
+				Show the form on the screen.
+	'''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
 		''' Function init tkinter Apps '''
@@ -447,6 +505,48 @@ class Notify:
 		Height = self.height
 
 class Files:
+	'''  Class Files.
+	
+		Info: A class for working with files.
+		
+		Methods:
+			WriteTextFile(data_text: str, text_file: str = 'text.txt'):
+				Writing text to a text file.
+			
+			ReadTextFile(text_file: str = 'text.txt') -> dict:
+				Reading text from a text file.
+			
+			WriteJson(data_json: dict, file_json: str = 'object.json'):
+				Writing JSON data to a json file.
+			
+			ReadJson(file_json: str = 'object.json') -> dict:
+				Reading JSON data from a json file.
+			
+			GetFileSuffix(List_Files, suffixes: str):
+				Get a file with the specified extension from a list or tuple.
+			
+			 CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str, width: int, 
+					height: int, left: int, top: int):
+				Calculation of the new position of the form 
+				in the specified previous position. 
+				The previous position can be ready, 
+				for example, using the socket library.
+	'''
+	
+	@staticmethod
+	def WriteTextFile(data_text: str, text_file: str = 'text.txt'):
+		''' Write Text data in file '''
+		with open(pathlib.Path(text_file).resolve(), "w") as fp:
+			fp.write(data_text)
+
+	@staticmethod
+	def ReadTextFile(text_file: str = 'text.txt') -> dict:
+		''' Read Text Data from File '''
+		data = ''
+		with open(pathlib.Path(text_file).resolve(), "r") as fp:
+			data = fp.read()
+		return data
 	
 	@staticmethod
 	def WriteJson(data_json: dict, file_json: str = 'object.json'):
@@ -470,26 +570,28 @@ class Files:
 				if suffixes == pathlib.Path(x).suffix:
 					return pathlib.Path(x).resolve()
 		return None
-
-def CalcNewPosition(scr_width: int, scr_height: int, 
-					pos_x: str, pos_y: str, 
-					width: int, height: int, left: int, top: int):
-	''' Calculation for new position to Form '''
-	virt_x = width + 10
-	virt_y = height + 10
-	real_x = virt_x * Defaults.koef_x[pos_x.value] + left
-	real_y = virt_y * Defaults.koef_y[pos_y.value] + top
-	if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
-		if real_y < 0:
-			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+	
+	@staticmethod
+	def CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str,  
+					width: int, height: int, 
+					left: int, top: int):
+		''' Calculation for new position to Form '''
+		virt_x = width + 10
+		virt_y = height + 10
+		real_x = virt_x * Defaults.koef_x[pos_x.value] + left
+		real_y = virt_y * Defaults.koef_y[pos_y.value] + top
+		if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
+			if real_y < 0:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
 		else:
-			real_x = left
-	else:
-		if (scr_height - real_y) < height:
-			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
-		else:
-			real_x = left
-	return real_x, real_y
+			if (scr_height - real_y) < height:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
+		return real_x, real_y
 
 def main():
 	args = Arguments(icon='test1.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
