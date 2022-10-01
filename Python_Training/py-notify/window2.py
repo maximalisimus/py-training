@@ -154,7 +154,7 @@ class Defaults:
 class Arguments:
 	''' The class of the set of input parameters. '''
 	
-	__slots__ = ['Title', 'Text', 'OnTime', 'isTimer', 'icon', 
+	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
 				'TitleFont_Family', 'TitleFont_Size',  'TitleFont_Weight', 
 				'TitleFont_Underline', 'TitleFont_Slant', 'TitleFont_Overstrike', 
 				'TitleBG', 'TitleFG', 
@@ -167,7 +167,7 @@ class Arguments:
 	
 	def __init__(self, *args, **kwargs):
 		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
-		self.Text = args[1] if len(args) >= 2 else kwargs.get('Text','Info!')
+		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
 		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime',10000)
 		self.isTimer = args[3] if len(args) >= 4 else kwargs.get('isTimer',True)
 		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','')
@@ -203,7 +203,7 @@ class Arguments:
 		''' For Debug Function output paramters '''
 		return f"{self.__class__}:" + \
 				f"\n\tTitle = {self.Title}," + \
-				f"\n\tText = {self.Text}," + \
+				f"\n\tText = {self.Message}," + \
 				f"\n\tOnTime = {self.OnTime}," + \
 				f"\n\tisTimer = {self.isTimer}," + \
 				f"\n\ticon = {self.icon}," + \
@@ -219,7 +219,7 @@ class Arguments:
 				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
 				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
 
-class Window:
+class Notify:
 	''' Tkinter class form. '''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
@@ -277,7 +277,7 @@ class Window:
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 	
-	def Run(self):
+	def send(self):
 		''' Global Form LOOP - visibility '''
 		if self.args.isTimer:
 			self.update_clock()
@@ -339,14 +339,14 @@ class Window:
 	def __CreateText(self):
 		''' Create Text notify '''		
 		if self.args.on_icon != '':
-			self.label_2 = tk.Label(self.root, text=self.args.Text,
+			self.label_2 = tk.Label(self.root, text=self.args.Message,
 								bg=self.args.BodyBG,
 								fg=self.args.BodyFG,
 								font=self.BodyFont,
 								justify=tk.CENTER
 								)
 		else:
-			self.label_2 = tk.Label(self.root, text=self.args.Text,
+			self.label_2 = tk.Label(self.root, text=self.args.Message,
 								bg=self.args.BodyBG,
 								fg=self.args.BodyFG,
 								font=self.BodyFont,
@@ -493,10 +493,10 @@ def CalcNewPosition(scr_width: int, scr_height: int,
 	return real_x, real_y
 
 def main():
-	args = Arguments(icon='test1.png', Scale='2,2', Title='Messages!', Text='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='test1.png', Scale='2,2', Title='Title!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value
 					) # isTimer = True, MoveX = 100, MoveY = 100, Relative = False
-	win = Window(args)
+	notification = Notify(args)
 	'''
 	global screen_width
 	global screen_height
@@ -507,7 +507,7 @@ def main():
 	global Left
 	global Top
 	'''
-	win.Run()
+	notification.send()
 
 if __name__ == '__main__':
 	main()
