@@ -198,6 +198,24 @@ class Arguments:
 		''' Access to a non-existent variable. '''
 		return None
 	
+	def Info(self):
+		return f"\n\tTitle = Title," + \
+				f"\n\tText = Message," + \
+				f"\n\tOnTime = OnTime," + \
+				f"\n\tisTimer = isTimer," + \
+				f"\n\ticon = icon," + \
+				f"\n\tTitle Font Family = TFFamily, Title Font size = TFSize," + \
+				f"\n\tTitle Font Weight = TFWeight, Title Font Underline = TFUnderline," + \
+				f"\n\tTitle Font Slant: TFSlant, Title Font Overstrike = TFOverstrike," + \
+				f"\n\tTitle BG = TitleBG, Title FG = TitleFG," + \
+				f"\n\tBody BG = BodyBG, Body FG = BodyFG," + \
+				f"\n\tBody Font Family = BFFamily, Body Font Size = BFSize," + \
+				f"\n\tBody Font Weight = BFWeight, Body Font Underline = BFUnderline," + \
+				f"\n\tBody Font Slant = BFSlant, Body Font Overstrike = BFOverstrike," + \
+				f"\n\tScale = (scale)," + \
+				f"\n\tPosX = PosX, PosY = PosY, MoveX = MoveX, MoveY = MoveY," + \
+				f"\n\tTransparent (Alpha) = Alpha, Relative move position = Relative"
+	
 	def __repr__(self):
 		''' For Debug Function output paramters '''
 		return f"{self.__class__}:" + \
@@ -218,7 +236,7 @@ class Arguments:
 				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
 				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
 
-class Window:
+class Notify:
 	''' Tkinter class form. '''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
@@ -275,7 +293,7 @@ class Window:
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 	
-	def Run(self):
+	def send(self):
 		''' Global Form LOOP - visibility '''
 		if self.args.isTimer:
 			self.update_clock()
@@ -477,7 +495,7 @@ def main():
 	args = Arguments(icon='test1.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
 					)
-	win = Window(args)
+	notification = Notify(args)
 	'''
 	global screen_width
 	global screen_height
@@ -488,7 +506,7 @@ def main():
 	global Left
 	global Top
 	'''
-	win.Run()
+	notification.send()
 
 if __name__ == '__main__':
 	main()
