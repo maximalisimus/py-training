@@ -437,13 +437,16 @@ class Notify:
 			self.root.columnconfigure(index=c, weight=1)
 		for r in range(2):
 			self.root.rowconfigure(index=r, weight=1)
-		self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+		if self.args.icon != '':
+			self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+		else:
+			self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
 		self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
 			self.label_1.grid(row=1, column=0, padx=10, pady=0)
-			self.label_2.grid(row=1, column=1, padx=5, pady=0)
+			self.label_2.grid(row=1, column=1, padx=0, pady=0)
 		else:
-			self.label_2.grid(row=1, column=0, padx=10, pady=0)
+			self.label_2.grid(row=1, column=0, padx=15, pady=0)
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
@@ -598,7 +601,7 @@ class Files:
 		return real_x, real_y
 
 def main():
-	args = Arguments(icon='info.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='info.png', scale='2,2', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
 					)
 	args.TitleBG = '#303030'
