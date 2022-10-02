@@ -388,7 +388,9 @@ class Notify:
 						activebackground='white',
 						highlightthickness = 0,
 						image=self.close_icon,
-						command=self.root.destroy
+						command=self.root.destroy,
+						width=36,
+						height=33
 						)
 	
 	def __CreateHeader(self):
@@ -397,9 +399,7 @@ class Notify:
 							bg=self.args.TitleBG,
 							fg=self.args.TitleFG,
 							font=self.TitleFont,
-							justify=tk.CENTER,
-							padx=10,
-							pady=0
+							justify=tk.CENTER
 							)
 
 	def __CreateIcon(self):
@@ -409,7 +409,7 @@ class Notify:
 		self.label_1 = tk.Label(self.root, text="", justify=tk.CENTER,
 							borderwidth=0,
 							bg=self.args.BodyBG,
-							fg=self.args.BodyFG
+							fg=self.args.BodyFG,
 							)
 		self.label_1.image = self.image
 		self.label_1['image'] = self.label_1.image
@@ -428,22 +428,22 @@ class Notify:
 								bg=self.args.BodyBG,
 								fg=self.args.BodyFG,
 								font=self.BodyFont,
-								justify=tk.CENTER,
-								padx=5,
-								pady=0
+								justify=tk.CENTER
 								)
 	
 	def __ElementPack(self):
 		''' Elements send (pack, place or grid standart class method) to Form '''
-		self.label_3.grid(row=0, column=0)
-		self.btn1.place(relx=0.915, rely=0.0)
-		#self.btn1.grid(row=0, column=2)
+		for c in range(3):
+			self.root.columnconfigure(index=c, weight=1)
+		for r in range(2):
+			self.root.rowconfigure(index=r, weight=1)
+		self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+		self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
-			self.label_1.grid(row=1, column=0)
-			self.label_2.grid(row=1, column=1)
+			self.label_1.grid(row=1, column=0, padx=10, pady=0)
+			self.label_2.grid(row=1, column=1, padx=5, pady=0)
 		else:
-			self.label_2.grid(row=1, column=0)
-			self.label_2.place(relx=0.0, rely=0.5)
+			self.label_2.grid(row=1, column=0, padx=10, pady=0)
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
@@ -506,7 +506,7 @@ class Notify:
 		Top = self.top
 		Left = self.left
 		Width = self.width
-		Height = self.height
+		Height = self.height			
 
 class Files:
 	'''  Class Files.
@@ -598,9 +598,14 @@ class Files:
 		return real_x, real_y
 
 def main():
-	args = Arguments(icon='test1.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='info.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
 					)
+	args.TitleBG = '#303030'
+	args.TitleFG = 'white'
+	args.BodyBG = '#303030'
+	args.BodyFG = 'white'
+	args.Alpha = 0.9
 	notification = Notify(args)
 	'''
 	global screen_width
