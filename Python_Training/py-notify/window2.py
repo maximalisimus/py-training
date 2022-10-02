@@ -123,23 +123,25 @@ class Defaults:
 	
 		Info: The default value class.
 		Variables:
-			PREFIX: The directory where the program was launched from.
+			PREFIX: The directory where the program 
+					was launched from.
 			config_file: The default settings file, 
-				which is located in the same directory as the program itself.
+						which is located in the same directory 
+						as the program itself.
 			koef_x: The X-axis coefficient used in calculating 
-				the new location of the form, 
-				if at least one has already been launched.
+					the new location of the form, 
+					if at least one has already been launched.
 			koef_y: The Y-axis coefficient used in calculating 
-				the new location of the form, 
-				if at least one has already been launched.
+					the new location of the form, 
+					if at least one has already been launched.
 		Methods:
 			CalcPositionX(pos_x: str, scr_width: int, width: int):
 				Calculation of the standard position by X (Left).
-				pos_x = left, center or right
+				pos_x = "left", "center" or "right"
 			
 			CalcPositionY(pos_y: str, scr_height: int, height: int):
 				Calculation of the standard position by Y (Top).
-				pos_y = top, center or bottom
+				pos_y = "top", "center" or "bottom"
 	'''
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
@@ -277,8 +279,8 @@ class Notify:
 	''' Tkinter class form. 
 	
 		Info: The variables are exactly the same as in Arguments.
-			The class is not inherited from Tkinter!
-			The class is inherited from the Object type.
+				The class is not inherited from Tkinter!
+				The class is inherited from the Object type.
 		
 		Variables:
 			root: Tkinter form,
