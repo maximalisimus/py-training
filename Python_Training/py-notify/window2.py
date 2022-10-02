@@ -194,9 +194,14 @@ class Arguments:
 			BFUnderline: Body Font Underline (0, 1),
 			BFSlant: Body Font Slant (italic, roman), 
 			BFOverstrike: Body Font Overstrike (0, 1),
-			scale: Zoom out of the icon ("1,1" of string),
-			PosX: Position on X (Left), 
-			PosY: Position on Y (Top), 
+			scale: The scale of the icon, 
+					the value should be specified 
+					as a string without spaces 
+					(for example, "1,1" or "2,2"),
+			PosX: The value of the X-axis position (left), 
+				according to the "PositionX" class, 
+			PosY: The value of the Y-axis position (top), 
+					according to the "PositionY" class, 
 			MoveX: Offset on the X-axis (Left), 
 			MoveY: Offset on the Y-axis (Top),
 			Alpha: Transparent (Alpha), 
