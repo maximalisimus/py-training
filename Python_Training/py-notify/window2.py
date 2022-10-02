@@ -398,7 +398,7 @@ class Notify:
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
 		self.image = tk.PhotoImage(file=self.args.icon)
-		self.image = self.image.subsample(*self.args.scale.split(','))
+		self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
 		self.label_1 = tk.Label(self.root, text="", justify=tk.CENTER,
 							borderwidth=0,
 							bg=self.args.BodyBG,
