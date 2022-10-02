@@ -7,13 +7,10 @@ import json
 import configparser
 import argparse
 import tkinter as tk
+from tkinter import font as fnt
 from enum import Enum
-import threading
-from os import getpid
 import time
 
-env_event = threading.Event()
-worker_event = threading.Event()
 screen_width = 0
 screen_height = 0
 position_x = 0
@@ -41,18 +38,39 @@ class Weight(NoValue):
 	bold = 'bold'
 	
 	@classmethod
-	def GetWeightValue(cls, weight: str):
+	def GetWeightValue(cls, value: str):
 		''' Get Weight to value elements '''
 		for x in cls:
-			if weight == x.value:
+			if value == x.value:
 				return x
 		return None
 
 	@classmethod
-	def GetWeightName(cls, pos):
+	def GetWeightName(cls, on_name):
 		''' Get Weight to name elements '''
 		for x in cls:
-			if os == x:
+			if on_name == x:
+				return x
+		return None
+
+class Slant(NoValue):
+	''' Italic text or normal mode '''
+	Normal = 'roman'
+	Italic = 'italic'
+	
+	@classmethod
+	def GetSlantValue(cls, value: str):
+		''' Get PositionX to value elements '''
+		for x in cls:
+			if value == x.value:
+				return x
+		return None
+
+	@classmethod
+	def GetSlantName(cls, on_name):
+		''' Get PositionX to name elements '''
+		for x in cls:
+			if on_name == x:
 				return x
 		return None
 
@@ -63,18 +81,18 @@ class PositionX(NoValue):
 	Center = 'center'
 	
 	@classmethod
-	def GetPosValue(cls, pos: str):
+	def GetPosValue(cls, value: str):
 		''' Get PositionX to value elements '''
 		for x in cls:
-			if pos == x.value:
+			if value == x.value:
 				return x
 		return None
 
 	@classmethod
-	def GetPosName(cls, pos):
+	def GetPosName(cls, on_name):
 		''' Get PositionX to name elements '''
 		for x in cls:
-			if os == x:
+			if on_name == x:
 				return x
 		return None
 
@@ -85,40 +103,46 @@ class PositionY(NoValue):
 	Bottom = 'bottom'
 
 	@classmethod
-	def GetPosValue(cls, pos: str):
+	def GetPosValue(cls, value: str):
 		''' Get PositionY to value elements '''
 		for x in cls:
-			if pos == x.value:
+			if value == x.value:
 				return x
 		return None
 
 	@classmethod
-	def GetPosName(cls, pos):
+	def GetPosName(cls, on_name):
 		''' Get PositionY to name elements '''
 		for x in cls:
-			if os == x:
-				return x
-		return None
-
-class TypePositionMove(NoValue):
-	Relative = 'relative'
-	Real = 'real'
-	
-	@classmethod
-	def GetTypePosValue(cls, pos: str):
-		for x in cls:
-			if pos == x.value:
-				return x
-		return None
-
-	@classmethod
-	def GetTypePosName(cls, pos):
-		for x in cls:
-			if os == x:
+			if on_name == x:
 				return x
 		return None
 
 class Defaults:
+	''' Class Defaults 
+	
+		Info: The default value class.
+		Variables:
+			PREFIX: The directory where the program 
+					was launched from.
+			config_file: The default settings file, 
+						which is located in the same directory 
+						as the program itself.
+			koef_x: The X-axis coefficient used in calculating 
+					the new location of the form, 
+					if at least one has already been launched.
+			koef_y: The Y-axis coefficient used in calculating 
+					the new location of the form, 
+					if at least one has already been launched.
+		Methods:
+			CalcPositionX(pos_x: str, scr_width: int, width: int):
+				Calculation of the standard position by X (Left).
+				pos_x = "left", "center" or "right"
+			
+			CalcPositionY(pos_y: str, scr_height: int, height: int):
+				Calculation of the standard position by Y (Top).
+				pos_y = "top", "center" or "bottom"
+	'''
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
 	config_file = PREFIX.joinpath('config.ini').resolve()
@@ -126,51 +150,106 @@ class Defaults:
 	koef_y = {'top': 1, 'center': 1, 'bottom': -1}
 
 	@staticmethod
-	def CalcPositionX(pos_x: PositionX, scr_width: int, width: int):
+	def CalcPositionX(pos_x: str, scr_width: int, width: int):
 		''' Calculate Position Left (x) '''
-		if pos_x == PositionX.Left:
+		if PositionX.GetPosValue(pos_x) == PositionX.Left:
 			calc_x = 15
-		elif pos_x == PositionX.Center:
+		elif PositionX.GetPosValue(pos_x) == PositionX.Center:
 			calc_x = int(scr_width/2) - int(width/2)
 		else:
 			calc_x = scr_width - width - 15
 		return calc_x
 
 	@staticmethod
-	def CalcPositionY(pos_y: PositionY, scr_height: int, height: int):
+	def CalcPositionY(pos_y: str, scr_height: int, height: int):
 		''' Calculate Position Top (y) '''
-		if pos_y == PositionY.Top:
+		if PositionY.GetPosValue(pos_y) == PositionY.Top:
 			calc_y = 15
-		elif pos_y == PositionY.Center:
+		elif PositionY.GetPosValue(pos_y) == PositionY.Center:
 			calc_y =  int(scr_height/2) - int(height/2)
 		else:
 			calc_y = scr_height - height - 30
 		return calc_y
 
 class Arguments:
-	''' The class of the set of input parameters. '''
+	''' The class of the set of input parameters. 
 	
-	__slots__ = 'title text ontime icon fonts fgcolor bgcolor scale posx posy alpha movex movey typepos istimer'.split()
+		Variables:
+			Title: Header Text,
+			Message: Text notify,
+			OnTime: The waiting time before the form closes automatically,
+			isTimer: The presence of a timer for automatically closing the application,
+			icon: Icon to display inside the notification,
+			TFFamily: Title Font Family,
+			TFSize: Title Font size
+			TFWeight: Title Font Weight (normal, bold), 
+			TFUnderline: Title Font Underline (0, 1),
+			TFSlant: Title Font Slant (italic, roman), 
+			TFOverstrike: Title Font Overstrike (0, 1),
+			TitleBG: Title Background Color, 
+			TitleFG: Title Foreground Color (Header, Title Text Color),
+			BodyBG: Body Background Color, 
+			BodyFG: Body Foreground Color (Message Text Color),
+			BFFamily: Body Font Family, 
+			BFSize: Body Font Size,
+			BFWeight: Body Font Weight (normal, bold), 
+			BFUnderline: Body Font Underline (0, 1),
+			BFSlant: Body Font Slant (italic, roman), 
+			BFOverstrike: Body Font Overstrike (0, 1),
+			scale: The scale of the icon, 
+					the value should be specified 
+					as a string without spaces 
+					(for example, "1,1" or "2,2"),
+			PosX: The value of the X-axis position (left), 
+				according to the "PositionX" class, 
+			PosY: The value of the Y-axis position (top), 
+					according to the "PositionY" class, 
+			MoveX: Offset on the X-axis (Left), 
+			MoveY: Offset on the Y-axis (Top),
+			Alpha: Transparent (Alpha), 
+			Relative: Relative move position (True, False).
+	'''
+	
+	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
+				'TFFamily', 'TFSize',  'TFWeight', 
+				'TFUnderline', 'TFSlant', 'TFOverstrike', 
+				'TitleBG', 'TitleFG', 
+				'BFFamily', 'BFSize', 'BFWeight', 
+				'BFUnderline', 'BFSlant', 'BFOverstrike',
+				'BodyBG', 'BodyFG', 
+				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
+				'save', 'load', 'reset'
+				]
 	
 	def __init__(self, *args, **kwargs):
-		self.title = args[0] if len(args) >= 1 else kwargs.get('title', 'Apps')
-		self.text = args[1] if len(args) >= 2 else kwargs.get('text', 'Ok!')
-		self.ontime = args[2] if len(args) >= 3 else kwargs.get('ontime', 10000)
-		self.icon = pathlib.Path(args[3]).resolve() if len(args) >= 4 else kwargs.get('icon', '')
-		self.fonts = list(str(args[4]).split(',')) if len(args) >= 5 else list(str(kwargs.get('fonts','Arial,14,normal')).split(','))
-		self.fonts[1] = int(self.fonts[1])
-		self.fonts[2] = Weight.GetWeightValue(self.fonts[2])
-		self.fonts = tuple(self.fonts)
-		self.fgcolor = args[5] if len(args) >= 6 else kwargs.get('fgcolor', 'black')
-		self.bgcolor = args[6] if len(args) >= 7 else kwargs.get('bgcolor', '#FFFADD')
-		self.scale = tuple(map(int, str(args[7]).split(',')))  if len(args) >= 8 else tuple(map(int, str(kwargs.get('scale', '1,1')).split(',')))
-		self.posx = PositionX.GetPosValue(args[[8]]) if len(args) >= 9 else PositionX.GetPosValue(kwargs.get('posx', 'right'))
-		self.posy = PositionY.GetPosValue(args[[9]]) if len(args) >= 10 else PositionY.GetPosValue(kwargs.get('posy', 'top'))
-		self.alpha = args[10] if len(args) >= 11 else kwargs.get('alpha', 1.0)
-		self.movex = args[11] if len(args) >= 12 else kwargs.get('movex', 0)
-		self.movey = args[12] if len(args) >= 13 else kwargs.get('movey', 0)
-		self.typepos = TypePositionMove.GetTypePosValue(args[13]) if len(args) >= 14 else TypePositionMove.GetTypePosValue(kwargs.get('typepos', 'relative'))
-		self.istimer = args[14] if len(args) >= 15 else kwargs.get('istimer', True)
+		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
+		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
+		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime',10000)
+		self.isTimer = args[3] if len(args) >= 4 else kwargs.get('isTimer',True)
+		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','')
+		self.TFFamily = args[5] if len(args) >= 6 else kwargs.get('TFFamily','Arial')
+		self.TFSize = args[6] if len(args) >= 7 else kwargs.get('TFSize',14)
+		self.TFWeight = args[7] if len(args) >= 8 else kwargs.get('TFWeight','bold')
+		self.TFUnderline = args[8] if len(args) >= 9 else kwargs.get('TFUnderline',0)
+		self.TFSlant = args[9] if len(args) >= 10 else kwargs.get('TFSlant','roman')
+		self.TFOverstrike = args[10] if len(args) >= 11 else kwargs.get('TFOverstrike',0)
+		self.TitleBG = args[11] if len(args) >= 12 else kwargs.get('TitleBG','#FFFADD')
+		self.TitleFG = args[12] if len(args) >= 13 else kwargs.get('TitleFG','black')
+		self.BFFamily = args[13] if len(args) >= 14 else kwargs.get('BFFamily','Arial')
+		self.BFSize = args[14] if len(args) >= 15 else kwargs.get('BFSize',14)
+		self.BFWeight = args[15] if len(args) >= 16 else kwargs.get('BFWeight','normal')
+		self.BFUnderline = args[16] if len(args) >= 17 else kwargs.get('BFUnderline',0)
+		self.BFSlant = args[17] if len(args) >= 18 else kwargs.get('BFSlant','roman')
+		self.BFOverstrike = args[18] if len(args) >= 19 else kwargs.get('BFOverstrike',0)
+		self.BodyBG = args[19] if len(args) >= 20 else kwargs.get('BodyBG','#FFFADD')
+		self.BodyFG = args[20] if len(args) >= 21 else kwargs.get('BodyFG','black')
+		self.scale = args[21] if len(args) >= 22 else kwargs.get('scale', '1,1')
+		self.PosX = args[22] if len(args) >= 23 else kwargs.get('PosX', 'right')
+		self.PosY = args[23] if len(args) >= 24 else kwargs.get('PosY', 'top')
+		self.Alpha = args[24] if len(args) >= 25 else kwargs.get('Alpha', 1.0)
+		self.MoveX = args[25] if len(args) >= 26 else kwargs.get('MoveX', 0)
+		self.MoveY = args[26] if len(args) >= 27 else kwargs.get('MoveY', 0)
+		self.Relative = args[27] if len(args) >= 28 else kwargs.get('Relative', True)
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
@@ -179,25 +258,62 @@ class Arguments:
 	def __repr__(self):
 		''' For Debug Function output paramters '''
 		return f"{self.__class__}:" + \
-				f"\n\tTitle: {self.title}" + \
-				f"\n\tText: {self.text}" + \
-				f",\n\tTime: {self.ontime} ms, isTimer: {self.istimer}," + \
-				f",\n\tIcon: {self.icon if self.icon != '' else None}," + \
-				f"\n\tFonts: {self.fonts}," + \
-				f"\n\tFG Color: {self.fgcolor}, " + \
-				f"BG Color: {self.bgcolor}, " + \
-				f"\n\tScale: {self.scale}," + \
-				f"\n\tPos X: {self.posx}, Pos Y: {self.posy}," + \
-				f"\n\tAlpha: {self.alpha}," + \
-				f"\n\tMove X: {self.movex}, Move Y: {self.movey}, Type Position Move: {self.typepos}"
+				f"\n\tTitle = {self.Title}," + \
+				f"\n\tText = {self.Message}," + \
+				f"\n\tOnTime = {self.OnTime}," + \
+				f"\n\tisTimer = {self.isTimer}," + \
+				f"\n\ticon = {self.icon}," + \
+				f"\n\tTitle Font Family = {self.TFFamily}, Title Font size = {self.TFSize}," + \
+				f"\n\tTitle Font Weight = {self.TFWeight}, Title Font Underline = {self.TFUnderline}," + \
+				f"\n\tTitle Font Slant = {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
+				f"\n\tTitle BG = {self.TitleBG}, Title FG = {self.TitleFG}," + \
+				f"\n\tBody BG = {self.BodyBG}, Body FG = {self.BodyFG}," + \
+				f"\n\tBody Font Family = {self.BFFamily}, Body Font Size = {self.BFSize}," + \
+				f"\n\tBody Font Weight = {self.BFWeight}, Body Font Underline = {self.BFUnderline}," + \
+				f"\n\tBody Font Slant = {self.BFSlant}, Body Font Overstrike = {self.BFOverstrike}," + \
+				f"\n\tScale = ({self.scale})," + \
+				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
+				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
 
-class Window:
-	''' Tkinter class form. '''
+class Notify:
+	''' Tkinter class form. 
+	
+		Info: The variables are exactly the same as in Arguments.
+				The class is not inherited from Tkinter!
+				The class is inherited from the Object type.
+		
+		Variables:
+			root: Tkinter form,
+			TitleFont: Title (Header) Form Fonts,
+			BodyFont: Body Form Fonts,
+			screen_width: Horizontal screen size.
+			screen_height: The vertical size of the screen.
+			width: The horizontal size of the form.
+			height: The vertical size of the form.
+			left: The position of the shape on the X-axis.
+			top: The position of the shape on the Y-axis.
+		
+		Methods:
+			RelativePosition(self, x: int = 0, y: int = 0): 
+				Change the position of the form in relative coordinates.
+			
+			RealPosition(self, x: int, y: int): 
+				Change the position of the form in absolute coordinates.
+			
+			send(self):
+				Show the form on the screen.
+	'''
 	
 	def __init__(self, on_args: Arguments = Arguments()):
 		''' Function init tkinter Apps '''
 		self.args = on_args
 		self.root = tk.Tk()
+		
+		self.TitleFont = fnt.Font(family = self.args.TFFamily, size = self.args.TFSize, weight = self.args.TFWeight)
+		self.TitleFont.configure(underline = self.args.TFUnderline, slant = self.args.TFSlant, overstrike = self.args.TFOverstrike)
+		
+		self.BodyFont = fnt.Font(family = self.args.BFFamily, size = self.args.BFSize, weight = self.args.BFWeight)
+		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
 		# Window Functions builds
 		self.__CreateTitle()
@@ -226,14 +342,13 @@ class Window:
 		else:
 			self.timer_flag = False
 			self.root.attributes('-alpha', self.count)
-			self.root.after(self.args.ontime, self.update_clock)
+			self.root.after(self.args.OnTime, self.update_clock)
 	
 	def __FormTimer_Init(self):
 		''' Timer on destroy form parameters and functions '''
 		self.timer_flag = True
-		self.on_time = self.args.on_time
 		self.counter = 0.1
-		self.count = self.args.alpha
+		self.count = self.args.Alpha
 	
 	def on_enter(self, event):
 		''' Form focused '''
@@ -243,16 +358,16 @@ class Window:
 		''' Form not focused '''
 		self.root.attributes('-alpha', self.count)
 	
-	def Run(self):
+	def send(self):
 		''' Global Form LOOP - visibility '''
-		if self.args.istimer:
+		if self.args.isTimer:
 			self.update_clock()
 		self.root.mainloop()
 	
 	def __CreateTitle(self):
 		''' TKinter Title '''
-		self.root.title(self.args.title)
-		self.root.configure(bg=self.args.bgcolor)
+		self.root.title(self.args.Title)
+		self.root.configure(bg=self.args.BodyBG)
 	
 	def __CreateTransparent(self):
 		''' Transparent Form parameters '''
@@ -267,35 +382,34 @@ class Window:
 		self.close_icon = self.close_icon.subsample(1, 1)
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 						borderwidth=0,
-						bg=self.args.bgcolor,
-						fg=self.args.fgcolor,
+						bg=self.args.TitleBG,
+						fg=self.args.TitleFG,
 						highlightcolor='white',
 						activebackground='white',
 						highlightthickness = 0,
 						image=self.close_icon,
-						command=self.root.destroy
+						command=self.root.destroy,
+						width=36,
+						height=33
 						)
 	
 	def __CreateHeader(self):
 		''' Create Header '''
-		self.label_3 = tk.Label(self.root, text=self.args.title,
-							bg=self.args.bgcolor,
-							fg=self.args.fgcolor,
-							font=(self.args.fonts[0], self.args.fonts[1], 'bold'),
-							justify=tk.CENTER,
-							padx=10,
-							pady=0
+		self.label_3 = tk.Label(self.root, text=self.args.Title,
+							bg=self.args.TitleBG,
+							fg=self.args.TitleFG,
+							font=self.TitleFont,
+							justify=tk.CENTER
 							)
 
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
 		self.image = tk.PhotoImage(file=self.args.icon)
-		self.image = self.image.subsample(*self.args.scale)
-		self.label_1 = tk.Label(self.root, text=f"",
-							bg=self.args.bgcolor,
-							fg=self.args.fgcolor,
-							font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2].value),
-							justify=tk.CENTER
+		self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
+		self.label_1 = tk.Label(self.root, text="", justify=tk.CENTER,
+							borderwidth=0,
+							bg=self.args.BodyBG,
+							fg=self.args.BodyFG,
 							)
 		self.label_1.image = self.image
 		self.label_1['image'] = self.label_1.image
@@ -303,38 +417,38 @@ class Window:
 	def __CreateText(self):
 		''' Create Text notify '''
 		if self.args.icon != '':
-			self.label_2 = tk.Label(self.root, text=self.args.text,
-								bg=self.args.bgcolor,
-								fg=self.args.fgcolor,
-								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
+			self.label_2 = tk.Label(self.root, text=self.args.Message,
+								bg=self.args.BodyBG,
+								fg=self.args.BodyFG,
+								font=self.BodyFont,
 								justify=tk.CENTER
 								)
 		else:
-			self.label_2 = tk.Label(self.root, text=self.args.text,
-								bg=self.args.bgcolor,
-								fg=self.args.fgcolor,
-								font=(self.args.fonts[0], self.args.fonts[1], self.args.fonts[2]),
-								justify=tk.CENTER,
-								padx=5,
-								pady=0
+			self.label_2 = tk.Label(self.root, text=self.args.Message,
+								bg=self.args.BodyBG,
+								fg=self.args.BodyFG,
+								font=self.BodyFont,
+								justify=tk.CENTER
 								)
 	
 	def __ElementPack(self):
 		''' Elements send (pack, place or grid standart class method) to Form '''
-		self.label_3.grid(row=0, column=0)
-		self.btn1.place(relx=0.915, rely=0.0)
-		#self.btn1.grid(row=0, column=2)
+		for c in range(3):
+			self.root.columnconfigure(index=c, weight=1)
+		for r in range(2):
+			self.root.rowconfigure(index=r, weight=1)
+		self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+		self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
-			self.label_1.grid(row=1, column=0)
-			self.label_2.grid(row=1, column=1)
+			self.label_1.grid(row=1, column=0, padx=10, pady=0)
+			self.label_2.grid(row=1, column=1, padx=5, pady=0)
 		else:
-			self.label_2.grid(row=1, column=0)
-			self.label_2.place(relx=0.0, rely=0.5)
+			self.label_2.grid(row=1, column=0, padx=10, pady=0)
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
-		self.left = Defaults.CalcPositionX(self.args.posx, self.screen_width, self.width)
-		self.top = Defaults.CalcPositionY(self.args.posy, self.screen_height, self.height)
+		self.left = Defaults.CalcPositionX(self.args.PosX, self.screen_width, self.width)
+		self.top = Defaults.CalcPositionY(self.args.PosY, self.screen_height, self.height)
 	
 	def RelativePosition(self, x: int = 0, y: int = 0):
 		''' Change relative coordinate position form on left (x) and top (y) '''
@@ -351,10 +465,7 @@ class Window:
 		self.root.update_idletasks()
 	
 	def __CreatePosition(self):
-		'''
-			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
-			and Window size
-		'''
+		''' Position Forms on Desktop '''
 		self.screen_width = self.root.winfo_screenwidth()
 		self.screen_height = self.root.winfo_screenheight()
 		self.root.geometry()
@@ -371,11 +482,11 @@ class Window:
 		self.root.geometry(f"+{self.left}+{self.top}")
 		self.root.update_idletasks()
 		
-		if self.args.movex != 0 or self.args.movey != 0:
-			if self.args.typepos == TypePositionMove.Relative:
-				self.RelativePosition(self.args.movex, self.args.movey)
+		if self.args.MoveX != 0 or self.args.MoveY != 0:
+			if self.args.Relative:
+				self.RelativePosition(self.args.MoveX, self.args.MoveY)
 			else:
-				self.RealPosition(self.args.movex, self.args.movey)
+				self.RealPosition(self.args.MoveX, self.args.MoveY)
 		
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height)
@@ -390,14 +501,56 @@ class Window:
 		global Left
 		screen_width = self.screen_width
 		screen_height = self.screen_height
-		position_x = self.args.posx
-		position_y = self.args.posy
+		position_x = self.args.PosX
+		position_y = self.args.PosY
 		Top = self.top
 		Left = self.left
 		Width = self.width
-		Height = self.height
+		Height = self.height			
 
 class Files:
+	'''  Class Files.
+	
+		Info: A class for working with files.
+		
+		Methods:
+			WriteTextFile(data_text: str, text_file: str = 'text.txt'):
+				Writing text to a text file.
+			
+			ReadTextFile(text_file: str = 'text.txt') -> dict:
+				Reading text from a text file.
+			
+			WriteJson(data_json: dict, file_json: str = 'object.json'):
+				Writing JSON data to a json file.
+			
+			ReadJson(file_json: str = 'object.json') -> dict:
+				Reading JSON data from a json file.
+			
+			GetFileSuffix(List_Files, suffixes: str):
+				Get a file with the specified extension from a list or tuple.
+			
+			 CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str, width: int, 
+					height: int, left: int, top: int):
+				Calculation of the new position of the form 
+				in the specified previous position. 
+				The previous position can be ready, 
+				for example, using the socket library.
+	'''
+	
+	@staticmethod
+	def WriteTextFile(data_text: str, text_file: str = 'text.txt'):
+		''' Write Text data in file '''
+		with open(pathlib.Path(text_file).resolve(), "w") as fp:
+			fp.write(data_text)
+
+	@staticmethod
+	def ReadTextFile(text_file: str = 'text.txt') -> dict:
+		''' Read Text Data from File '''
+		data = ''
+		with open(pathlib.Path(text_file).resolve(), "r") as fp:
+			data = fp.read()
+		return data
 	
 	@staticmethod
 	def WriteJson(data_json: dict, file_json: str = 'object.json'):
@@ -421,32 +574,39 @@ class Files:
 				if suffixes == pathlib.Path(x).suffix:
 					return pathlib.Path(x).resolve()
 		return None
-
-def CalcNewPosition(scr_width: int, scr_height: int, 
-					pos_x: PositionX, pos_y: PositionY, 
-					width: int, height: int, left: int, top: int):
-	''' Calculation for new position to Form '''
-	virt_x = width + 10
-	virt_y = height + 10
-	real_x = virt_x * Defaults.koef_x[pos_x.value] + left
-	real_y = virt_y * Defaults.koef_y[pos_y.value] + top
-	if pos_y == PositionY.Bottom:
-		if real_y < 0:
-			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+	
+	@staticmethod
+	def CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str,  
+					width: int, height: int, 
+					left: int, top: int):
+		''' Calculation for new position to Form '''
+		virt_x = width + 10
+		virt_y = height + 10
+		real_x = virt_x * Defaults.koef_x[pos_x.value] + left
+		real_y = virt_y * Defaults.koef_y[pos_y.value] + top
+		if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
+			if real_y < 0:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
 		else:
-			real_x = left
-	else:
-		if (scr_height - real_y) < height:
-			real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
-		else:
-			real_x = left
-	return real_x, real_y
+			if (scr_height - real_y) < height:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
+		return real_x, real_y
 
 def main():
-	args = Arguments(icon='test1.png', scale='2,2', title='Messages!', text='Mesages to text output information!', ontime=5000,
-					posx=PositionX.Right.value, posy = PositionY.Top.value, istimer = True
-					) # typepos = TypePositionMove.Relative.value posx=PositionX.Right.value, posy = PositionY.Top.value
-	win = Window(args)
+	args = Arguments(icon='info.png', scale='2,2', Title='Messages!', Message='Mesages to text output information!', OnTime=5000,
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
+					)
+	args.TitleBG = '#303030'
+	args.TitleFG = 'white'
+	args.BodyBG = '#303030'
+	args.BodyFG = 'white'
+	args.Alpha = 0.9
+	notification = Notify(args)
 	'''
 	global screen_width
 	global screen_height
@@ -456,15 +616,8 @@ def main():
 	global Height
 	global Left
 	global Top
-	print(f"Left = {Left}, Top = {Top}")
-	new_x, new_y = CalcNewPosition(screen_width, screen_height, position_x, position_y, Width, Height, 15, 34)
-	print(screen_width, screen_height, Width, Height)
-	print(f"Left = {new_x}, Top = {new_y}")
-	#win.RelativePosition(0,102)
-	win.RealPosition(15,34)
-	#win.RealPosition(437,646)
 	'''
-	win.Run()
+	notification.send()
 
 if __name__ == '__main__':
 	main()
