@@ -465,10 +465,7 @@ class Notify:
 		self.root.update_idletasks()
 	
 	def __CreatePosition(self):
-		'''
-			Position Forms on Desktop: pos_x = Desktop.width - Form.Width - left; pos_y = 15 - top 
-			and Window size
-		'''
+		''' Position Forms on Desktop '''
 		self.screen_width = self.root.winfo_screenwidth()
 		self.screen_height = self.root.winfo_screenheight()
 		self.root.geometry()
