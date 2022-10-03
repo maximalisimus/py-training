@@ -170,6 +170,30 @@ class Defaults:
 		else:
 			calc_y = scr_height - height - 30
 		return calc_y
+	
+	@staticmethod
+	def GetRoundPoints(x1, y1, x2, y2, radius=25):
+		points = [x1+radius, y1,
+			  x1+radius, y1,
+			  x2-radius, y1,
+			  x2-radius, y1,
+			  x2, y1,
+			  x2, y1+radius,
+			  x2, y1+radius,
+			  x2, y2-radius,
+			  x2, y2-radius,
+			  x2, y2,
+			  x2-radius, y2,
+			  x2-radius, y2,
+			  x1+radius, y2,
+			  x1+radius, y2,
+			  x1, y2,
+			  x1, y2-radius,
+			  x1, y2-radius,
+			  x1, y1+radius,
+			  x1, y1+radius,
+			  x1, y1]
+		return points
 
 class Arguments:
 	''' The class of the set of input parameters. 
@@ -315,6 +339,10 @@ class Notify:
 		self.BodyFont = fnt.Font(family = self.args.BFFamily, size = self.args.BFSize, weight = self.args.BFWeight)
 		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
+		self.canvas = tk.Canvas(self.root, bg='gray', bd=0, highlightthickness=0, relief='ridge')
+		#self.canvas.place(x=0, y=0, width=1024, height=800)
+		self.canvas.place(x=0, y=0)
+		
 		# Window Functions builds
 		self.__CreateTitle()
 		self.__CreateTransparent()
@@ -374,6 +402,7 @@ class Notify:
 		self.root.resizable(0,0)
 		self.root.overrideredirect(1)
 		self.root.wm_attributes("-topmost", 1)
+		self.root.wm_attributes("-transparent", 'gray')
 		self.root.wait_visibility(self.root)
 	
 	def __CreateBtnClose(self):
@@ -479,6 +508,10 @@ class Notify:
 		self.root.geometry(f"{self.width}x{self.height}")
 		self.left = 0
 		self.top = 0
+		
+		self.canvas.place(x=0, y=0, width=self.width, height=self.height)
+		self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=30)
+		self.canvas.create_polygon(self.RoundPoints, fill=self.args.BodyBG, smooth=True)
 		
 		self.__CalcPosition()
 		
@@ -601,7 +634,7 @@ class Files:
 		return real_x, real_y
 
 def main():
-	args = Arguments(icon='info.png', scale='2,2', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
 					)
 	args.TitleBG = '#303030'
