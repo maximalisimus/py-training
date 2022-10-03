@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import font as fnt
 from enum import Enum
 import time
+import platform
 
 screen_width = 0
 screen_height = 0
@@ -339,9 +340,10 @@ class Notify:
 		self.BodyFont = fnt.Font(family = self.args.BFFamily, size = self.args.BFSize, weight = self.args.BFWeight)
 		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
-		self.canvas = tk.Canvas(self.root, bg='gray', bd=0, highlightthickness=0, relief='ridge')
-		#self.canvas.place(x=0, y=0, width=1024, height=800)
-		self.canvas.place(x=0, y=0)
+		if platform.system() == 'Windows':
+			self.canvas = tk.Canvas(self.root, bg='gray', bd=0, highlightthickness=0, relief='ridge')
+			#self.canvas.place(x=0, y=0, width=1024, height=800)
+			self.canvas.place(x=0, y=0)
 		
 		# Window Functions builds
 		self.__CreateTitle()
@@ -402,7 +404,8 @@ class Notify:
 		self.root.resizable(0,0)
 		self.root.overrideredirect(1)
 		self.root.wm_attributes("-topmost", 1)
-		self.root.wm_attributes("-transparent", 'gray')
+		if platform.system() == 'Windows':
+			self.root.wm_attributes("-transparent", 'gray')
 		self.root.wait_visibility(self.root)
 	
 	def __CreateBtnClose(self):
@@ -509,10 +512,11 @@ class Notify:
 		self.left = 0
 		self.top = 0
 		
-		#self.canvas.place(x=0, y=0, width=self.width, height=self.height)
-		self.canvas.config(width=self.width, height=self.height)
-		self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=30)
-		self.canvas.create_polygon(self.RoundPoints, fill=self.args.BodyBG, smooth=True)
+		if platform.system() == 'Windows':
+			#self.canvas.place(x=0, y=0, width=self.width, height=self.height)
+			self.canvas.config(width=self.width, height=self.height)
+			self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=20)
+			self.canvas.create_polygon(self.RoundPoints, fill=self.args.BodyBG, smooth=True)
 		
 		self.__CalcPosition()
 		
