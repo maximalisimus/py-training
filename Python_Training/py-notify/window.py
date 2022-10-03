@@ -509,7 +509,8 @@ class Notify:
 		self.left = 0
 		self.top = 0
 		
-		self.canvas.place(x=0, y=0, width=self.width, height=self.height)
+		#self.canvas.place(x=0, y=0, width=self.width, height=self.height)
+		self.canvas.config(width=self.width, height=self.height)
 		self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=30)
 		self.canvas.create_polygon(self.RoundPoints, fill=self.args.BodyBG, smooth=True)
 		
