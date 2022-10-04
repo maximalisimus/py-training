@@ -7,6 +7,7 @@ import json
 import configparser
 import argparse
 import tkinter as tk
+from tkinter import ttk
 from tkinter import font as fnt
 from enum import Enum
 import time
@@ -340,12 +341,14 @@ class Notify:
 		self.BodyFont = fnt.Font(family = self.args.BFFamily, size = self.args.BFSize, weight = self.args.BFWeight)
 		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
+		self.style = ttk.Style()
+		
 		if platform.system() == 'Windows':
 			self.canvas = tk.Canvas(self.root, bg='gray', bd=0, highlightthickness=0, relief='ridge')
-			#self.canvas.place(x=0, y=0, width=1024, height=800)
 			self.canvas.place(x=0, y=0)
 		
 		# Window Functions builds
+		self.__CreateStyle()
 		self.__CreateTitle()
 		self.__CreateTransparent()
 		self.__CreateBtnClose()
@@ -408,9 +411,27 @@ class Notify:
 			self.root.wm_attributes("-transparent", 'gray')
 		self.root.wait_visibility(self.root)
 	
+	def __CreateStyle(self):
+		''' Create Style elements on form '''
+		self.style.configure('H.TLabel', background=self.args.TitleBG,
+							foreground=self.args.TitleFG,
+							font=self.TitleFont,
+							justify=tk.CENTER, borderwidth=0)
+		self.style.configure('B.TLabel', 
+							background=self.args.BodyBG,
+							foreground=self.args.BodyFG,
+							font=self.BodyFont,
+							justify=tk.CENTER,
+							borderwidth=0)
+		self.style.configure('I.TLabel', 
+							background=self.args.BodyBG,
+							foreground=self.args.BodyFG,
+							justify=tk.CENTER,
+							borderwidth=0)
+	
 	def __CreateBtnClose(self):
 		''' Create Button on Close '''
-		self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('close-icon.png'))
+		self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
 		self.close_icon = self.close_icon.subsample(1, 1)
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 						borderwidth=0,
@@ -420,48 +441,26 @@ class Notify:
 						activebackground='white',
 						highlightthickness = 0,
 						image=self.close_icon,
-						command=self.root.destroy,
-						width=36,
-						height=33
-						)
+						command=self.root.destroy)#,
+						#width=36,
+						#height=33
+						#)
 	
 	def __CreateHeader(self):
 		''' Create Header '''
-		self.label_3 = tk.Label(self.root, text=self.args.Title,
-							bg=self.args.TitleBG,
-							fg=self.args.TitleFG,
-							font=self.TitleFont,
-							justify=tk.CENTER
-							)
+		self.label_header = ttk.Label(self.root, text=self.args.Title, style='H.TLabel')
 
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
 		self.image = tk.PhotoImage(file=self.args.icon)
 		self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
-		self.label_1 = tk.Label(self.root, text="", justify=tk.CENTER,
-							borderwidth=0,
-							bg=self.args.BodyBG,
-							fg=self.args.BodyFG,
-							)
-		self.label_1.image = self.image
-		self.label_1['image'] = self.label_1.image
+		self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
+		self.label_image.image = self.image
+		self.label_image['image'] = self.label_image.image
 	
 	def __CreateText(self):
 		''' Create Text notify '''
-		if self.args.icon != '':
-			self.label_2 = tk.Label(self.root, text=self.args.Message,
-								bg=self.args.BodyBG,
-								fg=self.args.BodyFG,
-								font=self.BodyFont,
-								justify=tk.CENTER
-								)
-		else:
-			self.label_2 = tk.Label(self.root, text=self.args.Message,
-								bg=self.args.BodyBG,
-								fg=self.args.BodyFG,
-								font=self.BodyFont,
-								justify=tk.CENTER
-								)
+		self.label_text = ttk.Label(self.root, text=self.args.Message, style='B.TLabel')
 	
 	def __ElementPack(self):
 		''' Elements send (pack, place or grid standart class method) to Form '''
@@ -470,15 +469,15 @@ class Notify:
 		for r in range(2):
 			self.root.rowconfigure(index=r, weight=1)
 		if self.args.icon != '':
-			self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+			self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
 		else:
-			self.label_3.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
+			self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
 		self.btn1.grid(row=0, column=2)
 		if self.args.icon != '':
-			self.label_1.grid(row=1, column=0, padx=10, pady=0)
-			self.label_2.grid(row=1, column=1, padx=0, pady=0)
+			self.label_image.grid(row=1, column=0, padx=10, pady=0)
+			self.label_text.grid(row=1, column=1, padx=0, pady=0)
 		else:
-			self.label_2.grid(row=1, column=0, padx=15, pady=0)
+			self.label_text.grid(row=1, column=0, padx=15, pady=0)
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
