@@ -244,7 +244,7 @@ class Arguments:
 				'BFUnderline', 'BFSlant', 'BFOverstrike',
 				'BodyBG', 'BodyFG', 
 				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
-				'save', 'load', 'reset'
+				'save', 'load', 'reset', 'Topmost'
 				]
 	
 	def __init__(self, *args, **kwargs):
@@ -276,6 +276,7 @@ class Arguments:
 		self.MoveX = args[25] if len(args) >= 26 else kwargs.get('MoveX', 0)
 		self.MoveY = args[26] if len(args) >= 27 else kwargs.get('MoveY', 0)
 		self.Relative = args[27] if len(args) >= 28 else kwargs.get('Relative', True)
+		self.Topmost = args[28] if len(args) >= 29 else kwargs.get('Topmost', False)
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
@@ -299,7 +300,8 @@ class Arguments:
 				f"\n\tBody Font Slant = {self.BFSlant}, Body Font Overstrike = {self.BFOverstrike}," + \
 				f"\n\tScale = ({self.scale})," + \
 				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
-				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}"
+				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}," + \
+				f"\n\tTopmost = {self.Topmost}"
 
 class Notify:
 	''' Tkinter class form. 
@@ -402,11 +404,17 @@ class Notify:
 		self.root.title(self.args.Title)
 		self.root.configure(bg=self.args.BodyBG)
 	
+	def __OnClose(self, event):
+		self.root.destroy()
+	
 	def __CreateTransparent(self):
 		''' Transparent Form parameters '''
+		self.root.bind('<Button-1>', self.__OnClose)
 		self.root.resizable(0,0)
 		self.root.overrideredirect(1)
-		self.root.wm_attributes("-topmost", 1)
+		self.root.lift()
+		self.root.wm_attributes("-topmost", self.args.Topmost)
+		self.root.after_idle(self.root.attributes,'-topmost', self.args.Topmost)
 		if platform.system() == 'Windows':
 			self.root.wm_attributes("-transparent", 'gray')
 		self.root.wait_visibility(self.root)
@@ -449,18 +457,21 @@ class Notify:
 	def __CreateHeader(self):
 		''' Create Header '''
 		self.label_header = ttk.Label(self.root, text=self.args.Title, style='H.TLabel')
+		self.label_header.bind('<Button-1>', self.__OnClose)
 
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
 		self.image = tk.PhotoImage(file=self.args.icon)
 		self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
 		self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
+		self.label_image.bind('<Button-1>', self.__OnClose)
 		self.label_image.image = self.image
 		self.label_image['image'] = self.label_image.image
 	
 	def __CreateText(self):
 		''' Create Text notify '''
 		self.label_text = ttk.Label(self.root, text=self.args.Message, style='B.TLabel')
+		self.label_text.bind('<Button-1>', self.__OnClose)
 	
 	def __ElementPack(self):
 		''' Elements send (pack, place or grid standart class method) to Form '''
@@ -639,7 +650,7 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False
 					)
 	args.TitleBG = '#303030'
 	args.TitleFG = 'white'
