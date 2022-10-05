@@ -212,9 +212,8 @@ class Arguments:
 			TFUnderline: Title Font Underline (0, 1),
 			TFSlant: Title Font Slant (italic, roman), 
 			TFOverstrike: Title Font Overstrike (0, 1),
-			TitleBG: Title Background Color, 
 			TitleFG: Title Foreground Color (Header, Title Text Color),
-			BodyBG: Body Background Color, 
+			BG: Background Color, 
 			BodyFG: Body Foreground Color (Message Text Color),
 			BFFamily: Body Font Family, 
 			BFSize: Body Font Size,
@@ -239,10 +238,9 @@ class Arguments:
 	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
 				'TFFamily', 'TFSize',  'TFWeight', 
 				'TFUnderline', 'TFSlant', 'TFOverstrike', 
-				'TitleBG', 'TitleFG', 
+				'TitleFG', 'BG', 'BodyFG',
 				'BFFamily', 'BFSize', 'BFWeight', 
-				'BFUnderline', 'BFSlant', 'BFOverstrike',
-				'BodyBG', 'BodyFG', 
+				'BFUnderline', 'BFSlant', 'BFOverstrike', 
 				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
 				'save', 'load', 'reset', 'Topmost'
 				]
@@ -259,24 +257,23 @@ class Arguments:
 		self.TFUnderline = args[8] if len(args) >= 9 else kwargs.get('TFUnderline',0)
 		self.TFSlant = args[9] if len(args) >= 10 else kwargs.get('TFSlant','roman')
 		self.TFOverstrike = args[10] if len(args) >= 11 else kwargs.get('TFOverstrike',0)
-		self.TitleBG = args[11] if len(args) >= 12 else kwargs.get('TitleBG','#FFFADD')
-		self.TitleFG = args[12] if len(args) >= 13 else kwargs.get('TitleFG','black')
-		self.BFFamily = args[13] if len(args) >= 14 else kwargs.get('BFFamily','Arial')
-		self.BFSize = args[14] if len(args) >= 15 else kwargs.get('BFSize',14)
-		self.BFWeight = args[15] if len(args) >= 16 else kwargs.get('BFWeight','normal')
-		self.BFUnderline = args[16] if len(args) >= 17 else kwargs.get('BFUnderline',0)
-		self.BFSlant = args[17] if len(args) >= 18 else kwargs.get('BFSlant','roman')
-		self.BFOverstrike = args[18] if len(args) >= 19 else kwargs.get('BFOverstrike',0)
-		self.BodyBG = args[19] if len(args) >= 20 else kwargs.get('BodyBG','#FFFADD')
-		self.BodyFG = args[20] if len(args) >= 21 else kwargs.get('BodyFG','black')
-		self.scale = args[21] if len(args) >= 22 else kwargs.get('scale', '1,1')
-		self.PosX = args[22] if len(args) >= 23 else kwargs.get('PosX', 'right')
-		self.PosY = args[23] if len(args) >= 24 else kwargs.get('PosY', 'top')
-		self.Alpha = args[24] if len(args) >= 25 else kwargs.get('Alpha', 1.0)
-		self.MoveX = args[25] if len(args) >= 26 else kwargs.get('MoveX', 0)
-		self.MoveY = args[26] if len(args) >= 27 else kwargs.get('MoveY', 0)
-		self.Relative = args[27] if len(args) >= 28 else kwargs.get('Relative', True)
-		self.Topmost = args[28] if len(args) >= 29 else kwargs.get('Topmost', False)
+		self.TitleFG = args[11] if len(args) >= 12 else kwargs.get('TitleFG','black')
+		self.BFFamily = args[12] if len(args) >= 13 else kwargs.get('BFFamily','Arial')
+		self.BFSize = args[13] if len(args) >= 14 else kwargs.get('BFSize',14)
+		self.BFWeight = args[14] if len(args) >= 15 else kwargs.get('BFWeight','normal')
+		self.BFUnderline = args[15] if len(args) >= 16 else kwargs.get('BFUnderline',0)
+		self.BFSlant = args[16] if len(args) >= 17 else kwargs.get('BFSlant','roman')
+		self.BFOverstrike = args[17] if len(args) >= 18 else kwargs.get('BFOverstrike',0)
+		self.BG = args[18] if len(args) >= 19 else kwargs.get('BG','#FFFADD')
+		self.BodyFG = args[19] if len(args) >= 20 else kwargs.get('BodyFG','black')
+		self.scale = args[20] if len(args) >= 21 else kwargs.get('scale', '1,1')
+		self.PosX = args[21] if len(args) >= 22 else kwargs.get('PosX', 'right')
+		self.PosY = args[22] if len(args) >= 23 else kwargs.get('PosY', 'top')
+		self.Alpha = args[23] if len(args) >= 24 else kwargs.get('Alpha', 1.0)
+		self.MoveX = args[24] if len(args) >= 25 else kwargs.get('MoveX', 0)
+		self.MoveY = args[25] if len(args) >= 26 else kwargs.get('MoveY', 0)
+		self.Relative = args[26] if len(args) >= 27 else kwargs.get('Relative', True)
+		self.Topmost = args[27] if len(args) >= 28 else kwargs.get('Topmost', False)
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
@@ -293,8 +290,7 @@ class Arguments:
 				f"\n\tTitle Font Family = {self.TFFamily}, Title Font size = {self.TFSize}," + \
 				f"\n\tTitle Font Weight = {self.TFWeight}, Title Font Underline = {self.TFUnderline}," + \
 				f"\n\tTitle Font Slant = {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
-				f"\n\tTitle BG = {self.TitleBG}, Title FG = {self.TitleFG}," + \
-				f"\n\tBody BG = {self.BodyBG}, Body FG = {self.BodyFG}," + \
+				f"\n\tTitle FG = {self.TitleFG}, Body FG = {self.BodyFG}, BG = {self.BG}," + \
 				f"\n\tBody Font Family = {self.BFFamily}, Body Font Size = {self.BFSize}," + \
 				f"\n\tBody Font Weight = {self.BFWeight}, Body Font Underline = {self.BFUnderline}," + \
 				f"\n\tBody Font Slant = {self.BFSlant}, Body Font Overstrike = {self.BFOverstrike}," + \
@@ -353,12 +349,14 @@ class Notify:
 		self.__CreateStyle()
 		self.__CreateTitle()
 		self.__CreateTransparent()
+		self.root.update()
 		self.__CreateBtnClose()
 		self.__CreateHeader()
 		self.__CreateIcon()
 		self.__CreateText()
 		self.__ElementPack()
 		self.__CreatePosition()
+		self.root.update()
 		
 		# Show an opaque form when hovering over the mouse
 		self.__FormTimer_Init()
@@ -395,6 +393,7 @@ class Notify:
 	
 	def send(self):
 		''' Global Form LOOP - visibility '''
+		self.root.update()
 		if self.args.isTimer:
 			self.update_clock()
 		self.root.mainloop()
@@ -402,7 +401,7 @@ class Notify:
 	def __CreateTitle(self):
 		''' TKinter Title '''
 		self.root.title(self.args.Title)
-		self.root.configure(bg=self.args.BodyBG)
+		self.root.configure(bg=self.args.BG)
 	
 	def __OnClose(self, event):
 		self.root.destroy()
@@ -423,18 +422,18 @@ class Notify:
 	
 	def __CreateStyle(self):
 		''' Create Style elements on form '''
-		self.style.configure('H.TLabel', background=self.args.TitleBG,
+		self.style.configure('H.TLabel', background=self.args.BG,
 							foreground=self.args.TitleFG,
 							font=self.TitleFont,
 							justify=tk.CENTER, borderwidth=0)
 		self.style.configure('B.TLabel', 
-							background=self.args.BodyBG,
+							background=self.args.BG,
 							foreground=self.args.BodyFG,
 							font=self.BodyFont,
 							justify=tk.CENTER,
 							borderwidth=0)
 		self.style.configure('I.TLabel', 
-							background=self.args.BodyBG,
+							background=self.args.BG,
 							foreground=self.args.BodyFG,
 							justify=tk.CENTER,
 							borderwidth=0)
@@ -445,7 +444,7 @@ class Notify:
 		self.close_icon = self.close_icon.subsample(1, 1)
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 						borderwidth=0,
-						bg=self.args.TitleBG,
+						bg=self.args.BG,
 						fg=self.args.TitleFG,
 						highlightcolor='white',
 						activebackground='white',
@@ -525,10 +524,9 @@ class Notify:
 		self.top = 0
 		
 		if platform.system() == 'Windows':
-			#self.canvas.place(x=0, y=0, width=self.width, height=self.height)
 			self.canvas.config(width=self.width, height=self.height)
 			self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=20)
-			self.canvas.create_polygon(self.RoundPoints, fill=self.args.BodyBG, smooth=True)
+			self.canvas.create_polygon(self.RoundPoints, fill=self.args.BG, smooth=True)
 		
 		self.__CalcPosition()
 		
@@ -652,14 +650,19 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False
 					)
-	args.TitleBG = '#303030'
+	args.BG = '#303030'
+	#args.BG = '#E1E1E1'
+	#args.TitleFG = 'green'
+	#args.BodyFG = 'blue'
+	#args.BFUnderline = 1
+	#args.TFOverstrike = 1
 	args.TitleFG = 'white'
-	args.BodyBG = '#303030'
 	args.BodyFG = 'white'
 	args.Alpha = 0.9
 	notification = Notify(args)
+	notification.root.update()
 	'''
 	global screen_width
 	global screen_height
