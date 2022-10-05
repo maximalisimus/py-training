@@ -411,12 +411,14 @@ class Notify:
 		''' Transparent Form parameters '''
 		self.root.bind('<Button-1>', self.__OnClose)
 		self.root.resizable(0,0)
-		self.root.overrideredirect(1)
+		if platform.system() == 'Windows':
+			self.root.overrideredirect(1)
+			self.root.wm_attributes("-transparent", 'gray')
+		elif platform.system() == 'Linux':
+			self.root.wm_attributes('-type', 'splash')
 		self.root.lift()
 		self.root.wm_attributes("-topmost", self.args.Topmost)
 		self.root.after_idle(self.root.attributes,'-topmost', self.args.Topmost)
-		if platform.system() == 'Windows':
-			self.root.wm_attributes("-transparent", 'gray')
 		self.root.wait_visibility(self.root)
 	
 	def __CreateStyle(self):
@@ -650,7 +652,7 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False
 					)
 	args.TitleBG = '#303030'
 	args.TitleFG = 'white'
