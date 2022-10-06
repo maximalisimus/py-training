@@ -340,11 +340,7 @@ class Notify:
 		self.BodyFont.configure(underline = self.args.BFUnderline, slant = self.args.BFSlant, overstrike = self.args.BFOverstrike)
 		
 		self.style = ttk.Style()
-		
-		if platform.system() == 'Windows':
-			self.canvas = tk.Canvas(self.root, bg='gray', bd=0, highlightthickness=0, relief='ridge')
-			self.canvas.place(x=0, y=0)
-		
+				
 		# Window Functions builds
 		self.__CreateStyle()
 		self.__CreateTitle()
@@ -396,6 +392,7 @@ class Notify:
 		self.root.update()
 		if self.args.isTimer:
 			self.update_clock()
+		self.root.update()
 		self.root.mainloop()
 	
 	def __CreateTitle(self):
@@ -412,7 +409,6 @@ class Notify:
 		self.root.resizable(0,0)
 		if platform.system() == 'Windows':
 			self.root.overrideredirect(1)
-			self.root.wm_attributes("-transparent", 'gray')
 		elif platform.system() == 'Linux':
 			self.root.wm_attributes('-type', 'splash')
 		self.root.lift()
@@ -522,11 +518,6 @@ class Notify:
 		self.root.geometry(f"{self.width}x{self.height}")
 		self.left = 0
 		self.top = 0
-		
-		if platform.system() == 'Windows':
-			self.canvas.config(width=self.width, height=self.height)
-			self.RoundPoints = Defaults.GetRoundPoints(0, 0, self.width, self.height, radius=20)
-			self.canvas.create_polygon(self.RoundPoints, fill=self.args.BG, smooth=True)
 		
 		self.__CalcPosition()
 		
@@ -662,7 +653,6 @@ def main():
 	args.BodyFG = 'white'
 	args.Alpha = 0.9
 	notification = Notify(args)
-	notification.root.update()
 	'''
 	global screen_width
 	global screen_height
