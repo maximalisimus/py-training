@@ -640,7 +640,8 @@ class Files:
 		return real_x, real_y
 
 def main():
-	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+	param = sys.argv[1]
+	args = Arguments(icon='info.png', scale='3,3', Title='Audio Volume', Message=param, OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False
 					)
 	args.BG = '#303030'
