@@ -611,19 +611,19 @@ class Notify:
 			for r in range(2):
 				self.root.rowconfigure(index=r, weight=1)
 			if self.args.icon != '':
-				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(10, 10), pady=0)
 			else:
-				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(5, 10), pady=0)
 			if self.close_icon != 'None':
 				self.btn1.grid(row=0, column=2)
 			if self.args.icon != 'None':
 				if self.image != 'None':
-					self.label_image.grid(row=1, column=0, padx=10, pady=0)
-					self.label_text.grid(row=1, column=1, padx=0, pady=0)
+					self.label_image.grid(row=1, column=0, padx=(10, 10), pady=(0, 5))
+					self.label_text.grid(row=1, column=1, padx=(0, 10), pady=(0, 5), sticky='w')
 				else:
-					self.label_text.grid(row=1, column=0, padx=15, pady=0)
+					self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 10), sticky='w')
 			else:
-				self.label_text.grid(row=1, column=0, padx=15, pady=0)
+				self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 10), sticky='w')
 		else:
 			if self.args.icon != 'None':
 				for c in range(2):
@@ -631,19 +631,19 @@ class Notify:
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
 				if self.image != 'None':
-					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=10, pady=0)
-					self.label_header.grid(row=0, column=1, padx=0, pady=0, sticky='w')
-					self.label_text.grid(row=1, column=1, padx=0, pady=0, sticky='w')
+					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=(10, 10), pady=0)
+					self.label_header.grid(row=0, column=1, padx=(0, 10), pady=0, sticky='sw')
+					self.label_text.grid(row=1, column=1, padx=(0, 10), pady=0, sticky='nw')
 				else:
-					self.label_header.grid(row=0, column=0, padx=10, pady=0, sticky='w')
-					self.label_text.grid(row=1, column=0, padx=10, pady=0, sticky='w')
+					self.label_header.grid(row=0, column=0, padx=(10, 10), pady=0, sticky='sw')
+					self.label_text.grid(row=1, column=0, padx=(10, 10), pady=(0, 0), sticky='nw')
 			else:
 				for c in range(1):
 					self.root.columnconfigure(index=c, weight=1)
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
-				self.label_header.grid(row=0, column=0, padx=10, pady=0, sticky='w')
-				self.label_text.grid(row=1, column=0, padx=10, pady=0, sticky='w')
+				self.label_header.grid(row=0, column=0, padx=(10, 10), pady=0, sticky='sw')
+				self.label_text.grid(row=1, column=0, padx=(10, 10), pady=(0, 0), sticky='nw') # , ipadx=0, ipady=0
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
@@ -674,6 +674,7 @@ class Notify:
 		self.width = tuple(map(int, form_size.split('+')[0].split('x')))[0] + 10
 		self.height = tuple(map(int, form_size.split('+')[0].split('x')))[1] + 10
 		self.root.geometry(f"{self.width}x{self.height}")
+		self.root.update_idletasks()
 		self.left = 0
 		self.top = 0
 		
@@ -784,7 +785,7 @@ class Files:
 		return None
 
 def main():
-	args = Arguments(icon='info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, 
 					Style = FormStyle.Standart.value
 					)
@@ -797,6 +798,8 @@ def main():
 	args.TitleFG = 'white'
 	args.BodyFG = 'white'
 	args.Alpha = 0.9
+	args.TFSize = 12
+	args.BFSize = 12
 	#args.icon = ''
 	notification = Notify(args)
 	'''
