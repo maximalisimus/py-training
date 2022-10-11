@@ -325,6 +325,45 @@ class Arguments:
 		self.Style = args[35] if len(args) >= 36 else kwargs.get('Style', 'standart')
 		self.ScaleClose = args[36] if len(args) >= 37 else kwargs.get('ScaleClose', '1,1')
 	
+	def Reset(self):
+		self.Title = 'Apps'
+		self.Message = 'Info!'
+		self.OnTime = 10000
+		self.isTimer = True
+		self.icon = ''
+		self.TFFamily = 'Arial'
+		self.TFSize = 14
+		self.TFWeight = 'bold'
+		self.TFUnderline = 0
+		self.TFSlant = 'roman'
+		self.TFOverstrike = 0
+		self.TitleFG = 'black'
+		self.BFFamily = 'Arial'
+		self.BFSize = 14
+		self.BFWeight = 'normal'
+		self.BFUnderline = 0
+		self.BFSlant = 'roman'
+		self.BFOverstrike = 0
+		self.BG = '#FFFADD'
+		self.BodyFG = 'black'
+		self.scale = '1,1'
+		self.PosX = 'right'
+		self.PosY = 'top'
+		self.Alpha = 1.0
+		self.MoveX = 0
+		self.MoveY = 0
+		self.Relative = True
+		self.Topmost = False
+		self.save = False
+		self.load = False
+		self.reset = False
+		self.CloseIcon = 'default'
+		self.Theme = ''
+		self.input = ''
+		self.output = ''
+		self.Style = 'standart'
+		self.ScaleClose = '1,1'
+	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
 		return None
