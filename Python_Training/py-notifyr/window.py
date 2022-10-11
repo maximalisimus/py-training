@@ -142,7 +142,38 @@ class FormStyle(NoValue):
 				return x
 		return None
 
-class Defaults:
+class Meta(type):
+	
+	def __init__(cls, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+	
+	@property
+	def PREFIX(cls):
+		return pathlib.Path(sys.argv[0]).resolve().parent
+	
+	@property
+	def ConfigDir(cls):
+		if platform.system() == 'Linux':
+			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr')
+		elif  platform.system() == 'Windows':
+			return pathlib.Path.home().joinpath('AppData').joinpath('Roaming').joinpath('py-notifyr')
+	
+	@property
+	def ThemeDir(cls):
+		if platform.system() == 'Linux':
+			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr').joinpath('Theme')
+		elif  platform.system() == 'Windows':
+			return pathlib.Path.home().joinpath('AppData').joinpath('Roaming').joinpath('py-notifyr').joinpath('Theme')
+	
+	@property
+	def koef_x(cls):
+		return {'left': 1, 'center': 1, 'right': -1}
+		
+	@property
+	def koef_y(cls):
+		return {'top': 1, 'center': 1, 'bottom': -1}
+
+class Defaults(metaclass=Meta):
 	''' Class Defaults 
 	
 		Info: The default value class.
@@ -175,11 +206,6 @@ class Defaults:
 				The previous position can be ready, 
 				for example, using the socket library.
 	'''
-	
-	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
-	config_file = PREFIX.joinpath('config.ini').resolve()
-	koef_x = {'left': 1, 'center': 1, 'right': -1}
-	koef_y = {'top': 1, 'center': 1, 'bottom': -1}
 
 	@staticmethod
 	def CalcPositionX(pos_x: str, scr_width: int, width: int):
@@ -233,7 +259,7 @@ class Arguments:
 			Message: Text notify,
 			OnTime: The waiting time before the form closes automatically,
 			isTimer: The presence of a timer for automatically closing the application,
-			icon: Icon to display inside the notification,
+			icon: Icon to display inside the notification (file, None),
 			TFFamily: Title Font Family,
 			TFSize: Title Font size
 			TFWeight: Title Font Weight (normal, bold), 
@@ -265,7 +291,7 @@ class Arguments:
 			save: Save Configuration,
 			load: Load configuration,
 			reset: Reset the configuration,
-			CloseIcon: Icon file for the form close button,
+			CloseIcon: Icon file for the form close button (file, default, None),
 			ScaleClose: The scale of the Close icon, 
 					the value should be specified 
 					as a string without spaces 
@@ -531,21 +557,28 @@ class Notify:
 	
 	def __CreateBtnClose(self):
 		''' Create Button on Close '''
+		closeIcon = ''
 		if self.args.Style == FormStyle.Standart.value:
 			if self.args.CloseIcon == 'default':
-				self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
+				closeIcon = Defaults.PREFIX.joinpath('exit_close.png')
+			elif self.args.CloseIcon != 'None':
+				closeIcon = pathlib.Path(self.args.CloseIcon).resolve() if pathlib.Path(self.args.CloseIcon).resolve().exists else ''
 			else:
-				self.close_icon = tk.PhotoImage(file = pathlib.Path(self.CloseIcon).resolve())
-			self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
-			self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
-							borderwidth=0,
-							bg=self.args.BG,
-							fg=self.args.TitleFG,
-							highlightcolor='white',
-							activebackground='white',
-							highlightthickness = 0,
-							image=self.close_icon,
-							command=self.root.destroy)
+				closeIcon = ''
+			if closeIcon != '':
+				self.close_icon = tk.PhotoImage(file = closeIcon)
+				self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
+				self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
+								borderwidth=0,
+								bg=self.args.BG,
+								fg=self.args.TitleFG,
+								highlightcolor='white',
+								activebackground='white',
+								highlightthickness = 0,
+								image=self.close_icon,
+								command=self.root.destroy)
+			else:
+				self.close_icon = 'None'
 	
 	def __CreateHeader(self):
 		''' Create Header '''
@@ -554,12 +587,14 @@ class Notify:
 
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
-		self.image = tk.PhotoImage(file=self.args.icon)
-		self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
-		self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
-		self.label_image.bind('<Button-1>', self.__OnClose)
-		self.label_image.image = self.image
-		self.label_image['image'] = self.label_image.image
+		if self.args.icon != 'None':
+			if pathlib.Path(self.args.icon).resolve().exists():
+				self.image = tk.PhotoImage(file=pathlib.Path(self.args.icon).resolve())
+				self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
+				self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
+				self.label_image.bind('<Button-1>', self.__OnClose)
+				self.label_image.image = self.image
+				self.label_image['image'] = self.label_image.image
 	
 	def __CreateText(self):
 		''' Create Text notify '''
@@ -577,21 +612,29 @@ class Notify:
 				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
 			else:
 				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
-			self.btn1.grid(row=0, column=2)
-			if self.args.icon != '':
-				self.label_image.grid(row=1, column=0, padx=10, pady=0)
-				self.label_text.grid(row=1, column=1, padx=0, pady=0)
+			if self.close_icon != 'None':
+				self.btn1.grid(row=0, column=2)
+			if self.args.icon != 'None':
+				if pathlib.Path(self.args.icon).resolve().exists():
+					self.label_image.grid(row=1, column=0, padx=10, pady=0)
+					self.label_text.grid(row=1, column=1, padx=0, pady=0)
+				else:
+					self.label_text.grid(row=1, column=0, padx=15, pady=0)
 			else:
 				self.label_text.grid(row=1, column=0, padx=15, pady=0)
 		else:
-			if self.args.icon != '':
+			if self.args.icon != 'None':
 				for c in range(2):
 					self.root.columnconfigure(index=c, weight=1)
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
-				self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=10, pady=0)
-				self.label_header.grid(row=0, column=1, padx=0, pady=0, sticky='w')
-				self.label_text.grid(row=1, column=1, padx=0, pady=0, sticky='w')
+				if pathlib.Path(self.args.icon).resolve().exists():
+					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=10, pady=0)
+					self.label_header.grid(row=0, column=1, padx=0, pady=0, sticky='w')
+					self.label_text.grid(row=1, column=1, padx=0, pady=0, sticky='w')
+				else:
+					self.label_header.grid(row=0, column=0, padx=10, pady=0, sticky='w')
+					self.label_text.grid(row=1, column=0, padx=10, pady=0, sticky='w')
 			else:
 				for c in range(1):
 					self.root.columnconfigure(index=c, weight=1)
@@ -740,7 +783,8 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, Style = FormStyle.Standart.value
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, 
+					Style = FormStyle.Standart.value
 					)
 	args.BG = '#303030'
 	#args.BG = '#E1E1E1'
