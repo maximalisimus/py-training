@@ -120,6 +120,28 @@ class PositionY(NoValue):
 				return x
 		return None
 
+class FormStyle(NoValue):
+	''' Form Style '''
+	
+	Standart = 'standart'
+	Compact = 'compact'
+	
+	@classmethod
+	def GetFormStyleValue(cls, value: str):
+		''' Get Form Style to value elements '''
+		for x in cls:
+			if value == x.value:
+				return x
+		return None
+
+	@classmethod
+	def GetFormStyleName(cls, on_name):
+		''' Get Form Style to name elements '''
+		for x in cls:
+			if on_name == x:
+				return x
+		return None
+
 class Defaults:
 	''' Class Defaults 
 	
@@ -232,7 +254,20 @@ class Arguments:
 			MoveX: Offset on the X-axis (Left), 
 			MoveY: Offset on the Y-axis (Top),
 			Alpha: Transparent (Alpha), 
-			Relative: Relative move position (True, False).
+			Relative: Relative move position (True, False),
+			Topmost: On top of all windows (True, False),
+			save: Save Configuration,
+			load: Load configuration,
+			reset: Reset the configuration,
+			CloseIcon: Icon file for the form close button,
+			ScaleClose: The scale of the Close icon, 
+					the value should be specified 
+					as a string without spaces 
+					(for example, "1,1" or "2,2"),
+			Theme: Theme, setting up form elements,
+			input: Application Settings input file,
+			output: The output file of the application settings,
+			Style: Form style ("standart", "compact").
 	'''
 	
 	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
@@ -241,8 +276,8 @@ class Arguments:
 				'TitleFG', 'BG', 'BodyFG',
 				'BFFamily', 'BFSize', 'BFWeight', 
 				'BFUnderline', 'BFSlant', 'BFOverstrike', 
-				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 
-				'save', 'load', 'reset', 'Topmost'
+				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 'Topmost',
+				'save', 'load', 'reset', 'CloseIcon', 'ScaleClose', 'Theme', 'input', 'output', 'Style'
 				]
 	
 	def __init__(self, *args, **kwargs):
@@ -274,6 +309,15 @@ class Arguments:
 		self.MoveY = args[25] if len(args) >= 26 else kwargs.get('MoveY', 0)
 		self.Relative = args[26] if len(args) >= 27 else kwargs.get('Relative', True)
 		self.Topmost = args[27] if len(args) >= 28 else kwargs.get('Topmost', False)
+		self.save = args[28] if len(args) >= 29 else kwargs.get('save', False)
+		self.load = args[29] if len(args) >= 30 else kwargs.get('load', False)
+		self.reset = args[30] if len(args) >= 31 else kwargs.get('reset', False)
+		self.CloseIcon = args[31] if len(args) >= 32 else kwargs.get('CloseIcon', 'default')
+		self.Theme = args[32] if len(args) >= 33 else kwargs.get('Theme', '')
+		self.input = args[33] if len(args) >= 34 else kwargs.get('input', '')
+		self.output = args[34] if len(args) >= 35 else kwargs.get('output', '')
+		self.Style = args[35] if len(args) >= 36 else kwargs.get('Style', 'standart')
+		self.ScaleClose = args[36] if len(args) >= 37 else kwargs.get('ScaleClose', '1,1')
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
@@ -297,7 +341,13 @@ class Arguments:
 				f"\n\tScale = ({self.scale})," + \
 				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
 				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}," + \
-				f"\n\tTopmost = {self.Topmost}"
+				f"\n\tTopmost = {self.Topmost}," + \
+				f"\n\tSave = {self.save}, Load = {self.load}, Reset = {self.reset}," + \
+				f"\n\tInput = {self.input}," + \
+				f"\n\tOutput = {self.output}," + \
+				f"\n\tStyle = {self.Style}," + \
+				f"\n\tCloseIcon = {self.CloseIcon}," + \
+				f"\n\tScaleClose = ({self.ScaleClose})"
 
 class Notify:
 	''' Tkinter class form. 
@@ -436,8 +486,11 @@ class Notify:
 	
 	def __CreateBtnClose(self):
 		''' Create Button on Close '''
-		self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
-		self.close_icon = self.close_icon.subsample(1, 1)
+		if self.args.CloseIcon == 'default':
+			self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
+		else:
+			self.close_icon = tk.PhotoImage(file = pathlib.Path(self.CloseIcon).resolve())
+		self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
 		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 						borderwidth=0,
 						bg=self.args.BG,
@@ -472,20 +525,37 @@ class Notify:
 	
 	def __ElementPack(self):
 		''' Elements send (pack, place or grid standart class method) to Form '''
-		for c in range(3):
-			self.root.columnconfigure(index=c, weight=1)
-		for r in range(2):
-			self.root.rowconfigure(index=r, weight=1)
-		if self.args.icon != '':
-			self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+		if self.args.Style == FormStyle.Standart.value:
+			for c in range(3):
+				self.root.columnconfigure(index=c, weight=1)
+			for r in range(2):
+				self.root.rowconfigure(index=r, weight=1)
+			if self.args.icon != '':
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=10, pady=0)
+			else:
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
+			self.btn1.grid(row=0, column=2)
+			if self.args.icon != '':
+				self.label_image.grid(row=1, column=0, padx=10, pady=0)
+				self.label_text.grid(row=1, column=1, padx=0, pady=0)
+			else:
+				self.label_text.grid(row=1, column=0, padx=15, pady=0)
 		else:
-			self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=5, pady=0)
-		self.btn1.grid(row=0, column=2)
-		if self.args.icon != '':
-			self.label_image.grid(row=1, column=0, padx=10, pady=0)
-			self.label_text.grid(row=1, column=1, padx=0, pady=0)
-		else:
-			self.label_text.grid(row=1, column=0, padx=15, pady=0)
+			if self.args.icon != '':
+				for c in range(2):
+					self.root.columnconfigure(index=c, weight=1)
+				for r in range(2):
+					self.root.rowconfigure(index=r, weight=1)
+				self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=10, pady=0)
+				self.label_header.grid(row=0, column=1, padx=0, pady=0, sticky='w')
+				self.label_text.grid(row=1, column=1, padx=0, pady=0, sticky='w')
+			else:
+				for c in range(1):
+					self.root.columnconfigure(index=c, weight=1)
+				for r in range(2):
+					self.root.rowconfigure(index=r, weight=1)
+				self.label_header.grid(row=0, column=0, padx=10, pady=0, sticky='w')
+				self.label_text.grid(row=1, column=0, padx=10, pady=0, sticky='w')
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
@@ -641,7 +711,7 @@ class Files:
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, Style = FormStyle.Standart.value
 					)
 	args.BG = '#303030'
 	#args.BG = '#E1E1E1'
@@ -652,6 +722,7 @@ def main():
 	args.TitleFG = 'white'
 	args.BodyFG = 'white'
 	args.Alpha = 0.9
+	#args.icon = ''
 	notification = Notify(args)
 	'''
 	global screen_width
