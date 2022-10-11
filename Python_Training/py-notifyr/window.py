@@ -492,23 +492,21 @@ class Notify:
 	
 	def __CreateBtnClose(self):
 		''' Create Button on Close '''
-		if self.args.CloseIcon == 'default':
-			self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
-		else:
-			self.close_icon = tk.PhotoImage(file = pathlib.Path(self.CloseIcon).resolve())
-		self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
-		self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
-						borderwidth=0,
-						bg=self.args.BG,
-						fg=self.args.TitleFG,
-						highlightcolor='white',
-						activebackground='white',
-						highlightthickness = 0,
-						image=self.close_icon,
-						command=self.root.destroy)#,
-						#width=36,
-						#height=33
-						#)
+		if self.args.Style == FormStyle.Standart.value:
+			if self.args.CloseIcon == 'default':
+				self.close_icon = tk.PhotoImage(file = Defaults.PREFIX.joinpath('exit_close.png'))
+			else:
+				self.close_icon = tk.PhotoImage(file = pathlib.Path(self.CloseIcon).resolve())
+			self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
+			self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
+							borderwidth=0,
+							bg=self.args.BG,
+							fg=self.args.TitleFG,
+							highlightcolor='white',
+							activebackground='white',
+							highlightthickness = 0,
+							image=self.close_icon,
+							command=self.root.destroy)
 	
 	def __CreateHeader(self):
 		''' Create Header '''
