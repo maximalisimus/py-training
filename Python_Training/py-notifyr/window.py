@@ -317,7 +317,7 @@ class Arguments:
 		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
 		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime',10000)
 		self.isTimer = args[3] if len(args) >= 4 else kwargs.get('isTimer',True)
-		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','')
+		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','None')
 		self.TFFamily = args[5] if len(args) >= 6 else kwargs.get('TFFamily','Arial')
 		self.TFSize = args[6] if len(args) >= 7 else kwargs.get('TFSize',14)
 		self.TFWeight = args[7] if len(args) >= 8 else kwargs.get('TFWeight','bold')
@@ -356,7 +356,7 @@ class Arguments:
 		self.Message = 'Info!'
 		self.OnTime = 10000
 		self.isTimer = True
-		self.icon = ''
+		self.icon = 'None'
 		self.TFFamily = 'Arial'
 		self.TFSize = 14
 		self.TFWeight = 'bold'
@@ -595,6 +595,8 @@ class Notify:
 				self.label_image.bind('<Button-1>', self.__OnClose)
 				self.label_image.image = self.image
 				self.label_image['image'] = self.label_image.image
+			else:
+				self.image = 'None'
 	
 	def __CreateText(self):
 		''' Create Text notify '''
@@ -615,7 +617,7 @@ class Notify:
 			if self.close_icon != 'None':
 				self.btn1.grid(row=0, column=2)
 			if self.args.icon != 'None':
-				if pathlib.Path(self.args.icon).resolve().exists():
+				if self.image != 'None':
 					self.label_image.grid(row=1, column=0, padx=10, pady=0)
 					self.label_text.grid(row=1, column=1, padx=0, pady=0)
 				else:
@@ -628,7 +630,7 @@ class Notify:
 					self.root.columnconfigure(index=c, weight=1)
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
-				if pathlib.Path(self.args.icon).resolve().exists():
+				if self.image != 'None':
 					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=10, pady=0)
 					self.label_header.grid(row=0, column=1, padx=0, pady=0, sticky='w')
 					self.label_text.grid(row=1, column=1, padx=0, pady=0, sticky='w')
@@ -782,7 +784,7 @@ class Files:
 		return None
 
 def main():
-	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+	args = Arguments(icon='info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
 					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, 
 					Style = FormStyle.Standart.value
 					)
