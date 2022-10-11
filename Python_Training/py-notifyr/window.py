@@ -669,35 +669,43 @@ class Files:
 		Info: A class for working with files.
 		
 		Methods:
-			WriteTextFile(data_text: str, text_file: str = 'text.txt'):
-				Writing text to a text file.
+			WriteConfig(parser: configparser.ConfigParser, 
+						config_file: str = 'text.ini'):
+				Writing config to a ini file.
 			
-			ReadTextFile(text_file: str = 'text.txt') -> dict:
-				Reading text from a text file.
+			ReadConfig(config_file: str = 'text.ini') 
+				-> configparser.ConfigParser:
+					Reading config from a ini file.
 			
-			WriteJson(data_json: dict, file_json: str = 'object.json'):
+			WriteJson(data_json: dict, 
+					file_json: str = 'object.json'):
 				Writing JSON data to a json file.
 			
 			ReadJson(file_json: str = 'object.json') -> dict:
 				Reading JSON data from a json file.
+			
+			JSONToSTR(data_json: dict) -> str:
+				Convert JSON (Dict) to string
+			
+			STRToJSON(value: str) -> dict:
+				Convert String to JSON (Dict)
 			
 			GetFileSuffix(List_Files, suffixes: str):
 				Get a file with the specified extension from a list or tuple.
 	'''
 	
 	@staticmethod
-	def WriteTextFile(data_text: str, text_file: str = 'text.txt'):
-		''' Write Text data in file '''
-		with open(pathlib.Path(text_file).resolve(), "w") as fp:
-			fp.write(data_text)
+	def WriteConfig(parser: configparser.ConfigParser, config_file: str = 'text.ini'):
+		''' Write ini data in file '''
+		with open(pathlib.Path(config_file).resolve(), "w") as configfile:
+			parser.write(configfile)
 
 	@staticmethod
-	def ReadTextFile(text_file: str = 'text.txt') -> dict:
-		''' Read Text Data from File '''
-		data = ''
-		with open(pathlib.Path(text_file).resolve(), "r") as fp:
-			data = fp.read()
-		return data
+	def ReadConfig(config_file: str = 'text.ini') -> configparser.ConfigParser:
+		''' Read ini Data from File '''
+		on_config = configparser.ConfigParser()
+		on_config.read(pathlib.Path(config_file).resolve())
+		return on_config
 	
 	@staticmethod
 	def WriteJson(data_json: dict, file_json: str = 'object.json'):
@@ -712,6 +720,14 @@ class Files:
 		with open(pathlib.Path(file_json).resolve(), "r") as fp:
 			data = json.load(fp)
 		return data
+
+	@staticmethod
+	def JSONToSTR(data_json: dict) -> str:
+		return json.dumps(data_json, indent=2)
+	
+	@staticmethod
+	def STRToJSON(value: str) -> dict:
+		json.loads(value)
 
 	@staticmethod
 	def GetFileSuffix(List_Files, suffixes: str):
