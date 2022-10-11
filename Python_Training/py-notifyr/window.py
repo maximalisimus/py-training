@@ -166,6 +166,14 @@ class Defaults:
 			CalcPositionY(pos_y: str, scr_height: int, height: int):
 				Calculation of the standard position by Y (Top).
 				pos_y = "top", "center" or "bottom"
+			
+			CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str, width: int, 
+					height: int, left: int, top: int):
+				Calculation of the new position of the form 
+				in the specified previous position. 
+				The previous position can be ready, 
+				for example, using the socket library.
 	'''
 	
 	PREFIX = pathlib.Path(sys.argv[0]).resolve().parent
@@ -194,30 +202,28 @@ class Defaults:
 		else:
 			calc_y = scr_height - height - 30
 		return calc_y
-	
+
 	@staticmethod
-	def GetRoundPoints(x1, y1, x2, y2, radius=25):
-		points = [x1+radius, y1,
-			  x1+radius, y1,
-			  x2-radius, y1,
-			  x2-radius, y1,
-			  x2, y1,
-			  x2, y1+radius,
-			  x2, y1+radius,
-			  x2, y2-radius,
-			  x2, y2-radius,
-			  x2, y2,
-			  x2-radius, y2,
-			  x2-radius, y2,
-			  x1+radius, y2,
-			  x1+radius, y2,
-			  x1, y2,
-			  x1, y2-radius,
-			  x1, y2-radius,
-			  x1, y1+radius,
-			  x1, y1+radius,
-			  x1, y1]
-		return points
+	def CalcNewPosition(scr_width: int, scr_height: int, 
+					pos_x: str, pos_y: str,  
+					width: int, height: int, 
+					left: int, top: int):
+		''' Calculation for new position to Form '''
+		virt_x = width + 10
+		virt_y = height + 10
+		real_x = virt_x * Defaults.koef_x[pos_x.value] + left
+		real_y = virt_y * Defaults.koef_y[pos_y.value] + top
+		if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
+			if real_y < 0:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
+		else:
+			if (scr_height - real_y) < height:
+				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+			else:
+				real_x = left
+		return real_x, real_y
 
 class Arguments:
 	''' The class of the set of input parameters. 
@@ -640,14 +646,6 @@ class Files:
 			
 			GetFileSuffix(List_Files, suffixes: str):
 				Get a file with the specified extension from a list or tuple.
-			
-			 CalcNewPosition(scr_width: int, scr_height: int, 
-					pos_x: str, pos_y: str, width: int, 
-					height: int, left: int, top: int):
-				Calculation of the new position of the form 
-				in the specified previous position. 
-				The previous position can be ready, 
-				for example, using the socket library.
 	'''
 	
 	@staticmethod
@@ -686,28 +684,6 @@ class Files:
 				if suffixes == pathlib.Path(x).suffix:
 					return pathlib.Path(x).resolve()
 		return None
-	
-	@staticmethod
-	def CalcNewPosition(scr_width: int, scr_height: int, 
-					pos_x: str, pos_y: str,  
-					width: int, height: int, 
-					left: int, top: int):
-		''' Calculation for new position to Form '''
-		virt_x = width + 10
-		virt_y = height + 10
-		real_x = virt_x * Defaults.koef_x[pos_x.value] + left
-		real_y = virt_y * Defaults.koef_y[pos_y.value] + top
-		if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
-			if real_y < 0:
-				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
-			else:
-				real_x = left
-		else:
-			if (scr_height - real_y) < height:
-				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
-			else:
-				real_x = left
-		return real_x, real_y
 
 def main():
 	args = Arguments(icon='test1.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
