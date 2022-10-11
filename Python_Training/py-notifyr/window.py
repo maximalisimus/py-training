@@ -786,7 +786,7 @@ class Files:
 
 def main():
 	args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = True, Topmost = False, 
+					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False, 
 					Style = FormStyle.Standart.value
 					)
 	args.BG = '#303030'
