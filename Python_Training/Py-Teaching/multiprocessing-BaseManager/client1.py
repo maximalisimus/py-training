@@ -7,10 +7,11 @@ class QueueManager(BaseManager):
 	pass
 
 def main():
-	QueueManager.register('get_queue')
+	QueueManager.register('GetQueue')
 	m = QueueManager(address=('localhost', 10000), authkey=b'abracadabra')
 	m.connect()
-	queue = m.get_queue()
+	queue = m.GetQueue()
+	#if queue.empty():
 	queue.put('hello')
 	
 if __name__ == '__main__':
