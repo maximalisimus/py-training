@@ -11,11 +11,13 @@ def main():
 	m = QueueManager(address=('localhost', 10000), authkey=b'abracadabra')
 	m.connect()
 	queue = m.GetQueue()
+	print(queue.qsize())
 	if not queue.empty():
 		print(queue.get())
 		queue.task_done()
 	else:
 		print('Queue is empty!')
+	print(queue.qsize())
 	
 if __name__ == '__main__':
 	main()
