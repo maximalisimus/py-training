@@ -6,6 +6,7 @@ from queue import Queue
 import signal
 import os
 import sys
+import threading
 
 qmanager = ''
 
@@ -24,7 +25,10 @@ def main():
 	queue = Queue()
 	QueueManager.register('GetQueue', callable=lambda:queue)
 	qmanager = QueueManager(address=('localhost', 10000), authkey=b'abracadabra')
+	# multiprocessing.managers.Server
 	s = qmanager.get_server()
+	stop_timer = threading.Timer(1, lambda:s.stop_event.set())
+	QueueManager.register('stop', callable=lambda:stop_timer.start())
 	s.serve_forever()
 	
 if __name__ == '__main__':
