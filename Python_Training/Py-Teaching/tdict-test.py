@@ -143,13 +143,27 @@ def main():
 	print(c)
 	d = b|c
 	print(d)
+	mydict1 = TDict(((1, 'LoL'),(2, 'KeK'),(3, 'Cheburek')))
+	mydict2 = TDict(((4, None), (5, None), (6, None)))
+	list_dict = TDict()
+	list_dict[mydict1] = 0
+	list_dict[mydict2] = 0
+	print(list_dict)
+	print(tuple(list_dict.keys())[0])
+	print(tuple(list_dict.keys())[1])
+	dict_list = TDict()
+	dict_list[0] = mydict1
+	dict_list[1] = mydict2
+	print(dict_list)
+	print(tuple(dict_list.values())[0])
+	print(tuple(dict_list.values())[1])
+	my_list = []
+	my_list.append(mydict1)
+	my_list.append(mydict2)
+	print(my_list)
+	print(my_list[0])
+	print(my_list[1])
 
 if __name__ == '__main__':
 	main()
-
-# ['__class_getitem__', '__contains__', '__delitem__', \
-# '__getitem__', '__ior__', '__iter__', '__len__', '__or__', \
-# '__reversed__', '__ror__', '__setitem__', 'clear', 'copy', \
-# 'fromkeys', 'get', 'items', 'keys', 'pop', 'popitem', \
-# 'setdefault', 'update', 'values']
 
