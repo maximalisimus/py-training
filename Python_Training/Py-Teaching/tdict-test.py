@@ -32,6 +32,9 @@ class TDict:
 	def has_key(self, k):
 		return k in self.__dict__
 
+	def has_value(self, v):
+		return v in self.__dict__.values()
+
 	def update(self, *args, **kwargs):
 		return self.__dict__.update(*args, **kwargs)
 
@@ -64,8 +67,8 @@ class TDict:
 						self.__dict__[iterable[count]] = value[count]
 		return self
 	
-	def sort(self):
-		self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0]))
+	def sort(self, revers: bool = False):
+		self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0], reverse = revers))
 		return self
 	
 	def popitem(self):
@@ -107,6 +110,30 @@ class TDict:
 
 	def __unicode__(self):
 		return unicode(repr(self.__dict__))
+	
+	def is_emty(self):
+		return len(self.__dict__) == 0
+	
+	def has_values(self, *v):
+		if not v:
+			return False
+		if len(v) == 1:
+			return self.has_value(v[0])
+		else:
+			values = []
+			for item in v:
+				values.append(self.has_value(item))
+			return values
+	
+	def has_keys(self, *k):
+		if not k:
+			return False
+		if len(k) == 1:
+			return self.has_key(k[0])
+		else:
+			keys = []
+			for key in k:
+				keys.append(self.has_key(key))
 
 def main():
 	a = [(1, True), (2, False), (3, True)]
