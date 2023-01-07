@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-class TDict:
+class TDict(object):
 	
 	__slots__ = '__dict__'
 	
 	def __init__(self, *args):
+		super(TDict, self).__init__()
 		self.__dict__ = dict(*args)
+	
+	@property
+	def __name__(self):
+		return self.__class__.__name__
+	
+	@property
+	def name(self):
+		return self.__class__.__name__
 	
 	def __setitem__(self, key, item):
 		self.__dict__[key] = item
