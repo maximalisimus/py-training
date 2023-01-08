@@ -69,18 +69,20 @@ class TDict(object):
 		return self
 	
 	def sort(self, iskey: bool = True, revers: bool = False):
-		if len(set(map(type, self.keys()))) == 1  and len(set(map(type, self.values()))) == 1:
-			self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0], reverse = revers)) if iskey else \
-							dict(sorted(self.__dict__.items(), key=lambda i: i[1], reverse = revers))
-		elif len(set(map(type, self.keys()))) == 1 and len(set(map(type, self.values()))) > 1:
-			self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0], reverse = revers)) if iskey else \
-							dict(sorted(self.__dict__.items(), key=lambda i: str(i[1]), reverse = revers))
-		elif len(set(map(type, self.keys()))) > 1  and len(set(map(type, self.values()))) == 1:
-			self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: str(i[0]), reverse = revers)) if iskey else \
-							dict(sorted(self.__dict__.items(), key=lambda i: i[1], reverse = revers))
-		elif len(set(map(type, self.keys()))) > 1  and len(set(map(type, self.values()))) > 1:
-			self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: str(i[0]), reverse = revers)) if iskey else \
-							dict(sorted(self.__dict__.items(), key=lambda i: str(i[1]), reverse = revers))
+		if all(set(map(lambda x: not hasattr(x,'__iter__'), self.values()))):
+			if len(set(map(type, self.keys()))) == 1  and len(set(map(type, self.values()))) == 1:
+				self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0], reverse = revers)) if iskey else \
+								dict(sorted(self.__dict__.items(), key=lambda i: i[1], reverse = revers))
+			else:
+				self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: str(i[0]), reverse = revers)) if iskey else \
+								dict(sorted(self.__dict__.items(), key=lambda i: str(i[1]), reverse = revers))
+		else:
+			if len(set(map(type, self.keys()))) == 1:
+				 self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: i[0], reverse = revers)) if iskey else \
+								dict(sorted(self.__dict__.items(), key=lambda i: i[1], reverse = revers))
+			else:
+				self.__dict__ = dict(sorted(self.__dict__.items(), key=lambda i: str(i[0]), reverse = revers)) if iskey else \
+								dict(sorted(self.__dict__.items(), key=lambda i: i[1], reverse = revers))
 		return self
 	
 	def popitem(self):
@@ -152,7 +154,13 @@ class TDict(object):
 
 def main():
 	a = [(1, 'True'), (2, 'False'), (3, 'Else')]
+	#a = [(1, [1,2,3]), (3, [4,5,6]), (2, [7,8,9])]
+	#a = [(1, True), (2, False), (3, None)]
 	b = TDict(a)
+	#print(b.sort(True, False))
+	#print(b.sort(True, True))
+	#print(b.sort(False, False))
+	#print(b.sort(False, True))
 	c = TDict([(3, 'Str'), (4, 'Main')])
 	print('b:',b)
 	print('c:',c)
