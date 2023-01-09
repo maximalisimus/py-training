@@ -220,6 +220,18 @@ def main():
 	print('my_list:',my_list)
 	print('my_list[0]:',my_list[0])
 	print('my_list[0]:',my_list[1])
+	
+	#a = TDict({'options': TDict({'align': ('Left', 'Center', 'Right', 'Up', 'Down'), \
+	#			'poDesktop': ('Left', 'Center', 'Right', 'Up', 'Down', 'TopLeft', 'TopRight', 'BottomLeft', 'BottomRight')}), \
+	#			'buttons': ('Ok', 'Cancel', 'Abort', 'Esc')})
+	#print(a)
+	#print(a['options'])
+	#print(a['buttons'])
+	#a.sort()
+	#print()
+	#print(a)
+	#print(a['options'])
+	#print(a['buttons'])
 
 if __name__ == '__main__':
 	main()
