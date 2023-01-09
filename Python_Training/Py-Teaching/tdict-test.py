@@ -16,7 +16,7 @@ class TDict(object):
 		return self.__dict__[key]
 	
 	def get(self, k, v):
-		return self.__g.get(k, v)
+		return self.__dict__.get(k, v)
 	
 	def __repr__(self):
 		return f"{self.__class__}"
