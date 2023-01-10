@@ -15,7 +15,7 @@ class TDict(object):
 	def __getitem__(self, key):
 		return self.__dict__[key]
 	
-	def get(self, k, v):
+	def get(self, k, v = None):
 		return self.__dict__.get(k, v)
 	
 	def __repr__(self):
