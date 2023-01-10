@@ -15,7 +15,7 @@ class TDict(object):
 		self.__g[key] = item
 
 	def __getitem__(self, key):
-		return self.__g[key]
+		return self.__g[key] if self.has_key(key) else None
 	
 	def get(self, k, v = None):
 		return self.__g.get(k, v)
@@ -34,12 +34,6 @@ class TDict(object):
 
 	def copy(self):
 		return self.__g.copy()
-
-	def has_key(self, k):
-		return k in self.__dict__
-
-	def has_value(self, v):
-		return v in self.__g.values()
 
 	def update(self, *args, **kwargs):
 		return self.__g.update(*args, **kwargs)
@@ -153,9 +147,6 @@ class TDict(object):
 	def __cmp__(self, dict_):
 		return self.__cmp__(self.__g, dict_)
 
-	def __contains__(self, item):
-		return item in self.__g
-
 	def __iter__(self):
 		return iter(self.__g)
 
@@ -164,6 +155,30 @@ class TDict(object):
 	
 	def is_emty(self):
 		return len(self.__g) == 0
+	
+	def __contains__(self, item):
+		return item in self.__g
+	
+	def has_key(self, k):
+		return k in self.__g
+
+	def has_value(self, v):
+		return v in self.__g.values()
+	
+	def __has_keys(self, od, i: int = 0, *keys):
+		if not keys or not od:
+			return False
+		for k, v in od.items():
+			if len(keys) > i:
+				if keys[i] == k:
+					if isinstance(v, TDict):
+						return self.__has_keys(v, i+1, *keys)
+					else:
+						return True
+		return False
+	
+	def has_keys(self, *keys):
+		return self.__has_keys(self.__g.copy(), 0, *keys)
 
 def main():
 	dict = TDict
