@@ -10,6 +10,8 @@ class TDict(object):
 		self.__g = dict(*args)
 	
 	def __setitem__(self, key, item):
+		if not type(key) in (float, int, str, tuple, frozenset, bool, None):
+			raise TypeError('Please, enter the \'key\' in (float, int, str, tuple, bool or frozenset)!')
 		self.__g[key] = item
 
 	def __getitem__(self, key):
@@ -162,27 +164,6 @@ class TDict(object):
 	
 	def is_emty(self):
 		return len(self.__g) == 0
-	
-	def has_values(self, *v):
-		if not v:
-			return False
-		if len(v) == 1:
-			return self.has_value(v[0])
-		else:
-			values = []
-			for item in v:
-				values.append(self.has_value(item))
-			return values
-	
-	def has_keys(self, *k):
-		if not k:
-			return False
-		if len(k) == 1:
-			return self.has_key(k[0])
-		else:
-			keys = []
-			for key in k:
-				keys.append(self.has_key(key))
 
 def main():
 	dict = TDict
@@ -221,13 +202,6 @@ def main():
 	print()
 	mydict1 = TDict(((1, 'LoL'),(2, 'KeK'),(3, 'Cheburek')))
 	mydict2 = TDict(((4, None), (5, None), (6, None)))
-	list_dict = TDict()
-	list_dict[mydict1] = 0
-	list_dict[mydict2] = 0
-	print('list_dict:',list_dict)
-	print('tuple(list_dict.keys())[0]:',tuple(list_dict.keys())[0])
-	print('tuple(list_dict.keys())[1]:',tuple(list_dict.keys())[1])
-	print()
 	dict_list = TDict()
 	dict_list[0] = mydict1
 	dict_list[1] = mydict2

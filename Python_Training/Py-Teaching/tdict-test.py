@@ -159,27 +159,6 @@ class TDict(object):
 	
 	def is_emty(self):
 		return len(self.__dict__) == 0
-	
-	def has_values(self, *v):
-		if not v:
-			return False
-		if len(v) == 1:
-			return self.has_value(v[0])
-		else:
-			values = []
-			for item in v:
-				values.append(self.has_value(item))
-			return values
-	
-	def has_keys(self, *k):
-		if not k:
-			return False
-		if len(k) == 1:
-			return self.has_key(k[0])
-		else:
-			keys = []
-			for key in k:
-				keys.append(self.has_key(key))
 
 def main():
 	a = [(1, 'True'), (2, 'False'), (3, 'Else')]
