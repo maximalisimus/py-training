@@ -1,0 +1,7 @@
+
+pyinstaller --onefile --console --icon=sound-icon_128.ico detect_sound.py
+
+pyinstaller --onefile --icon=sound-icon_128.ico detect_sound.py
+
+pyinstaller --onefile --noconsole --icon=sound-icon_128.ico check_sound.py
+

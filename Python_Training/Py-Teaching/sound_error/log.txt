@@ -1,0 +1,3 @@
+
+Input Device id: 0, - Переназначение звуковых устр. - Input
+Input Device id: 1, - Микрофон (Realtek High Definiti
