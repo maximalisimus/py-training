@@ -136,7 +136,7 @@ class Files:
 	
 	def __repr__(self):
 		''' For Debug Function output paramters. '''
-		except_list = ['join', 'unjoin', 'read', 'write', 'readBase64']
+		except_list = ['date', 'join', 'unjoin', 'read', 'write', 'readBase64']
 		return f"{self.__class__}:\n\t" + \
 				'\n\t'.join(f"{x}: {getattr(self, x)}" for x in dir(self) if not x in except_list and '__' not in x)
 	
@@ -176,10 +176,28 @@ class Files:
 				data = file.read()
 			return base64.b64encode(data).decode("ascii")
 
-class Icon(Files):
+class Icon:
+	
+	__slots__ = ['__dict__']
+	
+	name = Line()
+	template = Line()
 	
 	def __init__(self, *args, **kwargs):
-		self.value = args[4] if len(args) >= 5 else kwargs.get('value', 'file')
-		self.template = args[5] if len(args) >= 6 else kwargs.get('template', default_template)
-		tempfile = list(filter(lambda x: self.template in str(x), sorted(pathlib.Path(sys.argv[0]).parent.rglob(f"{self.value}.png"))))[0]
-		super(Icon, self).__init__(file = str(tempfile.resolve() if str(tempfile) != '' else default_file), *args, **kwargs)	
+		self.name = args[0] if len(args) >= 1 else kwargs.get('name', 'file')
+		self.template = args[1] if len(args) >= 2 else kwargs.get('template', default_template)
+	
+	def __str__(self):
+		return f"{self.name}"
+	
+	def __repr__(self):
+		''' For Debug Function output paramters. '''
+		except_list = ['getFile']
+		return f"{self.__class__}:\n\t" + \
+				'\n\t'.join(f"{x}: {getattr(self, x)}" for x in dir(self) if not x in except_list and '__' not in x)
+	
+	@property
+	def getFile(self):
+		tempfile = list(filter(lambda x: self.template in str(x), sorted(pathlib.Path(sys.argv[0]).parent.rglob(f"{self.name}.png"))))[0]
+		return str(tempfile.resolve() if str(tempfile) != '' else default_file)
+	
