@@ -10,7 +10,6 @@ import json
 
 import genlib as gm
 
-
 def main():
 	pass
 
