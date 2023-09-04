@@ -1,5 +1,7 @@
 __all__ = ['SearchDictValue', 'RandName']
 
+import random
+
 def SearchDictValue(OnDict: dict, onKey: str):
 	def CheckSTR(in_str: str, OnKey: str) -> bool:
 		for x in in_str.split(','):

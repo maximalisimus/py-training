@@ -27,11 +27,6 @@ class Line:
 
 class PathString:
 	
-	@classmethod
-	def verify_str(cls, value: str):
-		if type(value) != str:
-			raise TypeError('Enter the string!')
-
 	def __set_name__(self, owner, name):
 		self.name = "__" + name
 
@@ -39,7 +34,6 @@ class PathString:
 		return getattr(instance, self.name)
 
 	def __set__(self, instance, value: str):
-		self.verify_str(value)
 		setattr(instance, self.name, pathlib.Path(f"{value}").resolve())
 
 class FMode:
@@ -136,7 +130,7 @@ class Files:
 	
 	def __repr__(self):
 		''' For Debug Function output paramters. '''
-		except_list = ['date', 'join', 'unjoin', 'read', 'write', 'readBase64']
+		except_list = ['date', 'join', 'unjoin', 'read', 'write', 'writeBase64', 'readBase64', 'tobase64', 'totext']
 		return f"{self.__class__}:\n\t" + \
 				'\n\t'.join(f"{x}: {getattr(self, x)}" for x in dir(self) if not x in except_list and '__' not in x)
 	
@@ -144,11 +138,8 @@ class Files:
 	def date(self):
 		return stampToStr(self.file.stat().st_mtime, self.strformat) if self.file.exists() else '12-Aug-1981 00:00'
 	
-	def joinNO(self, path):
-		return Files(str(self.file.joinpath(str(path))))
-	
 	def join(self, path):
-		self.file.joinpath(str(path))
+		self.file = str(Files(str(self.file.joinpath(str(path)))))
 		return self
 	
 	def unjoin(self):
@@ -163,18 +154,34 @@ class Files:
 				else:
 					return fp.read()
 	
-	def write(self, data = '', typerw = 'w'):
+	def write(self, data = '', typerw: str = 'w'):
+		typerw = typerw.replace('+','').replace('r','w')
 		with open(self.file, typerw) as fp:
 			if self.isjson:
-				json.dump(data, fp, indent=self.indent)
+				if not 'b' in typerw and not 'r' in typerw:
+					json.dump(data, fp, indent=self.indent)
 			else:
 				fp.write(data)
 	
-	def readBase64(self):
+	def writeBase64(self, data64 = '', typerw: str = 'wb', coding = 'ascii'): # utf-8
+		typerw = typerw.replace('+','').replace('r','w')
+		with open(self.file, typerw) as file:
+			file.write(self.totext(data64, True, coding)) if 'b' in typerw else file.write(self.totext(data64, False, coding))
+	
+	def readBase64(self, typerw: str = 'rb', coding = 'ascii'): # utf-8
+		typerw = typerw.replace('+','').replace('a','r').replace('w','r')
 		if self.file.exists():
-			with open(self.file, "rb") as file:
+			with open(self.file, typerw) as file:
 				data = file.read()
-			return base64.b64encode(data).decode("ascii")
+			return self.tobase64(data, True, coding) if 'b' in typerw else self.tobase64(data, False, coding)
+	
+	@classmethod
+	def tobase64(cls, text, isbyte: bool = False, coding = 'ascii'): # utf-8
+		return base64.b64encode(text).decode(coding) if isbyte else base64.b64encode(text.encode(coding)).decode(coding)
+	
+	@classmethod
+	def totext(cls, text64, isbyte: bool = False, coding = 'ascii'): # utf-8
+		return base64.b64decode(text64.encode(coding)) if isbyte else base64.b64decode(text64.encode(coding)).decode(coding)
 
 class Icon:
 	
