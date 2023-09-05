@@ -139,7 +139,7 @@ class Files:
 		return stampToStr(self.file.stat().st_mtime, self.strformat) if self.file.exists() else '12-Aug-1981 00:00'
 	
 	def join(self, path):
-		self.file = str(Files(str(self.file.joinpath(str(path)))))
+		self.file = str(self.file.joinpath(str(path)))
 		return self
 	
 	def unjoin(self):
