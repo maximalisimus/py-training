@@ -1,0 +1,5 @@
+-----
+12.04.2024 - 12:17 GMT +3
+pyicon 1.0.0:
+* Base stable version.
+-----
