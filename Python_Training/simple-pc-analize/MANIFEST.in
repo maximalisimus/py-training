@@ -1,2 +1,0 @@
-include README.md LICENSE CHANGELOG.txt
-recursive-include FastPing ListPrinters smartmontools udefrag-x86 *.py
