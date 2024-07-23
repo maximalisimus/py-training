@@ -12,15 +12,106 @@ from tkinter import font as fnt
 from enum import Enum
 import time
 import platform
+import socket
+import shutil
+import base64
+from multiprocessing.managers import BaseManager
+import signal
+import os
+import threading
+import subprocess
 
-screen_width = 0
-screen_height = 0
-position_x = 0
-position_y = 0
-Top = 0
-Left = 0
-Width = 0
-Height = 0
+import tasks
+
+__author__ = 'Mikhail Artamonov'
+__description__ = 'Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.'
+__progname__ = str(pathlib.Path(sys.argv[0]).resolve().name)
+__copyright__ = f"© The \"{__progname__}\". Copyright  by 2024."
+__credits__ = ["Mikhail Artamonov"]
+__license__ = "GPL3"
+__version__ = "1.0.0"
+__maintainer__ = "Mikhail Artamonov"
+__status__ = "Production"
+__date__ = '11.10.2022'
+__modifed__ = '22.07.2024'
+
+class Prog_Name:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return str(pathlib.Path(__progname__).name).split('.')[0]
+
+class Full_Prog:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return str(pathlib.Path(sys.argv[0]).resolve())
+
+class ProgName:
+	
+	name = Prog_Name()
+	full = Full_Prog()
+
+class SystemdText:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return f"[Unit]\n" +\
+				f"Description={__description__}\n" +\
+				f"Wants=graphical.target\n" +\
+				f"After=graphical.target\n\n" +\
+				f"[Service]\n" +\
+				f"Type=simple\n" +\
+				f"RemainAfterExit=no\n" +\
+				f"ExecStart={ProgName.name} daemon -run\n" +\
+				f"ExecStop={ProgName.name} daemon -stop\n" +\
+				f"ExecReload={ProgName.name} daemon -restart\n\n" +\
+				f"[Install]\n" +\
+				f"WantedBy=multi-user.target"
+
+class SystemdConfig:
+	
+	config = SystemdText()
+	
+	def __repr__(self):
+		return f"{self.__class__}: {self.config}"
+	
+	def __str__(self):
+		return f"{self.config}"
+	
+	def __call__(self):
+		return f"{self.config}"
+
+class AuthorInfo:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return f"Author: {__author__}\nProgname: {__progname__}\nVersion: {__version__}\n" + \
+			f"Description: {__description__}\n" +\
+			f"Date of creation: {__date__}\nLast modified date: {__modifed__}\n" + \
+			f"License: {__license__}\nCopyright: {__copyright__}\nCredits: {__credits__}\n" + \
+			f"Maintainer: {__maintainer__}\nStatus: {__status__}\n"
+
+class Author:
+	
+	Info = AuthorInfo()
+	
+	def __repr__(self):
+		return f"{self.__class__}: {self.Info}"
+	
+	def __str__(self):
+		return f"{self.Info}"
+	
+	def __call__(self):
+		return f"{self.Info}"
 
 class NoValue(Enum):
 	''' Base Enum class elements '''
@@ -142,29 +233,157 @@ class FormStyle(NoValue):
 				return x
 		return None
 
+class HostName:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return 'localhost'
+
+class CheckAccess:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return 'py-notifyr'
+
+class CMD_Platform:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		python = str(pathlib.Path(str(sys.executable)).resolve())
+		script = str(pathlib.Path(str(ProgName.full)).resolve())
+		cmd = []
+		if  platform.system() == 'Windows':			
+			cmd = ('start', '/b', python, script, 'daemon', '-run')
+		else:
+			cmd = (python, script, 'daemon', '-run', '&')
+		return cmd
+
+class CMD:
+	
+	line = CMD_Platform()
+	
+	def __repr__(self):
+		return f"{self.__class__}: {self.line}"
+	
+	def __str__(self):
+		return f"{self.line}"
+	
+	def __call__(self):
+		return f"{self.line}"
+
+class SetPID:
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return os.getpid()
+
+class Boolean:
+	
+	@classmethod
+	def verify_bool(cls, value):
+		if type(value) != bool:
+			raise TypeError('Enter the boolean!')
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return getattr(instance, self.name)
+
+	def __set__(self, instance, value: str):
+		self.verify_bool(value)
+		setattr(instance, self.name, value)
+
+class Strings:
+	
+	@classmethod
+	def verify_str(cls, value):
+		if type(value) != str:
+			raise TypeError('Enter the string!')
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return getattr(instance, self.name)
+
+	def __set__(self, instance, value: str):
+		self.verify_str(value)
+		setattr(instance, self.name, value)
+
+class Integer:
+	
+	@classmethod
+	def verify_int(cls, value):
+		if type(value) != int:
+			raise TypeError('Enter the integer!')
+	
+	def __set_name__(self, owner, name):
+		self.name = "__" + name
+	
+	def __get__(self, instance, owner):
+		return getattr(instance, self.name)
+
+	def __set__(self, instance, value: int):
+		self.verify_int(value)
+		setattr(instance, self.name, value)
+
+class Texts:
+	
+	Access = CheckAccess()
+	
+	def __repr__(self):
+		return f"{self.__class__}: {self.Access}"
+	
+	def __str__(self):
+		return f"{self.Access}"
+	
+	def __call__(self):
+		return f"{self.Access}"
+	
+	@staticmethod
+	def StrToBase(inputSTR: str):
+		str_bytes = inputSTR.encode('utf-8')
+		return base64.b64encode(str_bytes)
+	
+	@staticmethod
+	def BaseToSTR(inputBase: str):
+		data = base64.b64decode(inputBase)
+		return data.decode('utf-8')
+
 class Meta(type):
 	
 	def __init__(cls, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 	
 	@property
+	def access_key(cls):
+		return Texts.StrToBase(Texts.Access)
+	
+	@property
+	def SockFileName(cls):
+		return f"pynotifyr.sock"
+	
+	@property
+	def LightThemeName(cls):
+		return f"light.json"
+	
+	@property
+	def DarkThemeName(cls):
+		return f"dark.json"
+	
+	@property
 	def PREFIX(cls):
 		return pathlib.Path(sys.argv[0]).resolve().parent
-	
-	@property
-	def ConfigDir(cls):
-		if platform.system() == 'Linux':
-			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr')
-		elif  platform.system() == 'Windows':
-			return pathlib.Path.home().joinpath('AppData').joinpath('Roaming').joinpath('py-notifyr')
-	
-	@property
-	def ThemeDir(cls):
-		if platform.system() == 'Linux':
-			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr').joinpath('Theme')
-		elif  platform.system() == 'Windows':
-			return pathlib.Path.home().joinpath('AppData').joinpath('Roaming').joinpath('py-notifyr').joinpath('Theme')
-	
+
 	@property
 	def koef_x(cls):
 		return {'left': 1, 'center': 1, 'right': -1}
@@ -211,126 +430,210 @@ class Defaults(metaclass=Meta):
 	def CalcPositionX(pos_x: str, scr_width: int, width: int):
 		''' Calculate Position Left (x) '''
 		if PositionX.GetPosValue(pos_x) == PositionX.Left:
-			calc_x = 15
+			calc_x = 0
 		elif PositionX.GetPosValue(pos_x) == PositionX.Center:
 			calc_x = int(scr_width/2) - int(width/2)
 		else:
-			calc_x = scr_width - width - 15
+			calc_x = scr_width - width
 		return calc_x
 
 	@staticmethod
 	def CalcPositionY(pos_y: str, scr_height: int, height: int):
 		''' Calculate Position Top (y) '''
 		if PositionY.GetPosValue(pos_y) == PositionY.Top:
-			calc_y = 15
+			calc_y = 0
 		elif PositionY.GetPosValue(pos_y) == PositionY.Center:
 			calc_y =  int(scr_height/2) - int(height/2)
 		else:
-			calc_y = scr_height - height - 30
+			calc_y = scr_height - height
 		return calc_y
 
-	@staticmethod
-	def CalcNewPosition(scr_width: int, scr_height: int, 
+	@classmethod
+	def CalcNewPosition(cls, scr_width: int, scr_height: int, 
 					pos_x: str, pos_y: str,  
 					width: int, height: int, 
-					left: int, top: int):
+					left: int, top: int, distance: int = 10):
 		''' Calculation for new position to Form '''
-		virt_x = width + 10
-		virt_y = height + 10
-		real_x = virt_x * Defaults.koef_x[pos_x.value] + left
-		real_y = virt_y * Defaults.koef_y[pos_y.value] + top
+		virt_x = width + distance
+		virt_y = height + distance
+		real_x = virt_x * cls.koef_x[pos_x] + left
+		real_y = virt_y * cls.koef_y[pos_y] + top
 		if PositionY.GetPosValue(pos_y) == PositionY.Bottom:
 			if real_y < 0:
-				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+				real_y = cls.CalcPositionY(pos_y, scr_height, height)
 			else:
 				real_x = left
 		else:
 			if (scr_height - real_y) < height:
-				real_y = Defaults.CalcPositionY(pos_y, scr_height, height)
+				real_y = cls.CalcPositionY(pos_y, scr_height, height)
 			else:
 				real_x = left
 		return real_x, real_y
 
-class Arguments:
-	''' The class of the set of input parameters. 
+class FilesMeta(type):
 	
-		Variables:
-			Title: Header Text,
-			Message: Text notify,
-			OnTime: The waiting time before the form closes automatically,
-			isTimer: The presence of a timer for automatically closing the application,
-			icon: Icon to display inside the notification (file, None),
-			TFFamily: Title Font Family,
-			TFSize: Title Font size
-			TFWeight: Title Font Weight (normal, bold), 
-			TFUnderline: Title Font Underline (0, 1),
-			TFSlant: Title Font Slant (italic, roman), 
-			TFOverstrike: Title Font Overstrike (0, 1),
-			TitleFG: Title Foreground Color (Header, Title Text Color),
-			BG: Background Color, 
-			BodyFG: Body Foreground Color (Message Text Color),
-			BFFamily: Body Font Family, 
-			BFSize: Body Font Size,
-			BFWeight: Body Font Weight (normal, bold), 
-			BFUnderline: Body Font Underline (0, 1),
-			BFSlant: Body Font Slant (italic, roman), 
-			BFOverstrike: Body Font Overstrike (0, 1),
-			scale: The scale of the icon, 
-					the value should be specified 
-					as a string without spaces 
-					(for example, "1,1" or "2,2"),
-			PosX: The value of the X-axis position (left), 
-				according to the "PositionX" class, 
-			PosY: The value of the Y-axis position (top), 
-					according to the "PositionY" class, 
-			MoveX: Offset on the X-axis (Left), 
-			MoveY: Offset on the Y-axis (Top),
-			Alpha: Transparent (Alpha), 
-			Relative: Relative move position (True, False),
-			Topmost: On top of all windows (True, False),
-			save: Save Configuration,
-			load: Load configuration,
-			reset: Reset the configuration,
-			CloseIcon: Icon file for the form close button (file, default, None),
-			ScaleClose: The scale of the Close icon, 
-					the value should be specified 
-					as a string without spaces 
-					(for example, "1,1" or "2,2"),
-			Theme: Theme, setting up form elements,
-			input: Application Settings input file,
-			output: The output file of the application settings,
-			Style: Form style ("standart", "compact").
-	'''
+	def __init__(cls, *args, **kwargs):
+		super().__init__(*args, **kwargs)
 	
-	__slots__ = ['Title', 'Message', 'OnTime', 'isTimer', 'icon', 
-				'TFFamily', 'TFSize',  'TFWeight', 
-				'TFUnderline', 'TFSlant', 'TFOverstrike', 
-				'TitleFG', 'BG', 'BodyFG',
-				'BFFamily', 'BFSize', 'BFWeight', 
-				'BFUnderline', 'BFSlant', 'BFOverstrike', 
-				'scale', 'PosX', 'PosY', 'Alpha', 'MoveX', 'MoveY', 'Relative', 'Topmost',
-				'save', 'load', 'reset', 'CloseIcon', 'ScaleClose', 'Theme', 'input', 'output', 'Style'
-				]
+	@property
+	def dark_theme(cls):
+		return cls.ThemeDir.joinpath(Defaults.DarkThemeName)
+
+	@property
+	def light_theme(cls):
+		return cls.ThemeDir.joinpath(Defaults.LightThemeName)
+
+	@property
+	def socket_file(cls):
+		return cls.ConfigDir.joinpath(cls.SockFileName)
+
+	@property
+	def ConfigDir(cls):
+		if platform.system() == 'Linux':
+			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr')
+		elif  platform.system() == 'Windows':
+			return pathlib.Path.home().joinpath('AppData').joinpath('Roaming').joinpath('py-notifyr')
+		else:
+			return pathlib.Path.home().joinpath('.config').joinpath('py-notifyr') 
+
+	@property
+	def ConfigFileName(cls):
+		return cls.ConfigDir.joinpath('theme').joinpath('config.ini')
+
+	@property
+	def ThemeDir(cls):
+		return cls.ConfigDir.joinpath('theme').joinpath('theme-path')
+	
+	@property
+	def ThemeIcons(cls):
+		return cls.ConfigDir.joinpath('theme').joinpath('theme-icons')
+
+	@property
+	def SockFileName(cls):
+		return f"pynotifyr.sock"
+
+class Files(metaclass=FilesMeta):
+	
+	@staticmethod
+	def check_pid(pid):
+		""" Check For the existence of a unix pid. """
+		ischeck = False
+		try:
+			os.kill(pid, 0)
+			ischeck = True
+		except:
+			ischeck = False
+		else:
+			ischeck = True
+		return ischeck
+	
+	@classmethod
+	def CreateClientServer(cls):
+		client_and_server = ClientServer()
+		if not cls.socket_file.exists():
+			client_and_server.set_free_port(cls.socket_file)
+			del client_and_server
+			client_and_server = ClientServer()
+			client_and_server.set_free_port(cls.socket_file)
+		else:
+			client_and_server.set_free_port(cls.socket_file)
+		return client_and_server
+	
+	@staticmethod
+	def read_write_json(jfile, typerw, data = dict(), indent: int = 2):
+		''' The function of reading and writing JSON objects. '''
+		file_save = pathlib.Path(str(jfile)).resolve()
+		file_save.parent.mkdir(parents=True,exist_ok=True)
+		with open(str(file_save), typerw) as fp:
+			if 'r' in typerw:
+				data = json.load(fp)
+				return data
+			else:
+				json.dump(data, fp, indent=indent)
+
+	@staticmethod
+	def read_write_file(onfile, typerw, data = ""):
+		''' The function of reading and writing text files. '''
+		file_save = pathlib.Path(str(onfile)).resolve()
+		file_save.parent.mkdir(parents=True,exist_ok=True)
+		with open(str(file_save), typerw) as fp:
+			if 'r' in typerw:
+				data = fp.read()
+				return data
+			else:
+				fp.write(data)
+
+	@staticmethod
+	def read_write_config(cfile, typerw, data: configparser.ConfigParser):
+		file_save = pathlib.Path(str(cfile)).resolve()
+		file_save.parent.mkdir(parents=True,exist_ok=True)
+		with open(str(file_save), typerw) as configfile:
+			if 'r' in typerw:
+				data.read_file(configfile)
+			else:
+				data.write(configfile)
+
+	@staticmethod
+	def JSONToSTR(data_json: dict) -> str:
+		return json.dumps(data_json, indent=2)
+	
+	@staticmethod
+	def STRToJSON(value: str) -> dict:
+		return json.loads(value)
+
+class Base:
+	
+	__slots__ = ['__dict__']
+		
+	def __init__(self):
+		self.except_list = []
+	
+	def __str__(self):
+		''' For STR Function output paramters. '''
+		return '\t' + '\n\t'.join(f"{x}: {getattr(self, x)}" for x in dir(self) if not x in self.except_list and '__' not in x)
+	
+	def __repr__(self):
+		''' For Debug Function output paramters. '''
+		return f"{self.__class__}:\n\t" + \
+				'\n\t'.join(f"{x}: {getattr(self, x)}" for x in dir(self) if not x in self.except_list and '__' not in x)
+
+class Arguments(Base):
+	''' The class of the set of input parameters. '''
 	
 	def __init__(self, *args, **kwargs):
+		super(Arguments, self).__init__()
+		self.except_list.append('except_list')
+		self.except_list.append('Reset')
+		self.except_list.append('ApplyTheme')
+		self.except_list.append('SaveTheme')
+		self.except_list.append('CreateDefaultConfig')
+		self.except_list.append('save')
+		self.except_list.append('load')
+		self.except_list.append('reset')
+		self.except_list.append('output')
+		self.except_list.append('FormPos')
+		self.except_list.append('TempPos')
+		self.except_list.append('SocketFormPos')
+		self.except_list.append('ThemeDict')
+		self.except_list.append('isTheme')
 		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
 		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
-		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime',10000)
+		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime', 5000)
 		self.isTimer = args[3] if len(args) >= 4 else kwargs.get('isTimer',True)
 		self.icon = args[4] if len(args) >= 5 else kwargs.get('icon','None')
 		self.TFFamily = args[5] if len(args) >= 6 else kwargs.get('TFFamily','Arial')
-		self.TFSize = args[6] if len(args) >= 7 else kwargs.get('TFSize',14)
+		self.TFSize = args[6] if len(args) >= 7 else kwargs.get('TFSize', 12)
 		self.TFWeight = args[7] if len(args) >= 8 else kwargs.get('TFWeight','bold')
-		self.TFUnderline = args[8] if len(args) >= 9 else kwargs.get('TFUnderline',0)
+		self.TFUnderline = args[8] if len(args) >= 9 else kwargs.get('TFUnderline', 0)
 		self.TFSlant = args[9] if len(args) >= 10 else kwargs.get('TFSlant','roman')
 		self.TFOverstrike = args[10] if len(args) >= 11 else kwargs.get('TFOverstrike',0)
 		self.TitleFG = args[11] if len(args) >= 12 else kwargs.get('TitleFG','black')
 		self.BFFamily = args[12] if len(args) >= 13 else kwargs.get('BFFamily','Arial')
-		self.BFSize = args[13] if len(args) >= 14 else kwargs.get('BFSize',14)
+		self.BFSize = args[13] if len(args) >= 14 else kwargs.get('BFSize', 12)
 		self.BFWeight = args[14] if len(args) >= 15 else kwargs.get('BFWeight','normal')
-		self.BFUnderline = args[15] if len(args) >= 16 else kwargs.get('BFUnderline',0)
+		self.BFUnderline = args[15] if len(args) >= 16 else kwargs.get('BFUnderline', 0)
 		self.BFSlant = args[16] if len(args) >= 17 else kwargs.get('BFSlant','roman')
-		self.BFOverstrike = args[17] if len(args) >= 18 else kwargs.get('BFOverstrike',0)
+		self.BFOverstrike = args[17] if len(args) >= 18 else kwargs.get('BFOverstrike', 0)
 		self.BG = args[18] if len(args) >= 19 else kwargs.get('BG','#FFFADD')
 		self.BodyFG = args[19] if len(args) >= 20 else kwargs.get('BodyFG','black')
 		self.scale = args[20] if len(args) >= 21 else kwargs.get('scale', '1,1')
@@ -346,15 +649,122 @@ class Arguments:
 		self.reset = args[30] if len(args) >= 31 else kwargs.get('reset', False)
 		self.CloseIcon = args[31] if len(args) >= 32 else kwargs.get('CloseIcon', 'default')
 		self.Theme = args[32] if len(args) >= 33 else kwargs.get('Theme', '')
-		self.input = args[33] if len(args) >= 34 else kwargs.get('input', '')
+		self.isTheme = args[33] if len(args) >= 34 else kwargs.get('isTheme', False)
 		self.output = args[34] if len(args) >= 35 else kwargs.get('output', '')
 		self.Style = args[35] if len(args) >= 36 else kwargs.get('Style', 'standart')
 		self.ScaleClose = args[36] if len(args) >= 37 else kwargs.get('ScaleClose', '1,1')
+		self.distance = args[37] if len(args) >= 38 else kwargs.get('distance', 10)
+		self.FormPos = dict()
+		self.SocketFormPos = dict()
+		self.TempPos = dict()
+		self.ThemeDict = dict()
+		temp_theme = f"{self.Theme}"
+		if Files.ConfigFileName.exists():
+			config = configparser.ConfigParser()
+			Files.read_write_config(str(Files.ConfigFileName), 'r', config)
+			self.Theme = config['Main']['Theme']
+			self.ApplyTheme()
+			self.Theme = f"{temp_theme}"
+		if self.Theme != '':
+			self.ApplyTheme()
+	
+	def CreateDefaultConfig(self):
+		dark_theme = Files.dark_theme
+		light_theme = Files.light_theme
+		
+		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
+		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
+		
+		temp_theme = dict()
+		for k, v in self.__dict__.items():
+			if not k in self.except_list and '__' not in k:
+				if type(v) in [str, float, bool, int]:
+					temp_theme[k] = v
+				elif 'value' in dir(v):
+					temp_theme[k] = v.value
+				else:
+					temp_theme[k] = str(v)
+		
+		self.Reset()
+		self.BG = '#303030'
+		self.TitleFG = 'white'
+		self.BodyFG = 'white'
+		self.Alpha = 0.8
+		self.TFSize = 12
+		self.BFSize = 12
+		self.scale = '5,5'
+		self.ScaleClose = '1,1'
+		self.PosX = 'right'
+		self.PosY = 'top'
+		self.MoveX = 0
+		self.MoveY = 0
+		self.OnTime = 5000
+		cur_icon = Defaults.PREFIX.joinpath('info.png').resolve()
+		cur_close_icon = Defaults.PREFIX.joinpath('exit_close_24x24.png').resolve()
+		self.icon = Files.ThemeIcons.joinpath('info.png').resolve()
+		self.CloseIcon = Files.ThemeIcons.joinpath('exit_close_24x24.png').resolve()
+		
+		self.icon.parent.mkdir(parents=True,exist_ok=True)
+		
+		if self.icon.exists():
+			self.icon.unlink(missing_ok=True)
+		
+		if self.CloseIcon.exists():
+			self.CloseIcon.unlink(missing_ok=True)
+		
+		shutil.copy(cur_icon, self.icon)
+		shutil.copy(cur_close_icon, self.CloseIcon)
+		
+		self.output = dark_theme
+		
+		self.SaveTheme()
+				
+		self.BG = '#FFFADD'
+		self.TitleFG = 'black'
+		self.BodyFG = 'black'
+		self.Alpha = 0.8
+		
+		self.output = light_theme
+		
+		self.SaveTheme()
+		
+		config = configparser.ConfigParser()
+		config['Main'] = {'Theme': f"{light_theme}"}
+		
+		Files.read_write_config(str(Files.ConfigFileName), 'w', config)
+		
+		for k, v in temp_theme.items():
+			self.__dict__[k] = v
+		
+		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
+		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
+	
+	def ApplyTheme(self):
+		self.Theme = pathlib.Path(str(self.Theme)).resolve()
+		if self.Theme.exists():
+			self.ThemeDict = Files.read_write_json(self.Theme, 'r')
+			for k in self.ThemeDict.keys():
+				if self.ThemeDict.get(k, '') != '':
+					self.__dict__[k] = self.ThemeDict.get(k, '')
+	
+	def SaveTheme(self):
+		if self.output != '':
+			self.output = pathlib.Path(str(self.output)).resolve()
+			self.ThemeDict.clear()
+			for k, v in self.__dict__.items():
+				if not k in self.except_list and '__' not in k:
+					if type(v) in [str, float, bool, int]:
+						self.ThemeDict[k] = v
+					elif 'value' in dir(v):
+						self.ThemeDict[k] = v.value
+					else:
+						self.ThemeDict[k] = str(v)
+			Files.read_write_json(self.output, 'w', self.ThemeDict)
 	
 	def Reset(self):
 		self.Title = 'Apps'
 		self.Message = 'Info!'
-		self.OnTime = 10000
+		self.OnTime = 5000
 		self.isTimer = True
 		self.icon = 'None'
 		self.TFFamily = 'Arial'
@@ -385,40 +795,19 @@ class Arguments:
 		self.reset = False
 		self.CloseIcon = 'default'
 		self.Theme = ''
-		self.input = ''
+		self.isTheme = False
 		self.output = ''
 		self.Style = 'standart'
 		self.ScaleClose = '1,1'
+		self.distance = 10
+		self.FormPos.clear()
+		self.TempPos.clear()
+		self.SocketFormPos.clear()
+		self.ThemeDict.clear()
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
 		return None
-	
-	def __repr__(self):
-		''' For Debug Function output paramters '''
-		return f"{self.__class__}:" + \
-				f"\n\tTitle = {self.Title}," + \
-				f"\n\tText = {self.Message}," + \
-				f"\n\tOnTime = {self.OnTime}," + \
-				f"\n\tisTimer = {self.isTimer}," + \
-				f"\n\ticon = {self.icon}," + \
-				f"\n\tTitle Font Family = {self.TFFamily}, Title Font size = {self.TFSize}," + \
-				f"\n\tTitle Font Weight = {self.TFWeight}, Title Font Underline = {self.TFUnderline}," + \
-				f"\n\tTitle Font Slant = {self.TFSlant}, Title Font Overstrike = {self.TFOverstrike}," + \
-				f"\n\tTitle FG = {self.TitleFG}, Body FG = {self.BodyFG}, BG = {self.BG}," + \
-				f"\n\tBody Font Family = {self.BFFamily}, Body Font Size = {self.BFSize}," + \
-				f"\n\tBody Font Weight = {self.BFWeight}, Body Font Underline = {self.BFUnderline}," + \
-				f"\n\tBody Font Slant = {self.BFSlant}, Body Font Overstrike = {self.BFOverstrike}," + \
-				f"\n\tScale = ({self.scale})," + \
-				f"\n\tPosX = {self.PosX}, PosY = {self.PosY}, MoveX = {self.MoveX}, MoveY = {self.MoveY}," + \
-				f"\n\tTransparent (Alpha) = {self.Alpha}, Relative move position = {self.Relative}," + \
-				f"\n\tTopmost = {self.Topmost}," + \
-				f"\n\tSave = {self.save}, Load = {self.load}, Reset = {self.reset}," + \
-				f"\n\tInput = {self.input}," + \
-				f"\n\tOutput = {self.output}," + \
-				f"\n\tStyle = {self.Style}," + \
-				f"\n\tCloseIcon = {self.CloseIcon}," + \
-				f"\n\tScaleClose = ({self.ScaleClose})"
 
 class Notify:
 	''' Tkinter class form. 
@@ -560,9 +949,9 @@ class Notify:
 		closeIcon = ''
 		if self.args.Style == FormStyle.Standart.value:
 			if self.args.CloseIcon == 'default':
-				closeIcon = Defaults.PREFIX.joinpath('exit_close.png')
+				closeIcon = Defaults.PREFIX.joinpath('exit_close_24x24.png')
 			elif self.args.CloseIcon != 'None':
-				closeIcon = pathlib.Path(self.args.CloseIcon).resolve() if pathlib.Path(self.args.CloseIcon).resolve().exists else ''
+				closeIcon = pathlib.Path(str(self.args.CloseIcon)).resolve() if pathlib.Path(str(self.args.CloseIcon)).resolve().exists else ''
 			else:
 				closeIcon = ''
 			if closeIcon != '':
@@ -588,8 +977,8 @@ class Notify:
 	def __CreateIcon(self):
 		''' Crete Icon on forms (image) '''
 		if self.args.icon != 'None':
-			if pathlib.Path(self.args.icon).resolve().exists():
-				self.image = tk.PhotoImage(file=pathlib.Path(self.args.icon).resolve())
+			if pathlib.Path(str(self.args.icon)).resolve().exists():
+				self.image = tk.PhotoImage(file=pathlib.Path(str(self.args.icon)).resolve())
 				self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
 				self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
 				self.label_image.bind('<Button-1>', self.__OnClose)
@@ -611,19 +1000,19 @@ class Notify:
 			for r in range(2):
 				self.root.rowconfigure(index=r, weight=1)
 			if self.args.icon != '':
-				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(10, 10), pady=0)
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(10, 0), pady=0)
 			else:
-				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(5, 10), pady=0)
+				self.label_header.grid(row=0, column=0, columnspan=2, sticky='w', padx=(5, 0), pady=0)
 			if self.close_icon != 'None':
 				self.btn1.grid(row=0, column=2)
 			if self.args.icon != 'None':
 				if self.image != 'None':
-					self.label_image.grid(row=1, column=0, padx=(10, 10), pady=(0, 5))
-					self.label_text.grid(row=1, column=1, padx=(0, 10), pady=(0, 5), sticky='w')
+					self.label_image.grid(row=1, column=0, padx=(10, 0), pady=(0, 5))
+					self.label_text.grid(row=1, column=1, padx=(0, 0), pady=(0, 10), sticky='w')
 				else:
-					self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 10), sticky='w')
+					self.label_text.grid(row=1, column=0, padx=(11, 10), pady=(0, 15), sticky='w')
 			else:
-				self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 10), sticky='w')
+				self.label_text.grid(row=1, column=0, padx=(11, 10), pady=(0, 15), sticky='w')
 		else:
 			if self.args.icon != 'None':
 				for c in range(2):
@@ -631,24 +1020,62 @@ class Notify:
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
 				if self.image != 'None':
-					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=(10, 10), pady=0)
-					self.label_header.grid(row=0, column=1, padx=(0, 10), pady=0, sticky='sw')
-					self.label_text.grid(row=1, column=1, padx=(0, 10), pady=0, sticky='nw')
+					self.label_image.grid(row=0, column=0, rowspan=2, sticky='w', padx=(10, 0), pady=(0, 0))
+					self.label_header.grid(row=0, column=1, padx=(0, 10), pady=(0, 0), sticky='sw')
+					self.label_text.grid(row=1, column=1, padx=(0, 10), pady=(0, 0), sticky='nw')
 				else:
-					self.label_header.grid(row=0, column=0, padx=(10, 10), pady=0, sticky='sw')
-					self.label_text.grid(row=1, column=0, padx=(10, 10), pady=(0, 0), sticky='nw')
+					self.label_header.grid(row=0, column=0, padx=(15, 10), pady=(0, 0), sticky='sw')
+					self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 0), sticky='nw')
 			else:
 				for c in range(1):
 					self.root.columnconfigure(index=c, weight=1)
 				for r in range(2):
 					self.root.rowconfigure(index=r, weight=1)
-				self.label_header.grid(row=0, column=0, padx=(10, 10), pady=0, sticky='sw')
-				self.label_text.grid(row=1, column=0, padx=(10, 10), pady=(0, 0), sticky='nw') # , ipadx=0, ipady=0
+				self.label_header.grid(row=0, column=0, padx=(15, 10), pady=(0, 0), sticky='sw')
+				self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 0), sticky='nw') # , ipadx=0, ipady=0
+	
+	def CalcNewPosition(self):
+		self.args.TempPos.clear()
+		if len(self.args.SocketFormPos.keys()) == 6:
+			self.args.TempPos['Left'], self.args.TempPos['Top'] = Defaults.CalcNewPosition(self.screen_width, self.screen_height, 
+																self.args.SocketFormPos['position_x'], self.args.SocketFormPos['position_y'], 
+																self.args.SocketFormPos['Width'], self.args.SocketFormPos['Height'], 
+																self.args.SocketFormPos['Left'], self.args.SocketFormPos['Top'], self.args.distance)
+																# scr_width scr_height pos_x pos_y width height left top
+			if self.args.MoveX != 0 or self.args.MoveY != 0:
+				if self.args.Relative:
+					self.args.TempPos['Left'] = self.args.TempPos['Left'] + self.args.MoveX
+					self.args.TempPos['Top'] = self.args.TempPos['Top'] + self.args.MoveY
+				else:
+					self.args.TempPos['Left'] = self.args.MoveX
+					self.args.TempPos['Top'] = self.args.MoveY
+			self.args.TempPos['position_x'] = self.args.PosX if type(self.args.PosX) == str else self.args.PosX.value
+			self.args.TempPos['position_y'] = self.args.PosY if type(self.args.PosY) == str else self.args.PosY.value
+			self.args.TempPos['Width'] = self.width
+			self.args.TempPos['Height'] = self.height
+	
+	def UsePosition(self):
+		if len(self.args.SocketFormPos.keys()) == 6:
+			self.args.FormPos['position_x'] = self.args.TempPos['position_x']
+			self.args.FormPos['position_y'] = self.args.TempPos['position_y']
+			self.args.FormPos['Top'] = self.args.TempPos['Top']
+			self.args.FormPos['Left'] = self.args.TempPos['Left']
+			self.left = self.args.TempPos['Left']
+			self.top = self.args.TempPos['Top']
+			self.root.geometry(f"+{self.left}+{self.top}")
+			self.root.update_idletasks()
 	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
-		self.left = Defaults.CalcPositionX(self.args.PosX, self.screen_width, self.width)
-		self.top = Defaults.CalcPositionY(self.args.PosY, self.screen_height, self.height)
+		if len(self.args.SocketFormPos.keys()) == 6:
+			self.left, self.top = Defaults.CalcNewPosition(self.screen_width, self.screen_height, 
+															self.args.SocketFormPos['position_x'], self.args.SocketFormPos['position_y'], 
+															self.args.SocketFormPos['Width'], self.args.SocketFormPos['Height'], 
+															self.args.SocketFormPos['Left'], self.args.SocketFormPos['Top'], self.args.distance)
+															# scr_width scr_height pos_x pos_y width height left top
+		else:
+			self.left = Defaults.CalcPositionX(self.args.PosX, self.screen_width, self.width)
+			self.top = Defaults.CalcPositionY(self.args.PosY, self.screen_height, self.height)
 	
 	def RelativePosition(self, x: int = 0, y: int = 0):
 		''' Change relative coordinate position form on left (x) and top (y) '''
@@ -678,6 +1105,11 @@ class Notify:
 		self.left = 0
 		self.top = 0
 		
+		self.args.FormPos['position_x'] = self.args.PosX if type(self.args.PosX) == str else self.args.PosX.value
+		self.args.FormPos['position_y'] = self.args.PosY if type(self.args.PosY) == str else self.args.PosY.value
+		self.args.FormPos['Width'] = self.width
+		self.args.FormPos['Height'] = self.height
+		
 		self.__CalcPosition()
 		
 		self.root.geometry(f"+{self.left}+{self.top}")
@@ -692,127 +1124,257 @@ class Notify:
 		self.root.minsize(110, 70)
 		self.root.maxsize(self.screen_width, self.screen_height)
 		self.root.resizable(0,0)
-		global screen_width
-		global screen_height
-		global position_x
-		global position_y
-		global Width
-		global Height
-		global Top
-		global Left
-		screen_width = self.screen_width
-		screen_height = self.screen_height
-		position_x = self.args.PosX
-		position_y = self.args.PosY
-		Top = self.top
-		Left = self.left
-		Width = self.width
-		Height = self.height			
+		self.args.FormPos['Top'] = self.top
+		self.args.FormPos['Left'] = self.left
 
-class Files:
-	'''  Class Files.
+class QueueManager(BaseManager):
+	pass
+
+class UserTimer:
+	def __init__(self, link):
+		self.link = link
+		self.stop_timer = threading.Timer(1, lambda:self.link.stop_event.set())
 	
-		Info: A class for working with files.
-		
-		Methods:
-			WriteConfig(parser: configparser.ConfigParser, 
-						config_file: str = 'text.ini'):
-				Writing config to a ini file.
-			
-			ReadConfig(config_file: str = 'text.ini') 
-				-> configparser.ConfigParser:
-					Reading config from a ini file.
-			
-			WriteJson(data_json: dict, 
-					file_json: str = 'object.json'):
-				Writing JSON data to a json file.
-			
-			ReadJson(file_json: str = 'object.json') -> dict:
-				Reading JSON data from a json file.
-			
-			JSONToSTR(data_json: dict) -> str:
-				Convert JSON (Dict) to string
-			
-			STRToJSON(value: str) -> dict:
-				Convert String to JSON (Dict)
-			
-			GetFileSuffix(List_Files, suffixes: str):
-				Get a file with the specified extension from a list or tuple.
-	'''
+	def start(self):
+		print('Stop Server')
+		self.stop_timer.start()
+
+class ClientServer:
 	
-	@staticmethod
-	def WriteConfig(parser: configparser.ConfigParser, config_file: str = 'text.ini'):
-		''' Write ini data in file '''
-		with open(pathlib.Path(config_file).resolve(), "w") as configfile:
-			parser.write(configfile)
+	DEBUG = Boolean()
+	connected = Boolean()
+	is_server = Boolean()
+	data_out = Strings()
+	port = 5007
+	host = HostName()
+	ServerPID = Integer()
+	PID = SetPID()
 
-	@staticmethod
-	def ReadConfig(config_file: str = 'text.ini') -> configparser.ConfigParser:
-		''' Read ini Data from File '''
-		on_config = configparser.ConfigParser()
-		on_config.read(pathlib.Path(config_file).resolve())
-		return on_config
+	def __init__(self):
+		self.is_server = False
+		self.connected = False
+		self.data_out = ''
+		self.DEBUG = False	
+		self.ServerPID = 0
 	
-	@staticmethod
-	def WriteJson(data_json: dict, file_json: str = 'object.json'):
-		''' Write Json data in file '''
-		with open(pathlib.Path(file_json).resolve(), "w") as fp:
-			json.dump(data_json, fp, indent=2)
+	def TestConnected(self, address, port):
+		s = socket.socket()
+		self.connected = False
+		try:
+			s.connect((address, port))
+			self.connected = True
+			self.is_server = False
+		except Exception as e:
+			#print("something's wrong with %s:%d. Exception is %s" % (address, port, e))
+			self.connected = False
+			self.is_server = True
+		finally:
+			s.close()
+		if self.connected:
+			self.is_server = False
+		else:
+			self.is_server = True
 
-	@staticmethod
-	def ReadJson(file_json: str = 'object.json') -> dict:
-		''' Read Json Data from File '''
-		data = ''
-		with open(pathlib.Path(file_json).resolve(), "r") as fp:
-			data = json.load(fp)
-		return data
+	def exit_handler(self, signum, frame):
+		self.qmanager.shutdown()
+		print(f"Exit {ProgName.full}...")
+		sys.exit(0)
 
-	@staticmethod
-	def JSONToSTR(data_json: dict) -> str:
-		return json.dumps(data_json, indent=2)
+	def RunServer(self):
+		self.smanager.serve_forever()
+
+	def StopServer(self):
+		if self.connected:
+			self.qmanager.stop()
+
+	def KillServer(self, socket_file):
+		socketfile = pathlib.Path(str(socket_file)).resolve()
+		if socketfile.exists():
+			port_dict = Files.read_write_json(socketfile, 'r')
+			temp_pid = 0
+			if port_dict.get('pid', '') != '' and type(port_dict.get('pid', '')) == int:
+				temp_pid = port_dict.get('pid', '')
+			
+			if self.ServerPID == temp_pid:
+				if self.ServerPID != 0:
+					if Files.check_pid(self.ServerPID):
+						os.kill(self.ServerPID, signal.SIGTERM)
+			else:
+				if self.ServerPID != 0:
+					if Files.check_pid(self.ServerPID):
+						os.kill(self.ServerPID, signal.SIGTERM)
+				if self.temp_pid != 0:
+					if Files.check_pid(self.temp_pid):
+						os.kill(self.temp_pid, signal.SIGTERM)
+			self.save_server_pid(socketfile, True)
+		else:
+			if self.ServerPID != 0:
+				if Files.check_pid(self.ServerPID):
+					os.kill(self.ServerPID, signal.SIGTERM)
+
+	def ClientConnect(self):
+		self.connected = False
+		try:
+			self.qmanager.connect()
+			self.connected = True
+		except:
+			self.connected = False
+		if self.connected:
+			self.task = self.qmanager.GetTasks()
+			self.ServerPID = self.task.get(0)
+
+	def ServerInit(self):
+		self.smanager = self.qmanager.get_server()
+		self.stop_timer = UserTimer(self.smanager) # threading.Timer(1, lambda:self.smanager.stop_event.set())
+		QueueManager.register('stop', callable=lambda:self.stop_timer.start())
+		self.task.put(self.PID)
+
+	def ClientServerINIT(self):
+		if self.is_server:
+			signal.signal(signal.SIGTERM, self.exit_handler)
+			self.task = tasks.Task()
+			QueueManager.register('GetTasks', callable=lambda:self.task)
+		else:
+			QueueManager.register('GetTasks')
+			QueueManager.register('stop')
+		self.qmanager = QueueManager(address=(self.get_host(), self.get_port()), authkey=Defaults.access_key)
+
+	def Client_Server(self):
+		self.ClientServerINIT()
+		if self.is_server:
+			self.ServerInit()
+		else:
+			self.ClientConnect()
+
+	def __str__(self):
+		return self.data_out
+
+	def __repr__(self):
+		return f"{self.__class__.__name__}:\n\t" +\
+				f"is_server: {self.is_server}\n\t" +\
+				f"connected: {self.connected}\n\t" +\
+				f"data_out: {self.data_out}\n\t" +\
+				f"DEBUG: {self.DEBUG}\n\t" +\
+				f"host: {self.host}\n\t" +\
+				f"port: {self.port}\n\t"
+
+	def set_free_port(self, socket_file):
+		socketfile = pathlib.Path(str(socket_file)).resolve()
+		if not socketfile.exists():
+			socketfile.parent.mkdir(mode=0o755, parents=True,exist_ok=True)
+			self.find_free_port()
+			port_dict = {'port': self.get_port()}
+			Files.read_write_json(socketfile, 'w', port_dict)
+		else:
+			port_dict = Files.read_write_json(socketfile, 'r')
+			if port_dict.get('port', '') != '' and type(port_dict.get('port', '')) == int:
+				self.set_port(port_dict.get('port', ''))
+			if port_dict.get('pid', '') != '' and type(port_dict.get('pid', '')) == int:
+				self.ServerPID = port_dict.get('pid', '')
+
+	def save_server_pid(self, socket_file, isreset: bool = False):
+		socketfile = pathlib.Path(str(socket_file)).resolve()
+		if not socketfile.exists():
+			socketfile.parent.mkdir(mode=0o755, parents=True,exist_ok=True)
+			self.find_free_port()
+			if not isreset:
+				port_dict = {'port': self.get_port(), 'pid': self.PID}
+			else:
+				port_dict = {'port': self.get_port(), 'pid': 0}
+			Files.read_write_json(socketfile, 'w', port_dict)
+		else:
+			port_dict = Files.read_write_json(socketfile, 'r')
+			if not isreset:
+				port_dict['pid'] = self.PID
+			else:
+				port_dict['pid'] = 0
+			Files.read_write_json(socketfile, 'w', port_dict)
 	
-	@staticmethod
-	def STRToJSON(value: str) -> dict:
-		json.loads(value)
-
-	@staticmethod
-	def GetFileSuffix(List_Files, suffixes: str):
-		''' Get for file suffix or extension file '''
-		if List_Files != None:
-			for x in List_Files:
-				if suffixes == pathlib.Path(x).suffix:
-					return pathlib.Path(x).resolve()
-		return None
-
+	@classmethod
+	def find_free_port(cls):
+		with socket.socket() as s:
+			s.bind(('', 0))            # Bind to a free port provided by the host.
+			cls.set_port(s.getsockname()[1])  # Return the port number assigned.
+	
+	@classmethod
+	def get_host(cls):
+		return cls.host
+	
+	@classmethod
+	def get_port(cls):
+		return cls.port
+	
+	@classmethod
+	def set_port(cls, value):
+		cls.port = value
+	
 def main():
+	'''
 	args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False, 
-					Style = FormStyle.Standart.value
-					)
-	args.BG = '#303030'
-	#args.BG = '#E1E1E1'
-	#args.TitleFG = 'green'
-	#args.BodyFG = 'blue'
-	#args.BFUnderline = 1
-	#args.TFOverstrike = 1
-	args.TitleFG = 'white'
-	args.BodyFG = 'white'
-	args.Alpha = 0.9
+	#args = Arguments(icon='None', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+					PosX=PositionX.Right.value, PosY = PositionY.Bottom.value, isTimer = False, Topmost = False, 
+					Style = FormStyle.Standart.value, MoveY = -40
+					) # Theme = './theme/light.json'
+	#args = Arguments(Theme = './theme/dark.json')
+	
+	#args.CloseIcon = Defaults.PREFIX.joinpath('exit_close_24x24.png')
+	args.CloseIcon = './exit_close_24x24.png'
+	dark_theme = {'TitleFG': 'white', 'BodyBG': '#303030', 'BodyFG': 'white', 'Alpha': 0.9}
+	light_theme = {'TitleFG': 'blue', 'BodyBG': '#FFFADD', 'BodyFG': 'black', 'Alpha': 0.9}
+	theme = light_theme	
+	args.BG = theme['BodyBG']
+	args.TitleFG = theme['TitleFG']
+	args.BodyFG = theme['BodyFG']
+	args.Alpha = theme['Alpha']
 	args.TFSize = 12
 	args.BFSize = 12
-	#args.icon = ''
+	#args.output = './example.json'
+	#if args.output != '':
+	#	args.SaveTheme()
+	#args.Theme = './example.json'
+	#args.ApplyTheme()
+	#args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', PosX=PositionX.Right.value, PosY = PositionY.Bottom.value, MoveX = 0, MoveY = -40)
+	
+	#args.SocketFormPos.clear()
+	'''
+	'''
+	#args = Arguments()
 	notification = Notify(args)
-	'''
-	global screen_width
-	global screen_height
-	global position_x
-	global position_y
-	global Width
-	global Height
-	global Left
-	global Top
-	'''
 	notification.send()
+	print(notification.args.SocketFormPos)
+	'''
+	'''
+	args.SocketFormPos = {
+							'position_x': PositionX.Right.value,
+							'position_y': PositionY.Bottom.value,
+							'Width': 337,
+							'Height': 86,
+							'Left': 1008,
+							'Top': 652
+						}
+	'''
+	'''
+	client_server = ClientServer()
+	client_server.TestConnected(client_server.get_host(), client_server.get_port())
+	client_server.Client_Server()
+	if client_server.is_server:
+		client_server.RunServer()
+	else:
+		print('server_pid:', client_server.ServerPID, 'client_pid:', client_server.PID)
+		client_server.task.put('hello')
+		print(client_server.task.qsize())
+		if not client_server.task.empty():
+			print(client_server.task.get())
+			client_server.task.task_done()
+		else:
+			print('Queue is empty!')
+		print(client_server.task.qsize())
+		#client_server.StopServer()
+		if Files.check_pid(client_server.ServerPID):
+			os.kill(client_server.ServerPID, signal.SIGTERM)
+	'''
+	pass
 
 if __name__ == '__main__':
 	main()
+

@@ -1,0 +1,78 @@
+{
+  "Title": "Apps",
+  "Message": "Mesages to text output information!",
+  "OnTime": 5000,
+  "isTimer": [
+    true,
+    false
+  ],
+  "icon": "./icon.png",
+  "TFFamily": "Arial",
+  "TFSize": 14,
+  "TFWeight": [
+    "bold",
+    "normal"
+  ],
+  "TFUnderline": [
+    0,
+    1
+  ],
+  "TFSlant": [
+    "roman",
+    "italic"
+  ],
+  "TFOverstrike": [
+    0,
+    1
+  ],
+  "TitleFG": "white",
+  "BFFamily": "Arial",
+  "BFSize": 14,
+  "BFWeight": [
+    "bold",
+    "normal"
+  ],
+  "BFUnderline": [
+    0,
+    1
+  ],
+  "BFSlant": [
+    "roman",
+    "italic"
+  ],
+  "BFOverstrike": [
+    0,
+    1
+  ],
+  "BG": "#FFFADD",
+  "BodyFG": "white",
+  "scale": "3,3",
+  "PosX": [
+    "left",
+    "center",
+    "right"
+  ],
+  "PosY": [
+    "top",
+    "center",
+    "bottom"
+  ],
+  "Alpha": 1.0,
+  "MoveX": 0,
+  "MoveY": 0,
+  "Relative": [
+    true,
+    false
+  ],
+  "Topmost": [
+    true,
+    false
+  ],
+  "CloseIcon": "./icon.png",
+  "Style": [
+    "standart",
+    "compact"
+  ],
+  "ScaleClose": "1,1",
+  "distance": 10
+}
