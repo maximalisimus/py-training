@@ -25,7 +25,7 @@ import tasks
 
 __author__ = 'Mikhail Artamonov'
 __description__ = 'Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.'
-__progname__ = str(pathlib.Path(sys.argv[0]).resolve())
+__progname__ = str(pathlib.Path(sys.argv[0]).resolve().name)
 __copyright__ = f"© The \"{__progname__}\". Copyright  by 2024."
 __credits__ = ["Mikhail Artamonov"]
 __license__ = "GPL3"
@@ -34,182 +34,6 @@ __maintainer__ = "Mikhail Artamonov"
 __status__ = "Production"
 __date__ = '11.10.2022'
 __modifed__ = '22.07.2024'
-
-class Ru_Eng:
-	
-	def __set_name__(self, owner, name):
-		self.name = "__" + name
-	
-	def __get__(self, instance, owner):
-		return {
-				'ru': {
-							'description': 'Кросс-платформенные графические уведомления и напоминания на рабочем столе на основе Tk/Tcl.',
-							'version': 'Версия',
-							'info': 'Информация об авторе.',
-							'lng': 'Язык интерфейса (по умолчанию: русский).',
-							'console': 'Оболочка по умолчанию.',
-							'ontime': 'Время, по истечении которого уведомление автоматически закроется (по умолчанию 5000).',
-							'notimer': 'Отключение таймера автоматического закрытия уведомления.',
-							'style': 'Стиль отображения окна (полный, компактный, по умолчанию: компактный).',
-							'distance': 'Расстояние между окнами соседних уведомлений.',
-							'alpha': 'Прозрачность формы.',
-							'sub_title': 'Управление',
-							'sub_desc': 'Команды управления.',
-							'sub_help': 'Помощь по командам.',
-							'systemd': {
-											'info': 'Службы systemd.',
-											'create': "Создать «pynotifyr.service».",
-											'delete': "Удалить «pynotifyr.service».",
-											'status': "Статус «pynotifyr.service».",
-											'enable': "Включить «pynotifyr.service».",
-											'disable': "Выключить «pynotifyr.service».",
-											'start': "Запустить «pynotifyr.service».",
-											'stop': "Остановить «pynotifyr.service».",
-											'reload': "Перезагрузить «pynotifyr.service»."
-										},
-							'daemon': {
-											'info': 'Управление демоном.',
-											'start': 'Запустить демон.',
-											'stop': 'Остановить демон.',
-											'restart': 'Перезагрузить демон.',
-											'kill': 'Убить демона.'
-										},
-							'title_group': 'Заголовок',
-							'title_info': 'Управление заголовком.',
-							'title': 'Название уведомления (заголовок).',
-							'tfamily': 'Шрифт заголовка (по умолчанию: Arial).',
-							'tsize': 'Размер шрифта заголовка (по умолчанию: 12).',
-							'tweight': 'Тип шрифта заголовка (по умолчанию: жирный).',
-							'tund': 'Подчеркните текст заголовка (0 отсутствует, 1 присутствует, по умолчанию: 0).',
-							'tslant': 'Наклон (italic) текста заголовка (по умолчанию: нормальный, т.е. ровный).',
-							'tstrike': 'Зачеркнутый шрифт. Аналогично настройке подчеркивания (по умолчанию: 0).',
-							'tcolor': 'Цвет текста заголовка (по умолчанию: черный).',
-							'mess_group': 'Уведомления',
-							'mess_info': 'Управления уведомлениями.',
-							'text': 'Текст уведомления.',
-							'bg': 'Цвет фона окна уведомлений.',
-							'bcolor': 'Цвет текста уведомления.',
-							'bfamily': 'Шрифт текста уведомления (по умолчанию: Arial).',
-							'bsize': 'Размер шрифта уведомления (по умолчанию: 12).',
-							'bweight': 'Тип шрифта уведомления (жирный, нормальный, по умолчанию: нормальный).',
-							'bund': 'Подчеркивание текста уведомления (0 отсутствует, 1 присутствует, по умолчанию: 0).',
-							'bslant': 'Наклон (italic) шрифта текста уведомления (обычный, курсив, по умолчанию: обычный).',
-							'bstrike': 'Зачеркнутый шрифт. Аналогично настройке подчеркивания (по умолчанию: 0).',
-							'icon_group': 'Иконка',
-							'icon_info': 'Управление иконками.',
-							'icon': 'Файл иконки внутри формы (по умолчанию: None).',
-							'close': 'Файл иконки закрытия (крестика) окна уведомления (по умолчанию: default).',
-							'scale': 'Масштабирование иконки внутри формы (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 1,1. По умолчанию: 1,1).',
-							'clscale': 'Масштабирование иконки закрытия (крестика) окна уведомления (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 1,1. По умолчанию: 1,1).',
-							'offset_group': 'Положение',
-							'offset_info': 'Положения и перемещения.',
-							'posx': 'Положение окна уведомлений на рабочем столе по оси X (слева, по центру и справа. По умолчанию: справа).',
-							'posy': 'Положение окна уведомлений на рабочем столе вдоль оси Y (вверху, по центру и внизу. По умолчанию: вверху).',
-							'x': 'Переместите окно уведомления на указанную величину вдоль оси X (по умолчанию: 0).',
-							'y': 'Переместите окно уведомления на указанную величину вдоль оси Y (по умолчанию: 0).',
-							'relative': 'Считайте координаты сдвига вдоль осей относительными, в противном случае абсолютными (по умолчанию: относительные).',
-							'topmost': 'Поверх других окон (по умолчанию: False).',
-							'config': {
-										'info': 'Настройки программы.',
-										'show': 'Показать список доступных тем.',
-										'dirs': 'Показать каталог расположения тем.',
-										'save': 'Сохраните настройки.',
-										'reset': 'Сбросить все изменения.',
-										'theme': 'Файл JSON с цветовой схемой отображения уведомлений (например, dark.json или light.json).',
-										'output': 'Файл сохранения темы.'
-									}
-						},
-				'eng': {
-							'description': 'Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.',
-							'version': 'Version.',
-							'info': 'Information about the author.',
-							'lng': 'Interface language (Default: ru).',
-							'console': 'The default shell.',
-							'ontime': 'The time after which the notification will automatically close (5000 by default).',
-							'notimer': 'Turning off the timer for automatic closing of the notification.',
-							'style': 'Window display style (full, compact, Default: compact).',
-							'distance': 'The distance between the windows of neighboring notifications.',
-							'alpha': 'Transparency of the form.',
-							'sub_title': 'Management',
-							'sub_desc': 'Management commands.',
-							'sub_help': 'commands help.',
-							'systemd': {
-											'info': 'Systemd management.',
-											'create': "Create «pynotifyr.service».",
-											'delete': "Delete «pynotifyr.service».",
-											'status': "Status «pynotifyr.service».",
-											'enable': "Enable «pynotifyr.service».",
-											'disable': "Disable «pynotifyr.service».",
-											'start': "Start «pynotifyr.service».",
-											'stop': "Stop «pynotifyr.service».",
-											'reload': "Reload «pynotifyr.service»."
-										},
-							'daemon': {
-											'info': 'Daemon control.',
-											'start': 'Start daemon.',
-											'stop': 'Stop daemon.',
-											'restart': 'Restart daemon.',
-											'kill': 'Kill daemon.'
-										},
-							'title_group': 'Title',
-							'title_info': 'Title control.',
-							'title': 'The title of the notification.',
-							'text': 'The text of the notification.',
-							'tfamily': 'The font of the title.',
-							'tsize': 'The font size of the title (default: 12).',
-							'tweight': 'The font type of the title (default: bold).',
-							'tund': 'Underline the title text (0 is missing, 1 is present, default: 0).',
-							'tslant': 'The font tilt of the title text (Default: roman).',
-							'tstrike': 'The crossed-out font. Similar to the underscore setting (Default: 0).',
-							'tcolor': 'The color of the title text (default: black).',
-							'mess_group': 'Notification',
-							'mess_info': 'Notification control.',
-							'bg': 'The background color of the notification window.',
-							'bcolor': 'The color of the notification text.',
-							'bfamily': 'The font of the notification text.',
-							'bsize': 'The font size of the notification text (default: 12).',
-							'bweight': 'The font type of the notification (bold, normal, default: normal).',
-							'bund': 'Underline the notification text (0 is missing, 1 is present, default: 0).',
-							'bslant': 'The font tilt of the notification text (normal, italics, Default: roman).',
-							'bstrike': 'The crossed-out font. Similar to the underscore setting (Default: 0).',
-							'icon_group': 'Icon',
-							'icon_info': 'Icon control.',
-							'icon': 'The icon file inside the form (default: None).',
-							'close': 'The file of the notification window (cross) closing icon (default: default).',
-							'scale': 'Scaling of the central notification icon (please write 2 integers separated by commas without spaces. For example, 1,1. Dafault: 1,1).',
-							'clscale': 'Scaling of the notification window close button icon (please write 2 integers separated by commas without spaces. For example, 1,1. Dafault: 1,1).',
-							'offset_group': 'Offset',
-							'offset_info': 'Offsets and Movements.',
-							'posx': 'The position of the notification window on the desktop on the X axis (left, center and right. Default: right).',
-							'posy': 'The position of the notification window on the desktop along the Y axis (top, center and bottom. Default: top).',
-							'x': 'Move the notification window by the specified value along the X-axis (Default: 0).',
-							'y': 'Move the notification window by the specified value along the Y axis (Default: 0).',
-							'relative': 'Consider the coordinates of the shift along the axes relative, otherwise absolute (Default: True).',
-							'topmost': 'On top of other windows (default: False).',
-							'config': {
-										'info': 'Program Settings.',
-										'show': 'Show a list of available topics.',
-										'dirs': 'Show the themes location directory.',
-										'save': 'Save Settings.',
-										'reset': 'Reset Settings.',
-										'theme': 'A JSON file of the notification display color scheme (for example, dark.json or light.json).',
-										'output': 'The theme save file.'
-									}
-						}
-			}
-
-class Default_Lang:
-	
-	Lang = Ru_Eng()
-	
-	def __repr__(self):
-		return f"{self.__class__}: {self.Lang}"
-	
-	def __str__(self):
-		return f"{self.Lang}"
-	
-	def __call__(self):
-		return f"{self.Lang}"
 
 class Prog_Name:
 	
@@ -225,7 +49,7 @@ class Full_Prog:
 		self.name = "__" + name
 	
 	def __get__(self, instance, owner):
-		return str(pathlib.Path(__progname__).resolve())
+		return str(pathlib.Path(sys.argv[0]).resolve())
 
 class ProgName:
 	
@@ -251,64 +75,18 @@ class SystemdText:
 				f"[Install]\n" +\
 				f"WantedBy=multi-user.target"
 
-class Service_File:
-	
-	def __set_name__(self, owner, name):
-		self.name = "__" + name
-	
-	def __get__(self, instance, owner):
-		return pathlib.Path('/etc/systemd/system/pynotifyr.service').resolve()
-
 class SystemdConfig:
 	
 	config = SystemdText()
-	service = Service_File()
-
-	@classmethod
-	def control(cls, console, select = None):
-		service_info, service_err = shell_open(console, cls.commands(select))
-		return service_info, service_err
-
-	@classmethod
-	def create_service(cls):
-		if not cls.service.exists():
-			Files.read_write_file(cls.service, 'w', cls.config)
-
-	@classmethod
-	def remove_service(cls, console):
-		print('Stop service ...')
-		service, err = cls.control(console, 'stop')
-		if service != '':
-			print(service)
-		if err != '':
-			print('err:\n', err)
-		print('Disable service ...')
-		service, err = cls.control(console, 'disable')
-		if service != '':
-			print(service)
-		if err != '':
-			print('err:\n', err)
-		print('Delete service ...')
-		cls.service.unlink(missing_ok=True)
-		print('Systemd  daemon-reload...')
-		service, err = cls.control(console, 'restart')
-		if service != '':
-			print(service)
-		if err != '':
-			print('err:\n', err)
-
-	@staticmethod
-	def commands(case = None):
-		''' Systemd control selection. '''
-		return {
-				'status': f"sudo systemctl status pynotifyr.service",
-				'start': f"sudo systemctl start pynotifyr.service",
-				'stop': f"sudo systemctl stop pynotifyr.service",
-				'reload': f"sudo systemctl restart pynotifyr.service",
-				'enable': f"sudo systemctl enable pynotifyr.service",
-				'disable': f"sudo systemctl disable pynotifyr.service",
-				'restart': f"sudo systemctl daemon-reload",
-		}.get(case, f"sudo systemctl status pynotifyr.service")
+	
+	def __repr__(self):
+		return f"{self.__class__}: {self.config}"
+	
+	def __str__(self):
+		return f"{self.config}"
+	
+	def __call__(self):
+		return f"{self.config}"
 
 class AuthorInfo:
 	
@@ -581,36 +359,10 @@ class Texts:
 		data = base64.b64decode(inputBase)
 		return data.decode('utf-8')
 
-class SHELL:
-	
-	@classmethod
-	def shell_open(cls, shell: str, cmd: str):
-		''' Execute the command in the specified command shell. 
-			Returns the result of executing the command, if any.'''
-		proc = subprocess.Popen(shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
-		sys.stdout.flush()
-		proc.stdin.write(cmd + "\n")
-		proc.stdin.close()
-		out_data = f"{proc.stdout.read()}"
-		err_data = f"{proc.stderr.read()}"
-		# Close the 'Popen' process correctly
-		proc.terminate()
-		proc.kill()
-		return out_data, err_data
-
-	@classmethod
-	def shell_run(cls, cmd):
-		result = subprocess.run(cmd, shell=True)
-		return result
-
 class Meta(type):
 	
 	def __init__(cls, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-	
-	@property
-	def LangFileName(cls):
-		return f"language.json"
 	
 	@property
 	def access_key(cls):
@@ -619,10 +371,6 @@ class Meta(type):
 	@property
 	def SockFileName(cls):
 		return f"pynotifyr.sock"
-	
-	@property
-	def MainThemeName(cls):
-		return f"standart.json"
 	
 	@property
 	def LightThemeName(cls):
@@ -728,16 +476,8 @@ class FilesMeta(type):
 		super().__init__(*args, **kwargs)
 	
 	@property
-	def language_file(cls):
-		return Defaults.PREFIX.joinpath(Defaults.LangFileName)
-	
-	@property
 	def dark_theme(cls):
 		return cls.ThemeDir.joinpath(Defaults.DarkThemeName)
-
-	@property
-	def default_theme(cls):
-		return cls.ThemeDir.joinpath(Defaults.MainThemeName)
 
 	@property
 	def light_theme(cls):
@@ -863,14 +603,19 @@ class Arguments(Base):
 	def __init__(self, *args, **kwargs):
 		super(Arguments, self).__init__()
 		self.except_list.append('except_list')
-		self.except_list.extend('Reset ApplyTheme SaveTheme CreateDefaultConfig SaveConfig LoadConfig'.split())
-		self.except_list.extend('show dirs save reset output FormPos SocketFormPos ThemeDict FixArgs'.split())
-		self.except_list.extend('notimer ontime theme title text style alpha'.split())
-		self.except_list.extend('tfamily tsize tweight tund tslant tstrike tcolor'.split())
-		self.except_list.extend('bg bcolor bfamily bsize bweight bund bslant bstrike'.split())
-		self.except_list.extend('close clscale posx posy x y relative topmost'.split())
-		self.except_list.extend('info Lang lng noprefix'.split())
-		'''
+		self.except_list.append('Reset')
+		self.except_list.append('ApplyTheme')
+		self.except_list.append('SaveTheme')
+		self.except_list.append('CreateDefaultConfig')
+		self.except_list.append('save')
+		self.except_list.append('load')
+		self.except_list.append('reset')
+		self.except_list.append('output')
+		self.except_list.append('FormPos')
+		self.except_list.append('TempPos')
+		self.except_list.append('SocketFormPos')
+		self.except_list.append('ThemeDict')
+		self.except_list.append('isTheme')
 		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
 		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
 		self.OnTime = args[2] if len(args) >= 3 else kwargs.get('OnTime', 5000)
@@ -900,50 +645,32 @@ class Arguments(Base):
 		self.Relative = args[26] if len(args) >= 27 else kwargs.get('Relative', True)
 		self.Topmost = args[27] if len(args) >= 28 else kwargs.get('Topmost', False)
 		self.save = args[28] if len(args) >= 29 else kwargs.get('save', False)
-		self.reset = args[29] if len(args) >= 30 else kwargs.get('reset', False)
-		self.CloseIcon = args[30] if len(args) >= 31 else kwargs.get('CloseIcon', 'default')
-		self.Theme = args[31] if len(args) >= 32 else kwargs.get('Theme', '')
-		self.isTheme = args[32] if len(args) >= 33 else kwargs.get('isTheme', False)
-		self.output = args[33] if len(args) >= 34 else kwargs.get('output', '')
-		self.Style = args[34] if len(args) >= 35 else kwargs.get('Style', 'standart')
-		self.ScaleClose = args[35] if len(args) >= 36 else kwargs.get('ScaleClose', '1,1')
-		self.distance = args[36] if len(args) >= 37 else kwargs.get('distance', 10)
-		'''
+		self.load = args[29] if len(args) >= 30 else kwargs.get('load', False)
+		self.reset = args[30] if len(args) >= 31 else kwargs.get('reset', False)
+		self.CloseIcon = args[31] if len(args) >= 32 else kwargs.get('CloseIcon', 'default')
+		self.Theme = args[32] if len(args) >= 33 else kwargs.get('Theme', '')
+		self.isTheme = args[33] if len(args) >= 34 else kwargs.get('isTheme', False)
+		self.output = args[34] if len(args) >= 35 else kwargs.get('output', '')
+		self.Style = args[35] if len(args) >= 36 else kwargs.get('Style', 'standart')
+		self.ScaleClose = args[36] if len(args) >= 37 else kwargs.get('ScaleClose', '1,1')
+		self.distance = args[37] if len(args) >= 38 else kwargs.get('distance', 10)
 		self.FormPos = dict()
 		self.SocketFormPos = dict()
+		self.TempPos = dict()
 		self.ThemeDict = dict()
-		self.LoadConfig()
-		if Files.language_file.exists():
-			self.Lang = Files.read_write_json(Files.language_file, 'r')
-		else:
-			self.Lang = Default_Lang.Lang
-		if self.Theme != '':
-			self.ApplyTheme()
-	
-	def SaveConfig(self):
-		if not Files.ConfigFileName.exists():
-			Files.ConfigFileName.parent.mkdir(parents=True,exist_ok=True)
-		config = configparser.ConfigParser()
-		config['Main'] = {'Theme': str(self.Theme), 'Lang': str(self.lng)}
-		Files.read_write_config(str(Files.ConfigFileName), 'w', config)
-	
-	def LoadConfig(self):
+		temp_theme = f"{self.Theme}"
 		if Files.ConfigFileName.exists():
-			temp_theme = f"{self.Theme}"
 			config = configparser.ConfigParser()
 			Files.read_write_config(str(Files.ConfigFileName), 'r', config)
 			self.Theme = config['Main']['Theme']
-			self.lng = config['Main']['Lang']
 			self.ApplyTheme()
 			self.Theme = f"{temp_theme}"
-		else:
-			self.lng = 'ru'
+		if self.Theme != '':
+			self.ApplyTheme()
 	
 	def CreateDefaultConfig(self):
 		dark_theme = Files.dark_theme
 		light_theme = Files.light_theme
-		
-		theme_str = f"{self.Theme}"
 		
 		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
 		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
@@ -988,9 +715,6 @@ class Arguments(Base):
 		shutil.copy(cur_icon, self.icon)
 		shutil.copy(cur_close_icon, self.CloseIcon)
 		
-		self.noprefix = True
-		temp_output = f"{self.output}"
-		
 		self.output = dark_theme
 		
 		self.SaveTheme()
@@ -1004,32 +728,24 @@ class Arguments(Base):
 		
 		self.SaveTheme()
 		
-		self.Theme = light_theme	
-		self.SaveConfig()
+		config = configparser.ConfigParser()
+		config['Main'] = {'Theme': f"{light_theme}"}
+		
+		Files.read_write_config(str(Files.ConfigFileName), 'w', config)
 		
 		for k, v in temp_theme.items():
 			self.__dict__[k] = v
 		
 		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
 		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
-		self.output = f"{temp_output}"
-		self.Theme = f"{theme_str}"
-		
-		self.SaveTheme()
-		
-		Files.read_write_json(Files.language_file, 'w', Default_Lang.Lang)
 	
 	def ApplyTheme(self):
-		if self.Theme != '':
-			self.Theme = pathlib.Path(str(self.Theme)).resolve()
-			if self.Theme.exists():
-				self.ThemeDict = Files.read_write_json(self.Theme, 'r')
-				for k in self.ThemeDict.keys():
-					if self.ThemeDict.get(k, '') != '':
-						self.__dict__[k] = self.ThemeDict.get(k, '')
-		else:
-			self.Theme = Files.default_theme
-			self.ApplyTheme()
+		self.Theme = pathlib.Path(str(self.Theme)).resolve()
+		if self.Theme.exists():
+			self.ThemeDict = Files.read_write_json(self.Theme, 'r')
+			for k in self.ThemeDict.keys():
+				if self.ThemeDict.get(k, '') != '':
+					self.__dict__[k] = self.ThemeDict.get(k, '')
 	
 	def SaveTheme(self):
 		if self.output != '':
@@ -1044,9 +760,6 @@ class Arguments(Base):
 					else:
 						self.ThemeDict[k] = str(v)
 			Files.read_write_json(self.output, 'w', self.ThemeDict)
-		else:
-			self.output = Files.default_theme
-			self.SaveTheme()
 	
 	def Reset(self):
 		self.Title = 'Apps'
@@ -1091,40 +804,6 @@ class Arguments(Base):
 		self.TempPos.clear()
 		self.SocketFormPos.clear()
 		self.ThemeDict.clear()
-		self.lng = 'ru'
-	
-	def FixArgs(self):
-		self.isTimer = self.notimer
-		self.OnTime = self.ontime
-		self.Theme = self.theme
-		self.Title = self.title
-		self.Message = self.text
-		self.Style = self.style
-		#self.Style = str(FormStyle.GetFormStyleValue(str(self.style)).value)
-		self.Alpha = self.alpha
-		self.TFFamily = self.tfamily
-		self.TFSize = self.tsize
-		self.TFWeight = self.tweight
-		self.TFUnderline = self.tund
-		self.TFSlant = self.tslant
-		self.TFOverstrike = self.tstrike
-		self.TitleFG = self.tcolor
-		self.BG = self.bg
-		self.BodyFG = self.bcolor
-		self.BFFamily = self.bfamily
-		self.BFSize = self.bsize
-		self.BFWeight = self.bweight
-		self.BFUnderline = self.bund
-		self.BFSlant = self.bslant
-		self.BFOverstrike = self.bstrike
-		self.CloseIcon = self.close
-		self.ScaleClose = self.clscale
-		self.PosX = self.posx
-		self.PosY = self.posy
-		self.MoveX = self.x
-		self.MoveY = self.y
-		self.Relative = self.relative
-		self.Topmost = self.topmost
 	
 	def __getattr__(self, attrname):
 		''' Access to a non-existent variable. '''
@@ -1354,7 +1033,38 @@ class Notify:
 					self.root.rowconfigure(index=r, weight=1)
 				self.label_header.grid(row=0, column=0, padx=(15, 10), pady=(0, 0), sticky='sw')
 				self.label_text.grid(row=1, column=0, padx=(15, 10), pady=(0, 0), sticky='nw') # , ipadx=0, ipady=0
-		
+	
+	def CalcNewPosition(self):
+		self.args.TempPos.clear()
+		if len(self.args.SocketFormPos.keys()) == 6:
+			self.args.TempPos['Left'], self.args.TempPos['Top'] = Defaults.CalcNewPosition(self.screen_width, self.screen_height, 
+																self.args.SocketFormPos['position_x'], self.args.SocketFormPos['position_y'], 
+																self.args.SocketFormPos['Width'], self.args.SocketFormPos['Height'], 
+																self.args.SocketFormPos['Left'], self.args.SocketFormPos['Top'], self.args.distance)
+																# scr_width scr_height pos_x pos_y width height left top
+			if self.args.MoveX != 0 or self.args.MoveY != 0:
+				if self.args.Relative:
+					self.args.TempPos['Left'] = self.args.TempPos['Left'] + self.args.MoveX
+					self.args.TempPos['Top'] = self.args.TempPos['Top'] + self.args.MoveY
+				else:
+					self.args.TempPos['Left'] = self.args.MoveX
+					self.args.TempPos['Top'] = self.args.MoveY
+			self.args.TempPos['position_x'] = self.args.PosX if type(self.args.PosX) == str else self.args.PosX.value
+			self.args.TempPos['position_y'] = self.args.PosY if type(self.args.PosY) == str else self.args.PosY.value
+			self.args.TempPos['Width'] = self.width
+			self.args.TempPos['Height'] = self.height
+	
+	def UsePosition(self):
+		if len(self.args.SocketFormPos.keys()) == 6:
+			self.args.FormPos['position_x'] = self.args.TempPos['position_x']
+			self.args.FormPos['position_y'] = self.args.TempPos['position_y']
+			self.args.FormPos['Top'] = self.args.TempPos['Top']
+			self.args.FormPos['Left'] = self.args.TempPos['Left']
+			self.left = self.args.TempPos['Left']
+			self.top = self.args.TempPos['Top']
+			self.root.geometry(f"+{self.left}+{self.top}")
+			self.root.update_idletasks()
+	
 	def __CalcPosition(self):
 		''' Calculate Position Left (x) '''
 		if len(self.args.SocketFormPos.keys()) == 6:
@@ -1597,158 +1307,51 @@ class ClientServer:
 	@classmethod
 	def set_port(cls, value):
 		cls.port = value
-
-def createParser(argv):
 	
-	dict_parser = dict()
+def main():
 	'''
-	Кросс-платформенные графические уведомления и напоминания на рабочем столе на основе Tk/Tcl.
-	Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.
-	'''
-	parser = argparse.ArgumentParser(prog=ProgName.name, description=argv.Lang[argv.lng]['description'])
-	parser.add_argument ('-V', '--version', action='version', version=f'{ProgName.name} {__version__}',  help=argv.Lang[argv.lng]['version'])
-	parser.add_argument ('-info', '--info', action='store_true', default=False, help=argv.Lang[argv.lng]['info'])
-	parser.add_argument("-lng", '--lng', choices=['eng', 'ru'], default='ru', help=argv.Lang[argv.lng]['lng'])
-	if  platform.system() == 'Windows':
-		parser.add_argument("-console", '--console', dest="console", metavar='CONSOLE', type=str, default='cmd.exe', help=argv.Lang[argv.lng]['console'])
-	else:
-		parser.add_argument("-console", '--console', dest="console", metavar='CONSOLE', type=str, default='bash', help=argv.Lang[argv.lng]['console'])
-	parser.add_argument("-ontime", '--ontime', dest="ontime", metavar='ONTIME', type=int, default=5000, help=argv.Lang[argv.lng]['ontime'])
-	parser.add_argument ('-notimer', '--notimer', action='store_false', default=True, help=argv.Lang[argv.lng]['notimer'])
-	parser.add_argument('-style', choices=['standart', 'compact'], default='compact', help=argv.Lang[argv.lng]['style'])
-	parser.add_argument("-distance", '--distance', dest="distance", metavar='DISTANCE', type=int, default=10, help=argv.Lang[argv.lng]['distance'])
-	parser.add_argument("-alpha", '--alpha', dest="alpha", metavar='ALPHA', type=float, default=1.0, help=argv.Lang[argv.lng]['alpha'])
-	dict_parser['parser'] = parser
-	
-	subparsers = parser.add_subparsers(title=argv.Lang[argv.lng]['sub_title'], description=argv.Lang[argv.lng]['sub_desc'], help=argv.Lang[argv.lng]['sub_help'])
-	
-	dict_parser['subparsers'] = subparsers
-
-	if platform.system() == 'Linux':
-		parser_systemd = subparsers.add_parser('systemd', help=argv.Lang[argv.lng]['systemd']['info'])
-		
-		parser_systemd.add_argument ('-create', '--create', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['create'])
-		parser_systemd.add_argument ('-delete', '--delete', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['delete'])
-		parser_systemd.add_argument ('-status', '--status', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['status'])
-		parser_systemd.add_argument ('-enable', '--enable', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['enable'])
-		parser_systemd.add_argument ('-disable', '--disable', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['disable'])
-		parser_systemd.add_argument ('-start', '--start', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['start'])
-		parser_systemd.add_argument ('-stop', '--stop', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['stop'])
-		parser_systemd.add_argument ('-reload', '--reload', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['reload'])
-		parser_systemd.set_defaults(onlist='systemd')
-		
-		dict_parser['parser_systemd'] = parser_systemd
-	
-	parser_daemon = subparsers.add_parser('daemon', help=argv.Lang[argv.lng]['daemon']['info'])
-	
-	parser_daemon.add_argument ('-start', '--start', action='store_true', default=False, help=argv.Lang[argv.lng]['daemon']['start'])
-	parser_daemon.add_argument('-run', '--run', action='store_true', default=False, help=argparse.SUPPRESS)
-	parser_daemon.add_argument ('-stop', '--stop', action='store_true', default=False, help=argv.Lang[argv.lng]['daemon']['stop'])
-	parser_daemon.add_argument ('-restart', '--restart', action='store_true', default=False, help=argv.Lang[argv.lng]['daemon']['restart'])
-	parser_daemon.add_argument ('-kill', '--kill', action='store_true', default=False, help=argv.Lang[argv.lng]['daemon']['kill'])
-	parser_daemon.set_defaults(onlist='daemon')
-	
-	dict_parser['parser_daemon'] = parser_daemon
-	
-	group1 = parser.add_argument_group(argv.Lang[argv.lng]['title_group'], argv.Lang[argv.lng]['title_info'])
-	group1.add_argument("-title", '--title', dest="title", metavar='TITLE', type=str, default='Apps', help=argv.Lang[argv.lng]['title'])
-	group1.add_argument("-tfamily", '--tfamily', dest="tfamily", metavar='TFAMILY', type=str, default='Arial', help=argv.Lang[argv.lng]['tfamily'])
-	group1.add_argument("-tsize", '--tsize', dest="tsize", metavar='TSIZE', type=int, default=12, help=argv.Lang[argv.lng]['tsize'])
-	group1.add_argument('-tweight', choices=['bold', 'normal'], default='bold', help=argv.Lang[argv.lng]['tweight'])
-	group1.add_argument("-tund", '--tund', dest="tund", metavar='TUND', type=int, default=0, help=argv.Lang[argv.lng]['tund'])
-	group1.add_argument('-tslant', choices=['roman', 'Italic'], default='roman', help=argv.Lang[argv.lng]['tslant'])
-	group1.add_argument("-tstrike", '--tstrike', dest="tstrike", metavar='TSTRIKE', type=int, default=0, help=argv.Lang[argv.lng]['tstrike'])
-	group1.add_argument("-tcolor", '--tcolor', dest="tcolor", metavar='TCOLOR', type=str, default='black', help=argv.Lang[argv.lng]['tcolor'])
-	dict_parser['group1'] = group1
-	
-	group2 = parser.add_argument_group(argv.Lang[argv.lng]['mess_group'], argv.Lang[argv.lng]['mess_info'])
-	group2.add_argument("-text", '--text', dest="text", metavar='TEXT', type=str, default='Info', help=argv.Lang[argv.lng]['text'])
-	group2.add_argument("-bg", '--bg', dest="bg", metavar='BG', type=str, default='#FFFADD', help=argv.Lang[argv.lng]['bg'])
-	group2.add_argument("-bcolor", '--bcolor', dest="bcolor", metavar='BCOLOR', type=str, default='black', help=argv.Lang[argv.lng]['bcolor'])
-	group2.add_argument("-bfamily", '--bfamily', dest="bfamily", metavar='BFAMILY', type=str, default='Arial', help=argv.Lang[argv.lng]['bfamily'])
-	group2.add_argument("-bsize", '--bsize', dest="bsize", metavar='BSIZE', type=int, default=12, help=argv.Lang[argv.lng]['bsize'])
-	group2.add_argument('-bweight', choices=['bold', 'normal'], default='normal', help=argv.Lang[argv.lng]['bweight'])
-	group2.add_argument("-bund", '--bund', dest="bund", metavar='BUND', type=int, default=0, help=argv.Lang[argv.lng]['bund'])
-	group2.add_argument('-bslant', choices=['roman', 'Italic'], default='roman', help=argv.Lang[argv.lng]['bslant'])
-	group2.add_argument("-bstrike", '--bstrike', dest="bstrike", metavar='BSTRIKE', type=int, default=0, help=argv.Lang[argv.lng]['bstrike'])
-	dict_parser['group2'] = group2
-	
-	group3 = parser.add_argument_group(argv.Lang[argv.lng]['icon_group'], argv.Lang[argv.lng]['icon_info'])
-	group3.add_argument("-icon", '--icon', dest="icon", metavar='ICON', type=str, default='None', help=argv.Lang[argv.lng]['icon'])
-	group3.add_argument("-close", '--close', dest="close", metavar='CLOSE', type=str, default='default', help=argv.Lang[argv.lng]['close'])
-	group3.add_argument("-scale", '--scale', dest="scale", metavar='SCALE', type=str, default='1,1', help=argv.Lang[argv.lng]['scale'])
-	group3.add_argument("-clscale", '--clscale', dest="clscale", metavar='CLSCALE', type=str, default='1,1', help=argv.Lang[argv.lng]['clscale'])
-	dict_parser['group3'] = group3
-	
-	group4 = parser.add_argument_group(argv.Lang[argv.lng]['offset_group'], argv.Lang[argv.lng]['offset_info'])
-	group4.add_argument('-posx', choices=['left', 'center', 'right'], default='right', help=argv.Lang[argv.lng]['posx'])
-	group4.add_argument('-posy', choices=['top', 'center', 'bottom'], default='top', help=argv.Lang[argv.lng]['posy'])
-	group4.add_argument("-x", '--x', dest="x", metavar='X', type=int, default=0, help=argv.Lang[argv.lng]['x'])
-	group4.add_argument("-y", '--y', dest="y", metavar='Y', type=int, default=0, help=argv.Lang[argv.lng]['y'])
-	group4.add_argument ('-relative', '--relative', action='store_false', default=True, help=argv.Lang[argv.lng]['relative'])
-	group4.add_argument ('-topmost', '--topmost', action='store_true', default=False, help=argv.Lang[argv.lng]['topmost'])
-	dict_parser['group4'] = group4
-	
-	parser_options = subparsers.add_parser('config', help=argv.Lang[argv.lng]['config']['info'])
-	parser_options.add_argument ('-show', '--show', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['show'])
-	parser_options.add_argument ('-dirs', '--dirs', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['dirs'])
-	parser_options.add_argument ('-save', '--save', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['save'])
-	parser_options.add_argument ('-reset', '--reset', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['reset'])
-	parser_options.add_argument("-theme", '--theme', dest="theme", metavar='THEME', type=str, default='', help=argv.Lang[argv.lng]['config']['theme'])
-	parser_options.add_argument("-output", '--output', dest="output", metavar='OUTPUT', type=str, default='', help=argv.Lang[argv.lng]['config']['output'])
-	dict_parser['parser_options'] = parser_options
-	
-	return dict_parser
-
-def main(*argv):
-	#'''
-	args = Arguments()
-	parser_dict = createParser(args)
-	if len(argv) > 0:
-		parser_dict['parser'].parse_args(args=argv, namespace=Arguments)
-	else:
-		parser_dict['parser'].parse_args(namespace=Arguments)
-	
-	if args.info:
-		print(Author.Info)
-		sys.exit(0)
-	
-	args.FixArgs()
-	print(args)
-	#if args.show:
-	#	for item in Defaults.PREFIX.glob('*.json'): # Files.ThemeDir.glob('*.json'):
-	#		print(str(item.name))
-	#	sys.exit(0)
-	#print(args)
-	
-	#if args.onlist == None:
-	#	parser_dict['parser'].parse_args(['-h'])
-	#'''
-	'''
-	#args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-	args = Arguments(icon='None', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False, 
-					Style = FormStyle.Standart.value, MoveY = 0, MoveX = 0
+	args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+	#args = Arguments(icon='None', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
+					PosX=PositionX.Right.value, PosY = PositionY.Bottom.value, isTimer = False, Topmost = False, 
+					Style = FormStyle.Standart.value, MoveY = -40
 					) # Theme = './theme/light.json'
 	#args = Arguments(Theme = './theme/dark.json')
 	
 	#args.CloseIcon = Defaults.PREFIX.joinpath('exit_close_24x24.png')
 	args.CloseIcon = './exit_close_24x24.png'
+	dark_theme = {'TitleFG': 'white', 'BodyBG': '#303030', 'BodyFG': 'white', 'Alpha': 0.9}
+	light_theme = {'TitleFG': 'blue', 'BodyBG': '#FFFADD', 'BodyFG': 'black', 'Alpha': 0.9}
+	theme = light_theme	
+	args.BG = theme['BodyBG']
+	args.TitleFG = theme['TitleFG']
+	args.BodyFG = theme['BodyFG']
+	args.Alpha = theme['Alpha']
+	args.TFSize = 12
+	args.BFSize = 12
+	#args.output = './example.json'
+	#if args.output != '':
+	#	args.SaveTheme()
+	#args.Theme = './example.json'
+	#args.ApplyTheme()
+	#args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', PosX=PositionX.Right.value, PosY = PositionY.Bottom.value, MoveX = 0, MoveY = -40)
 	
 	#args.SocketFormPos.clear()
+	'''
+	'''
+	#args = Arguments()
+	notification = Notify(args)
+	notification.send()
+	print(notification.args.SocketFormPos)
+	'''
+	'''
 	args.SocketFormPos = {
 							'position_x': PositionX.Right.value,
-							'position_y': PositionY.Top.value,
-							'Width': 301,
-							'Height': 71,
-							'Left': 1059,
-							'Top': 648
+							'position_y': PositionY.Bottom.value,
+							'Width': 337,
+							'Height': 86,
+							'Left': 1008,
+							'Top': 652
 						}
-	args.SocketFormPos.clear()
-	notification = Notify(args)
-	print(notification.args.FormPos)
-	notification.send()
-	#print(notification.args.SocketFormPos)
 	'''
 	'''
 	client_server = ClientServer()
@@ -1769,25 +1372,6 @@ def main(*argv):
 		#client_server.StopServer()
 		if Files.check_pid(client_server.ServerPID):
 			os.kill(client_server.ServerPID, signal.SIGTERM)
-	'''
-	'''
-	python = str(pathlib.Path(str(sys.executable)).resolve())
-	script = str(pathlib.Path(sys.argv[0]).resolve())
-	if len(sys.argv) >= 2:
-		cmd = []
-		if  platform.system() == 'Windows':
-			if python == script:
-				cmd = ['start', '/b', script]
-			else:
-				cmd = ['start', '/b', python, script]
-		else:
-			if python == script:
-				cmd = [script, '&']
-			else:
-				cmd = [python, script, '&']
-		result = Shell.shell_run(cmd)
-	else:
-		print(sys.argv)
 	'''
 	pass
 
