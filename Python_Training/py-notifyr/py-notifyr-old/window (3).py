@@ -23,10 +23,6 @@ import subprocess
 
 import tasks
 
-from PIL import Image, ImageTk
-
-# pip install pillow
-
 __author__ = 'Mikhail Artamonov'
 __description__ = 'Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.'
 __progname__ = str(pathlib.Path(sys.argv[0]).resolve())
@@ -103,8 +99,8 @@ class Ru_Eng:
 							'icon_info': 'Управление иконками.',
 							'icon': 'Файл иконки внутри формы (по умолчанию: None).',
 							'close': 'Файл иконки закрытия (крестика) окна уведомления (по умолчанию: default).',
-							'scale': 'Масштабирование иконки внутри формы (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 32,32. По умолчанию: 24,24).',
-							'clscale': 'Масштабирование иконки закрытия (крестика) окна уведомления (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 32,32. По умолчанию: 24,24).',
+							'scale': 'Масштабирование иконки внутри формы (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 1,1. По умолчанию: 1,1).',
+							'clscale': 'Масштабирование иконки закрытия (крестика) окна уведомления (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 1,1. По умолчанию: 1,1).',
 							'offset_group': 'Положение',
 							'offset_info': 'Положения и перемещения.',
 							'posx': 'Положение окна уведомлений на рабочем столе по оси X (слева, по центру и справа. По умолчанию: справа).',
@@ -180,8 +176,8 @@ class Ru_Eng:
 							'icon_info': 'Icon control.',
 							'icon': 'The icon file inside the form (default: None).',
 							'close': 'The file of the notification window (cross) closing icon (default: default).',
-							'scale': 'Scaling of the central notification icon (please write 2 integers separated by commas without spaces. For example, 32,32. Dafault: 24,24).',
-							'clscale': 'Scaling of the notification window close button icon (please write 2 integers separated by commas without spaces. For example, 32,32. Dafault: 24,24).',
+							'scale': 'Scaling of the central notification icon (please write 2 integers separated by commas without spaces. For example, 1,1. Dafault: 1,1).',
+							'clscale': 'Scaling of the notification window close button icon (please write 2 integers separated by commas without spaces. For example, 1,1. Dafault: 1,1).',
 							'offset_group': 'Offset',
 							'offset_info': 'Offsets and Movements.',
 							'posx': 'The position of the notification window on the desktop on the X axis (left, center and right. Default: right).',
@@ -270,7 +266,7 @@ class SystemdConfig:
 
 	@classmethod
 	def control(cls, console, select = None):
-		service_info, service_err = SHELL.shell_open(console, cls.commands(select))
+		service_info, service_err = shell_open(console, cls.commands(select))
 		return service_info, service_err
 
 	@classmethod
@@ -285,13 +281,13 @@ class SystemdConfig:
 		if service != '':
 			print(service)
 		if err != '':
-			print('Error:\n', err)
+			print('err:\n', err)
 		print('Disable service ...')
 		service, err = cls.control(console, 'disable')
 		if service != '':
 			print(service)
 		if err != '':
-			print('Error:\n', err)
+			print('err:\n', err)
 		print('Delete service ...')
 		cls.service.unlink(missing_ok=True)
 		print('Systemd  daemon-reload...')
@@ -299,7 +295,7 @@ class SystemdConfig:
 		if service != '':
 			print(service)
 		if err != '':
-			print('Error:\n', err)
+			print('err:\n', err)
 
 	@staticmethod
 	def commands(case = None):
@@ -587,8 +583,8 @@ class Texts:
 
 class SHELL:
 	
-	@staticmethod
-	def shell_open(shell: str, cmd: str):
+	@classmethod
+	def shell_open(cls, shell: str, cmd: str):
 		''' Execute the command in the specified command shell. 
 			Returns the result of executing the command, if any.'''
 		proc = subprocess.Popen(shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
@@ -602,8 +598,8 @@ class SHELL:
 		proc.kill()
 		return out_data, err_data
 
-	@staticmethod
-	def shell_run(cmd):
+	@classmethod
+	def shell_run(cls, cmd):
 		result = subprocess.run(cmd, shell=True)
 		return result
 
@@ -867,13 +863,13 @@ class Arguments(Base):
 	def __init__(self, *args, **kwargs):
 		super(Arguments, self).__init__()
 		self.except_list.append('except_list')
-		self.except_list.extend('Reset ApplyTheme SaveTheme CreateDefaultConfig SaveConfig LoadConfig Search_Socket_Pos'.split())
+		self.except_list.extend('Reset ApplyTheme SaveTheme CreateDefaultConfig SaveConfig LoadConfig'.split())
 		self.except_list.extend('show dirs save reset output FormPos SocketFormPos ThemeDict FixArgs'.split())
 		self.except_list.extend('notimer ontime theme title text style alpha'.split())
 		self.except_list.extend('tfamily tsize tweight tund tslant tstrike tcolor'.split())
 		self.except_list.extend('bg bcolor bfamily bsize bweight bund bslant bstrike'.split())
 		self.except_list.extend('close clscale posx posy x y relative topmost'.split())
-		self.except_list.extend('info Lang lng noprefix Theme'.split())
+		self.except_list.extend('info Lang lng noprefix'.split())
 		'''
 		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
 		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
@@ -895,7 +891,7 @@ class Arguments(Base):
 		self.BFOverstrike = args[17] if len(args) >= 18 else kwargs.get('BFOverstrike', 0)
 		self.BG = args[18] if len(args) >= 19 else kwargs.get('BG','#FFFADD')
 		self.BodyFG = args[19] if len(args) >= 20 else kwargs.get('BodyFG','black')
-		self.scale = args[20] if len(args) >= 21 else kwargs.get('scale', '24,24')
+		self.scale = args[20] if len(args) >= 21 else kwargs.get('scale', '1,1')
 		self.PosX = args[21] if len(args) >= 22 else kwargs.get('PosX', 'right')
 		self.PosY = args[22] if len(args) >= 23 else kwargs.get('PosY', 'top')
 		self.Alpha = args[23] if len(args) >= 24 else kwargs.get('Alpha', 1.0)
@@ -910,7 +906,7 @@ class Arguments(Base):
 		self.isTheme = args[32] if len(args) >= 33 else kwargs.get('isTheme', False)
 		self.output = args[33] if len(args) >= 34 else kwargs.get('output', '')
 		self.Style = args[34] if len(args) >= 35 else kwargs.get('Style', 'standart')
-		self.ScaleClose = args[35] if len(args) >= 36 else kwargs.get('ScaleClose', '24,24')
+		self.ScaleClose = args[35] if len(args) >= 36 else kwargs.get('ScaleClose', '1,1')
 		self.distance = args[36] if len(args) >= 37 else kwargs.get('distance', 10)
 		'''
 		self.FormPos = dict()
@@ -923,13 +919,6 @@ class Arguments(Base):
 			self.Lang = Default_Lang.Lang
 		if self.Theme != '':
 			self.ApplyTheme()
-	
-	def Search_Socket_Pos(self, task_list):
-		for z in range(len(task_list)-1, 0, -1):
-			if type(task_list[z]) == dict:
-				if task_list[z]['position_x'] == self.PosX and task_list[z]['position_y'] == self.PosY:
-					return task_list[z]
-		return dict()
 	
 	def SaveConfig(self):
 		if not Files.ConfigFileName.exists():
@@ -955,8 +944,9 @@ class Arguments(Base):
 		light_theme = Files.light_theme
 		
 		theme_str = f"{self.Theme}"
+		
 		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
-		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'default' else self.CloseIcon
+		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
 		
 		temp_theme = dict()
 		for k, v in self.__dict__.items():
@@ -976,13 +966,12 @@ class Arguments(Base):
 		self.TFSize = 12
 		self.BFSize = 12
 		self.scale = '5,5'
-		self.ScaleClose = '24,24'
+		self.ScaleClose = '1,1'
 		self.PosX = 'right'
 		self.PosY = 'top'
 		self.MoveX = 0
 		self.MoveY = 0
 		self.OnTime = 5000
-		self.Style = 'compact'
 		cur_icon = Defaults.PREFIX.joinpath('info.png').resolve()
 		cur_close_icon = Defaults.PREFIX.joinpath('exit_close_24x24.png').resolve()
 		self.icon = Files.ThemeIcons.joinpath('info.png').resolve()
@@ -1010,7 +999,6 @@ class Arguments(Base):
 		self.TitleFG = 'black'
 		self.BodyFG = 'black'
 		self.Alpha = 0.8
-		self.Style = 'compact'
 		
 		self.output = light_theme
 		
@@ -1023,7 +1011,7 @@ class Arguments(Base):
 			self.__dict__[k] = v
 		
 		self.icon = pathlib.Path(str(self.icon)).resolve() if self.icon != '' and self.icon != 'None' else self.icon
-		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'default' else self.CloseIcon
+		self.CloseIcon = pathlib.Path(str(self.CloseIcon)).resolve() if self.CloseIcon != '' and self.CloseIcon != 'None' else self.CloseIcon
 		self.output = f"{temp_output}"
 		self.Theme = f"{theme_str}"
 		
@@ -1081,7 +1069,7 @@ class Arguments(Base):
 		self.BFOverstrike = 0
 		self.BG = '#FFFADD'
 		self.BodyFG = 'black'
-		self.scale = '24,24'
+		self.scale = '1,1'
 		self.PosX = 'right'
 		self.PosY = 'top'
 		self.Alpha = 1.0
@@ -1090,15 +1078,17 @@ class Arguments(Base):
 		self.Relative = True
 		self.Topmost = False
 		self.save = False
+		self.load = False
 		self.reset = False
 		self.CloseIcon = 'default'
 		self.Theme = ''
 		self.isTheme = False
 		self.output = ''
-		self.Style = 'compact'
-		self.ScaleClose = '24,24'
+		self.Style = 'standart'
+		self.ScaleClose = '1,1'
 		self.distance = 10
 		self.FormPos.clear()
+		self.TempPos.clear()
 		self.SocketFormPos.clear()
 		self.ThemeDict.clear()
 		self.lng = 'ru'
@@ -1286,10 +1276,8 @@ class Notify:
 			else:
 				closeIcon = ''
 			if closeIcon != '':
-				self.close_icon = Image.open(str(pathlib.Path(str(closeIcon)).resolve()))
-				self.close_icon = self.close_icon.resize((tuple(map(int, self.args.ScaleClose.split(',')))), Image.LANCZOS)
-				self.close_icon = ImageTk.PhotoImage(self.close_icon)
-				
+				self.close_icon = tk.PhotoImage(file = closeIcon)
+				self.close_icon = self.close_icon.subsample(*tuple(map(int, self.args.ScaleClose.split(','))))
 				self.btn1 = tk.Button(self.root, text="", justify=tk.CENTER,
 								borderwidth=0,
 								bg=self.args.BG,
@@ -1311,10 +1299,8 @@ class Notify:
 		''' Crete Icon on forms (image) '''
 		if self.args.icon != 'None':
 			if pathlib.Path(str(self.args.icon)).resolve().exists():
-				self.image = Image.open(str(pathlib.Path(str(self.args.icon)).resolve()))
-				self.image = self.image.resize((tuple(map(int, self.args.scale.split(',')))), Image.LANCZOS)
-				self.image = ImageTk.PhotoImage(self.image)
-				
+				self.image = tk.PhotoImage(file=pathlib.Path(str(self.args.icon)).resolve())
+				self.image = self.image.subsample(*tuple(map(int, self.args.scale.split(','))))
 				self.label_image = ttk.Label(self.root, text="", style='I.TLabel')
 				self.label_image.bind('<Button-1>', self.__OnClose)
 				self.label_image.image = self.image
@@ -1690,8 +1676,8 @@ def createParser(argv):
 	group3 = parser.add_argument_group(argv.Lang[argv.lng]['icon_group'], argv.Lang[argv.lng]['icon_info'])
 	group3.add_argument("-icon", '--icon', dest="icon", metavar='ICON', type=str, default='None', help=argv.Lang[argv.lng]['icon'])
 	group3.add_argument("-close", '--close', dest="close", metavar='CLOSE', type=str, default='default', help=argv.Lang[argv.lng]['close'])
-	group3.add_argument("-scale", '--scale', dest="scale", metavar='SCALE', type=str, default='24,24', help=argv.Lang[argv.lng]['scale'])
-	group3.add_argument("-clscale", '--clscale', dest="clscale", metavar='CLSCALE', type=str, default='24,24', help=argv.Lang[argv.lng]['clscale'])
+	group3.add_argument("-scale", '--scale', dest="scale", metavar='SCALE', type=str, default='1,1', help=argv.Lang[argv.lng]['scale'])
+	group3.add_argument("-clscale", '--clscale', dest="clscale", metavar='CLSCALE', type=str, default='1,1', help=argv.Lang[argv.lng]['clscale'])
 	dict_parser['group3'] = group3
 	
 	group4 = parser.add_argument_group(argv.Lang[argv.lng]['offset_group'], argv.Lang[argv.lng]['offset_info'])
@@ -1728,25 +1714,7 @@ def main(*argv):
 		sys.exit(0)
 	
 	args.FixArgs()
-	#notification = Notify(args)
-	#notification.send()
-	'''
-	imitate_task = []
-	imitate_task.append(ClientServer.PID)
-	#imitate_task.append({'position_x': PositionX.Right.value, 'position_y': PositionY.Top.value, 'Width': 232, 'Height': 57, 'Left': 1128, 'Top': 0})
-	imitate_task.append({'position_x': PositionX.Right.value, 'position_y': PositionY.Bottom.value, 'Width': 232, 'Height': 57, 'Left': 1128, 'Top': 711})
-	imitate_task.append({'position_x': PositionX.Left.value, 'position_y': PositionY.Top.value, 'Width': 232, 'Height': 57, 'Left': 0, 'Top': 0})
-	
-	args.SocketFormPos = args.Search_Socket_Pos(imitate_task)
-	
-	notification = Notify(args)
-	print(notification.args.FormPos)
-	notification.send()
-	##print(notification.args.SocketFormPos)
-	'''
-	
-	#args.CreateDefaultConfig()
-	#print(args)
+	print(args)
 	#if args.show:
 	#	for item in Defaults.PREFIX.glob('*.json'): # Files.ThemeDir.glob('*.json'):
 	#		print(str(item.name))
@@ -1778,7 +1746,7 @@ def main(*argv):
 						}
 	args.SocketFormPos.clear()
 	notification = Notify(args)
-	#print(notification.args.FormPos)
+	print(notification.args.FormPos)
 	notification.send()
 	#print(notification.args.SocketFormPos)
 	'''
@@ -1817,7 +1785,7 @@ def main(*argv):
 				cmd = [script, '&']
 			else:
 				cmd = [python, script, '&']
-		result = SHELL.shell_run(cmd)
+		result = Shell.shell_run(cmd)
 	else:
 		print(sys.argv)
 	'''
