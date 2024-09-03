@@ -316,6 +316,7 @@ class SystemdConfig:
 			return 'stop'
 		if argv.reload:
 			return 'reload'
+		return 'empty'
 
 	@staticmethod
 	def commands(case = None):
@@ -897,7 +898,7 @@ class Arguments(Base):
 		self.except_list.extend('tfamily tsize tweight tund tslant tstrike tcolor'.split())
 		self.except_list.extend('bg bcolor bfamily bsize bweight bund bslant bstrike'.split())
 		self.except_list.extend('close clscale posx posy x y relative topmost'.split())
-		self.except_list.extend('info Lang lng noprefix Theme'.split())
+		self.except_list.extend('info Lang lng noprefix Theme parser_dict'.split())
 		'''
 		self.Title = args[0] if len(args) >= 1 else kwargs.get('Title','Apps')
 		self.Message = args[1] if len(args) >= 2 else kwargs.get('Message','Info!')
@@ -1762,12 +1763,16 @@ def systemd_process(argv):
 	if argv.delete:
 		SystemdConfig.remove_service(argv.console)
 		sys.exit(0)
-	service, err = SystemdConfig.control(argv.console, SystemdConfig.systemd_question(argv))
-	if service != '':
-		print(service)
-	if err != '':
-		print('Error:\n', err)
-	sys.exit(0)
+	if SystemdConfig.systemd_question(argv) != 'empty':
+		service, err = SystemdConfig.control(argv.console, SystemdConfig.systemd_question(argv))
+		if service != '':
+			print(service)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	else:
+		argv.parser_dict['parser_systemd'].parse_args(['-h'])
+		sys.exit(0)
 
 def daemon_process(argv):
 	def run_script_shell():
@@ -1809,6 +1814,8 @@ def daemon_process(argv):
 		argv.client_server.Client_Server()
 		argv.client_server.KillServer(Files.socket_file)
 		sys.exit(0)
+	argv.parser_dict['parser_daemon'].parse_args(['-h'])
+	sys.exit(0)
 
 def config_process(argv):
 	if argv.show:
@@ -1824,6 +1831,9 @@ def config_process(argv):
 		argv.CreateDefaultConfig()
 	if argv.save:
 		argv.SaveConfig()
+	#if not argv.reset and not argv.save:
+	#	argv.parser_dict['parser_options'].parse_args(['-h'])
+	sys.exit(0)
 
 def main(*argv):
 	
@@ -1836,6 +1846,8 @@ def main(*argv):
 		parser_dict['parser'].parse_args(namespace=Arguments)
 	
 	args.FixArgs()
+	
+	args.parser_dict = parser_dict
 	
 	if args.Theme != '':
 			args.ApplyTheme()
@@ -1854,18 +1866,20 @@ def main(*argv):
 			}.get(args.onlist, empty)(args)
 	
 	args.client_server.TestConnected(args.client_server.get_host(), args.client_server.get_port())
-	args.client_server.Client_Server()
 	
-	task_list = args.client_server..copy()
-	args.SocketFormPos = args.Search_Socket_Pos(task_list)
-	
-	notification = Notify(args)
-	
-	args.client_server.task.put(notification.args.FormPos)	
-	
-	notification.send()
-	
-	args.client_server.task.remove(notification.args.FormPos)
+	if not args.client_server.is_server:
+		args.client_server.Client_Server()
+		
+		task_list = args.client_server.task.copy()
+		args.SocketFormPos = args.Search_Socket_Pos(task_list)
+		
+		notification = Notify(args)
+		
+		args.client_server.task.put(notification.args.FormPos)	
+		
+		notification.send()
+		
+		args.client_server.task.remove(notification.args.FormPos)
 	
 	#if args.onlist == None:
 	#	parser_dict['parser'].parse_args(['-h'])
