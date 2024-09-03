@@ -24,8 +24,7 @@ import subprocess
 import tasks
 
 from PIL import Image, ImageTk
-
-# pip install pillow
+# bmp ico jpg png tga
 
 __author__ = 'Mikhail Artamonov'
 __description__ = 'Cross-platform graphical desktop notifications and reminders based on Tk/Tcl.'
@@ -103,7 +102,7 @@ class Ru_Eng:
 							'icon_info': 'Управление иконками.',
 							'icon': 'Файл иконки внутри формы (по умолчанию: None).',
 							'close': 'Файл иконки закрытия (крестика) окна уведомления (по умолчанию: default).',
-							'scale': 'Масштабирование иконки внутри формы (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 32,32. По умолчанию: 24,24).',
+							'scale': 'Масштабирование иконки внутри формы (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 32,32. По умолчанию: 48,48).',
 							'clscale': 'Масштабирование иконки закрытия (крестика) окна уведомления (Пожалуйста, укажите 2 значения через запятую без пробелов. Например, 32,32. По умолчанию: 24,24).',
 							'offset_group': 'Положение',
 							'offset_info': 'Положения и перемещения.',
@@ -118,6 +117,7 @@ class Ru_Eng:
 										'show': 'Показать список доступных тем.',
 										'dirs': 'Показать каталог расположения тем.',
 										'save': 'Сохраните настройки.',
+										'load': 'Загрузить настройки.',
 										'reset': 'Сбросить все изменения.',
 										'theme': 'Файл JSON с цветовой схемой отображения уведомлений (например, dark.json или light.json).',
 										'output': 'Файл сохранения темы.'
@@ -180,7 +180,7 @@ class Ru_Eng:
 							'icon_info': 'Icon control.',
 							'icon': 'The icon file inside the form (default: None).',
 							'close': 'The file of the notification window (cross) closing icon (default: default).',
-							'scale': 'Scaling of the central notification icon (please write 2 integers separated by commas without spaces. For example, 32,32. Dafault: 24,24).',
+							'scale': 'Scaling of the central notification icon (please write 2 integers separated by commas without spaces. For example, 32,32. Dafault: 48,48).',
 							'clscale': 'Scaling of the notification window close button icon (please write 2 integers separated by commas without spaces. For example, 32,32. Dafault: 24,24).',
 							'offset_group': 'Offset',
 							'offset_info': 'Offsets and Movements.',
@@ -194,6 +194,7 @@ class Ru_Eng:
 										'info': 'Program Settings.',
 										'show': 'Show a list of available topics.',
 										'dirs': 'Show the themes location directory.',
+										'load': 'Download Settings.',
 										'save': 'Save Settings.',
 										'reset': 'Reset Settings.',
 										'theme': 'A JSON file of the notification display color scheme (for example, dark.json or light.json).',
@@ -272,7 +273,7 @@ class SystemdConfig:
 	def control(cls, console, select = None):
 		service_info, service_err = SHELL.shell_open(console, cls.commands(select))
 		return service_info, service_err
-
+	
 	@classmethod
 	def create_service(cls):
 		if not cls.service.exists():
@@ -302,6 +303,21 @@ class SystemdConfig:
 			print('Error:\n', err)
 
 	@staticmethod
+	def systemd_question(argv):
+		if argv.status:
+			return 'status'
+		if argv.enable:
+			return 'enable'
+		if argv.disable:
+			return 'disable'
+		if argv.start:
+			return 'start'
+		if argv.stop:
+			return 'stop'
+		if argv.reload:
+			return 'reload'
+
+	@staticmethod
 	def commands(case = None):
 		''' Systemd control selection. '''
 		return {
@@ -312,7 +328,7 @@ class SystemdConfig:
 				'enable': f"sudo systemctl enable pynotifyr.service",
 				'disable': f"sudo systemctl disable pynotifyr.service",
 				'restart': f"sudo systemctl daemon-reload",
-		}.get(case, f"sudo systemctl status pynotifyr.service")
+		}.get(case, f"sudo systemctl daemon-reload")
 
 class AuthorInfo:
 	
@@ -613,6 +629,10 @@ class Meta(type):
 		super().__init__(*args, **kwargs)
 	
 	@property
+	def prefix_icon_folder(cls):
+		return f"py-notifyr-icons"
+	
+	@property
 	def LangFileName(cls):
 		return f"language.json"
 	
@@ -734,6 +754,10 @@ class FilesMeta(type):
 	@property
 	def language_file(cls):
 		return Defaults.PREFIX.joinpath(Defaults.LangFileName)
+	
+	@property
+	def prefix_icon(cls):
+		return Defaults.PREFIX.joinpath(Defaults.prefix_icon_folder)
 	
 	@property
 	def dark_theme(cls):
@@ -921,17 +945,16 @@ class Arguments(Base):
 			self.Lang = Files.read_write_json(Files.language_file, 'r')
 		else:
 			self.Lang = Default_Lang.Lang
-		if self.Theme != '':
-			self.ApplyTheme()
 	
 	def Search_Socket_Pos(self, task_list):
 		for z in range(len(task_list)-1, 0, -1):
 			if type(task_list[z]) == dict:
-				if task_list[z]['position_x'] == self.PosX and task_list[z]['position_y'] == self.PosY:
+				if task_list[z].get('position_x', '') == self.PosX and task_list[z].get('position_y', '') == self.PosY:
 					return task_list[z]
 		return dict()
 	
 	def SaveConfig(self):
+		self.SaveTheme()
 		if not Files.ConfigFileName.exists():
 			Files.ConfigFileName.parent.mkdir(parents=True,exist_ok=True)
 		config = configparser.ConfigParser()
@@ -975,7 +998,7 @@ class Arguments(Base):
 		self.Alpha = 0.8
 		self.TFSize = 12
 		self.BFSize = 12
-		self.scale = '5,5'
+		self.scale = '48,48'
 		self.ScaleClose = '24,24'
 		self.PosX = 'right'
 		self.PosY = 'top'
@@ -983,6 +1006,8 @@ class Arguments(Base):
 		self.MoveY = 0
 		self.OnTime = 5000
 		self.Style = 'compact'
+		
+		'''
 		cur_icon = Defaults.PREFIX.joinpath('info.png').resolve()
 		cur_close_icon = Defaults.PREFIX.joinpath('exit_close_24x24.png').resolve()
 		self.icon = Files.ThemeIcons.joinpath('info.png').resolve()
@@ -998,6 +1023,15 @@ class Arguments(Base):
 		
 		shutil.copy(cur_icon, self.icon)
 		shutil.copy(cur_close_icon, self.CloseIcon)
+		'''
+		if Files.prefix_icon.exists():
+			Files.ThemeIcons.mkdir(parents=True,exist_ok=True)
+			all_icon = Files.prefix_icon.glob('*.png')
+			for icons in all_icon:
+				new_icon = Files.ThemeIcons.joinpath(str(icons.name))
+				if new_icon.exists():
+					new_icon.unlink(missing_ok=True)
+				shutil.copy(icons, new_icon)
 		
 		self.noprefix = True
 		temp_output = f"{self.output}"
@@ -1081,7 +1115,7 @@ class Arguments(Base):
 		self.BFOverstrike = 0
 		self.BG = '#FFFADD'
 		self.BodyFG = 'black'
-		self.scale = '24,24'
+		self.scale = '48,48'
 		self.PosX = 'right'
 		self.PosY = 'top'
 		self.Alpha = 1.0
@@ -1286,6 +1320,7 @@ class Notify:
 			else:
 				closeIcon = ''
 			if closeIcon != '':
+				
 				self.close_icon = Image.open(str(pathlib.Path(str(closeIcon)).resolve()))
 				self.close_icon = self.close_icon.resize((tuple(map(int, self.args.ScaleClose.split(',')))), Image.LANCZOS)
 				self.close_icon = ImageTk.PhotoImage(self.close_icon)
@@ -1311,6 +1346,7 @@ class Notify:
 		''' Crete Icon on forms (image) '''
 		if self.args.icon != 'None':
 			if pathlib.Path(str(self.args.icon)).resolve().exists():
+
 				self.image = Image.open(str(pathlib.Path(str(self.args.icon)).resolve()))
 				self.image = self.image.resize((tuple(map(int, self.args.scale.split(',')))), Image.LANCZOS)
 				self.image = ImageTk.PhotoImage(self.image)
@@ -1626,7 +1662,7 @@ def createParser(argv):
 	if  platform.system() == 'Windows':
 		parser.add_argument("-console", '--console', dest="console", metavar='CONSOLE', type=str, default='cmd.exe', help=argv.Lang[argv.lng]['console'])
 	else:
-		parser.add_argument("-console", '--console', dest="console", metavar='CONSOLE', type=str, default='bash', help=argv.Lang[argv.lng]['console'])
+		parser.add_argument("-console", '--console', dest="console", metavar='CONSOLE', type=str, default='sh', help=argv.Lang[argv.lng]['console'])
 	parser.add_argument("-ontime", '--ontime', dest="ontime", metavar='ONTIME', type=int, default=5000, help=argv.Lang[argv.lng]['ontime'])
 	parser.add_argument ('-notimer', '--notimer', action='store_false', default=True, help=argv.Lang[argv.lng]['notimer'])
 	parser.add_argument('-style', choices=['standart', 'compact'], default='compact', help=argv.Lang[argv.lng]['style'])
@@ -1690,7 +1726,7 @@ def createParser(argv):
 	group3 = parser.add_argument_group(argv.Lang[argv.lng]['icon_group'], argv.Lang[argv.lng]['icon_info'])
 	group3.add_argument("-icon", '--icon', dest="icon", metavar='ICON', type=str, default='None', help=argv.Lang[argv.lng]['icon'])
 	group3.add_argument("-close", '--close', dest="close", metavar='CLOSE', type=str, default='default', help=argv.Lang[argv.lng]['close'])
-	group3.add_argument("-scale", '--scale', dest="scale", metavar='SCALE', type=str, default='24,24', help=argv.Lang[argv.lng]['scale'])
+	group3.add_argument("-scale", '--scale', dest="scale", metavar='SCALE', type=str, default='48,48', help=argv.Lang[argv.lng]['scale'])
 	group3.add_argument("-clscale", '--clscale', dest="clscale", metavar='CLSCALE', type=str, default='24,24', help=argv.Lang[argv.lng]['clscale'])
 	dict_parser['group3'] = group3
 	
@@ -1706,122 +1742,133 @@ def createParser(argv):
 	parser_options = subparsers.add_parser('config', help=argv.Lang[argv.lng]['config']['info'])
 	parser_options.add_argument ('-show', '--show', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['show'])
 	parser_options.add_argument ('-dirs', '--dirs', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['dirs'])
+	#parser_options.add_argument ('-load', '--load', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['load'])
 	parser_options.add_argument ('-save', '--save', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['save'])
 	parser_options.add_argument ('-reset', '--reset', action='store_true', default=False, help=argv.Lang[argv.lng]['config']['reset'])
 	parser_options.add_argument("-theme", '--theme', dest="theme", metavar='THEME', type=str, default='', help=argv.Lang[argv.lng]['config']['theme'])
 	parser_options.add_argument("-output", '--output', dest="output", metavar='OUTPUT', type=str, default='', help=argv.Lang[argv.lng]['config']['output'])
+	parser_options.set_defaults(onlist='config')
 	dict_parser['parser_options'] = parser_options
 	
 	return dict_parser
 
+def empty(argv):
+	pass
+
+def systemd_process(argv):
+	if argv.create:
+		SystemdConfig.create_service()
+		sys.exit(0)
+	if argv.delete:
+		SystemdConfig.remove_service(argv.console)
+		sys.exit(0)
+	service, err = SystemdConfig.control(argv.console, SystemdConfig.systemd_question(argv))
+	if service != '':
+		print(service)
+	if err != '':
+		print('Error:\n', err)
+	sys.exit(0)
+
+def daemon_process(argv):
+	def run_script_shell():
+		python = str(pathlib.Path(str(sys.executable)).resolve())
+		script = str(pathlib.Path(sys.argv[0]).resolve())
+		cmd = []
+		if  platform.system() == 'Windows':
+			if python == script:
+				cmd = ['start', '/b', script, 'daemon', '-run']
+			else:
+				cmd = ['start', '/b', python, script, 'daemon', '-run']
+		else:
+			if python == script:
+				cmd = [script, 'daemon', '-run', '&']
+			else:
+				cmd = [python, script, 'daemon', '-run', '&']
+		result = SHELL.shell_run(cmd)
+	if argv.run and argv.client_server.is_server:
+		argv.client_server.Client_Server()
+		argv.client_server.save_server_pid(Files.socket_file, False)
+		argv.client_server.RunServer()
+		argv.client_server.save_server_pid(Files.socket_file, True)
+		sys.exit(0)
+	if argv.start and argv.client_server.is_server:
+		run_script_shell()
+		sys.exit(0)
+	if argv.stop and not argv.client_server.is_server:
+		argv.client_server.Client_Server()
+		argv.client_server.StopServer()
+		argv.client_server.save_server_pid(Files.socket_file, True)
+		sys.exit(0)
+	if argv.restart and not argv.client_server.is_server:
+		argv.client_server.Client_Server()
+		argv.client_server.StopServer()
+		argv.client_server.save_server_pid(Files.socket_file, True)
+		run_script_shell()
+		sys.exit(0)
+	if argv.kill and not argv.client_server.is_server:
+		argv.client_server.Client_Server()
+		argv.client_server.KillServer(Files.socket_file)
+		sys.exit(0)
+
+def config_process(argv):
+	if argv.show:
+		for item in Files.ThemeDir.glob('*.json'):
+			print(str(item.name))
+		sys.exit(0)
+	if argv.dirs:
+		print(str(Files.ThemeDir))
+		sys.exit(0)
+	#if argv.load:
+	#	argv.LoadConfig()
+	if argv.reset:
+		argv.CreateDefaultConfig()
+	if argv.save:
+		argv.SaveConfig()
+
 def main(*argv):
-	#'''
+	
 	args = Arguments()
 	parser_dict = createParser(args)
+	
 	if len(argv) > 0:
 		parser_dict['parser'].parse_args(args=argv, namespace=Arguments)
 	else:
 		parser_dict['parser'].parse_args(namespace=Arguments)
 	
+	args.FixArgs()
+	
+	if args.Theme != '':
+			args.ApplyTheme()
+	
 	if args.info:
 		print(Author.Info)
 		sys.exit(0)
 	
-	args.FixArgs()
-	#notification = Notify(args)
-	#notification.send()
-	'''
-	imitate_task = []
-	imitate_task.append(ClientServer.PID)
-	#imitate_task.append({'position_x': PositionX.Right.value, 'position_y': PositionY.Top.value, 'Width': 232, 'Height': 57, 'Left': 1128, 'Top': 0})
-	imitate_task.append({'position_x': PositionX.Right.value, 'position_y': PositionY.Bottom.value, 'Width': 232, 'Height': 57, 'Left': 1128, 'Top': 711})
-	imitate_task.append({'position_x': PositionX.Left.value, 'position_y': PositionY.Top.value, 'Width': 232, 'Height': 57, 'Left': 0, 'Top': 0})
+	args.client_server = Files.CreateClientServer()
+	args.client_server.TestConnected(args.client_server.get_host(), args.client_server.get_port())
 	
-	args.SocketFormPos = args.Search_Socket_Pos(imitate_task)
+	func = {
+				'systemd': systemd_process,
+				'daemon': daemon_process,
+				'config': config_process
+			}.get(args.onlist, empty)(args)
+	
+	args.client_server.TestConnected(args.client_server.get_host(), args.client_server.get_port())
+	args.client_server.Client_Server()
+	
+	task_list = args.client_server..copy()
+	args.SocketFormPos = args.Search_Socket_Pos(task_list)
 	
 	notification = Notify(args)
-	print(notification.args.FormPos)
-	notification.send()
-	##print(notification.args.SocketFormPos)
-	'''
 	
-	#args.CreateDefaultConfig()
-	#print(args)
-	#if args.show:
-	#	for item in Defaults.PREFIX.glob('*.json'): # Files.ThemeDir.glob('*.json'):
-	#		print(str(item.name))
-	#	sys.exit(0)
-	#print(args)
+	args.client_server.task.put(notification.args.FormPos)	
+	
+	notification.send()
+	
+	args.client_server.task.remove(notification.args.FormPos)
 	
 	#if args.onlist == None:
 	#	parser_dict['parser'].parse_args(['-h'])
-	#'''
-	'''
-	#args = Arguments(icon='./info.png', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-	args = Arguments(icon='None', scale='3,3', Title='Apps!', Message='Mesages to text output information!', OnTime=5000,
-					PosX=PositionX.Right.value, PosY = PositionY.Top.value, isTimer = False, Topmost = False, 
-					Style = FormStyle.Standart.value, MoveY = 0, MoveX = 0
-					) # Theme = './theme/light.json'
-	#args = Arguments(Theme = './theme/dark.json')
-	
-	#args.CloseIcon = Defaults.PREFIX.joinpath('exit_close_24x24.png')
-	args.CloseIcon = './exit_close_24x24.png'
-	
-	#args.SocketFormPos.clear()
-	args.SocketFormPos = {
-							'position_x': PositionX.Right.value,
-							'position_y': PositionY.Top.value,
-							'Width': 301,
-							'Height': 71,
-							'Left': 1059,
-							'Top': 648
-						}
-	args.SocketFormPos.clear()
-	notification = Notify(args)
-	#print(notification.args.FormPos)
-	notification.send()
-	#print(notification.args.SocketFormPos)
-	'''
-	'''
-	client_server = ClientServer()
-	client_server.TestConnected(client_server.get_host(), client_server.get_port())
-	client_server.Client_Server()
-	if client_server.is_server:
-		client_server.RunServer()
-	else:
-		print('server_pid:', client_server.ServerPID, 'client_pid:', client_server.PID)
-		client_server.task.put('hello')
-		print(client_server.task.qsize())
-		if not client_server.task.empty():
-			print(client_server.task.get())
-			client_server.task.task_done()
-		else:
-			print('Queue is empty!')
-		print(client_server.task.qsize())
-		#client_server.StopServer()
-		if Files.check_pid(client_server.ServerPID):
-			os.kill(client_server.ServerPID, signal.SIGTERM)
-	'''
-	'''
-	python = str(pathlib.Path(str(sys.executable)).resolve())
-	script = str(pathlib.Path(sys.argv[0]).resolve())
-	if len(sys.argv) >= 2:
-		cmd = []
-		if  platform.system() == 'Windows':
-			if python == script:
-				cmd = ['start', '/b', script]
-			else:
-				cmd = ['start', '/b', python, script]
-		else:
-			if python == script:
-				cmd = [script, '&']
-			else:
-				cmd = [python, script, '&']
-		result = SHELL.shell_run(cmd)
-	else:
-		print(sys.argv)
-	'''
-	pass
 
 if __name__ == '__main__':
 	main()

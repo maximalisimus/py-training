@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-def main(*argv):
+def main():
 	pass
 
 if __name__ == '__main__':
