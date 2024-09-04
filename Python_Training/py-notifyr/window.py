@@ -375,7 +375,10 @@ class ServicesConfig:
 				'delete': f"sc delete py-notifyr",
 				'create': f"sc create py-notifyr DisplayName= \"Py-Notifyr\" binpath= \"{bin_path}\" type= own start= \"auto\"",
 				'description': f"sc description py-notifyr \"{__description__}\"",
-				'config': f"sc config py-notifyr obj= LocalSystem"
+				'config': f"sc config py-notifyr obj= LocalSystem",
+				'utf': f"chcp 65001",
+				'off': f"@echo off",
+				'ansi': f"chcp 866"
 		}.get(case, f"sc query py-notifyr")
 
 class AuthorInfo:
@@ -657,11 +660,11 @@ class SHELL:
 			Returns the result of executing the command, if any.'''
 		proc = subprocess.Popen(shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 		sys.stdout.flush()
-		if  platform.system() == 'Windows':
-			proc.stdin.write('chcp 65001' + "\n")
+		#if  platform.system() == 'Windows':
+		#	proc.stdin.write('chcp 65001' + "\n")
 		proc.stdin.write(cmd + "\n")
-		if  platform.system() == 'Windows':
-			proc.stdin.write('chcp 866' + "\n")
+		#if  platform.system() == 'Windows':
+		#	proc.stdin.write('chcp 866' + "\n")
 		proc.stdin.close()
 		out_data = f"{proc.stdout.read()}"
 		err_data = f"{proc.stderr.read()}"
@@ -669,7 +672,7 @@ class SHELL:
 		proc.terminate()
 		proc.kill()
 		return out_data, err_data
-
+	
 	@staticmethod
 	def shell_run(cmd):
 		result = subprocess.run(cmd, shell=True)
@@ -1836,6 +1839,8 @@ def systemd_process(argv):
 
 def windows_services(argv):
 	if argv.create:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'create')
 		if services != '':
 			print(services)
@@ -1851,8 +1856,11 @@ def windows_services(argv):
 			print(services)
 		if err != '':
 			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'ansi')
 		sys.exit(0)
 	if argv.delete:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'stop')
 		if services != '':
 			print(services)
@@ -1863,22 +1871,31 @@ def windows_services(argv):
 			print(services)
 		if err != '':
 			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'ansi')
 		sys.exit(0)
 	if argv.status:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'status')
 		if services != '':
 			print(services)
 		if err != '':
 			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'ansi')
 		sys.exit(0)
 	if argv.start:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'start')
 		if services != '':
 			print(services)
 		if err != '':
 			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'ansi')
 		sys.exit(0)
 	if argv.stop:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'stop')
 		if services != '':
 			print(services)
@@ -1886,6 +1903,8 @@ def windows_services(argv):
 			print('Error:\n', err)
 		sys.exit(0)
 	if argv.restart:
+		services, err = ServicesConfig.control(argv.console, 'utf')
+		services, err = ServicesConfig.control(argv.console, 'off')
 		services, err = ServicesConfig.control(argv.console, 'stop')
 		if services != '':
 			print(services)
@@ -1896,6 +1915,7 @@ def windows_services(argv):
 			print(services)
 		if err != '':
 			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'ansi')
 		sys.exit(0)
 	argv.parser_dict['parser_services'].parse_args(['-h'])
 	sys.exit(0)
