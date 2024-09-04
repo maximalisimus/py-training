@@ -70,6 +70,15 @@ class Ru_Eng:
 											'stop': "Остановить «pynotifyr.service».",
 											'reload': "Перезагрузить «pynotifyr.service»."
 										},
+							'winservices' : {
+											'info': "Windows службы.",
+											'create': "Создать службу «py-notifyr».",
+											'delete': "Удалить службу «py-notifyr».",
+											'status': "Состояние службы «py-notifyr».",
+											'start': "Запустить службу «py-notifyr».",
+											'stop': "Остановить службу «py-notifyr».",
+											'restart': "Перезапустить службу «py-notifyr»."
+										},
 							'daemon': {
 											'info': 'Управление демоном.',
 											'start': 'Запустить демон.',
@@ -147,6 +156,15 @@ class Ru_Eng:
 											'start': "Start «pynotifyr.service».",
 											'stop': "Stop «pynotifyr.service».",
 											'reload': "Reload «pynotifyr.service»."
+										},
+							'winservices' : {
+											'info': "Windows services.",
+											'create': "Create a service «py-notifyr».",
+											'delete': "Delete a service «py-notifyr».",
+											'status': "Service status «py-notifyr».",
+											'start': "Start the service «py-notifyr».",
+											'stop': "Stop the service «py-notifyr».",
+											'restart': "Restart the service «py-notifyr»."
 										},
 							'daemon': {
 											'info': 'Daemon control.',
@@ -330,6 +348,35 @@ class SystemdConfig:
 				'disable': f"sudo systemctl disable pynotifyr.service",
 				'restart': f"sudo systemctl daemon-reload",
 		}.get(case, f"sudo systemctl daemon-reload")
+
+class ServicesConfig:
+	
+	@classmethod
+	def control(cls, console, select = None):
+		service_info, service_err = SHELL.shell_open(console, cls.commands(select))
+		return service_info, service_err
+	
+	@staticmethod
+	def commands(case = None):
+		''' Windows services control selection. '''
+		global __description__
+		python = str(pathlib.Path(str(sys.executable)).resolve())
+		script = str(pathlib.Path(sys.argv[0]).resolve())
+		cmd = []
+		if python == script:
+			cmd = [script, 'daemon', '-run']
+		else:
+			cmd = [python, script, 'daemon', '-run']
+		bin_path = ' '.join(cmd)
+		return {
+				'status': f"sc query py-notifyr",
+				'start': f"sc start py-notifyr",
+				'stop': f"sc stop py-notifyr",
+				'delete': f"sc delete py-notifyr",
+				'create': f"sc create py-notifyr DisplayName= \"Py-Notifyr\" binpath= \"{bin_path}\" type= own start= \"auto\"",
+				'description': f"sc description py-notifyr \"{__description__}\"",
+				'config': f"sc config py-notifyr obj= LocalSystem"
+		}.get(case, f"sc query py-notifyr")
 
 class AuthorInfo:
 	
@@ -610,7 +657,11 @@ class SHELL:
 			Returns the result of executing the command, if any.'''
 		proc = subprocess.Popen(shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
 		sys.stdout.flush()
+		if  platform.system() == 'Windows':
+			proc.stdin.write('chcp 65001' + "\n")
 		proc.stdin.write(cmd + "\n")
+		if  platform.system() == 'Windows':
+			proc.stdin.write('chcp 866' + "\n")
 		proc.stdin.close()
 		out_data = f"{proc.stdout.read()}"
 		err_data = f"{proc.stderr.read()}"
@@ -1677,7 +1728,6 @@ def createParser(argv):
 
 	if platform.system() == 'Linux':
 		parser_systemd = subparsers.add_parser('systemd', help=argv.Lang[argv.lng]['systemd']['info'])
-		
 		parser_systemd.add_argument ('-create', '--create', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['create'])
 		parser_systemd.add_argument ('-delete', '--delete', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['delete'])
 		parser_systemd.add_argument ('-status', '--status', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['status'])
@@ -1687,8 +1737,18 @@ def createParser(argv):
 		parser_systemd.add_argument ('-stop', '--stop', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['stop'])
 		parser_systemd.add_argument ('-reload', '--reload', action='store_true', default=False, help=argv.Lang[argv.lng]['systemd']['reload'])
 		parser_systemd.set_defaults(onlist='systemd')
-		
 		dict_parser['parser_systemd'] = parser_systemd
+		
+	elif  platform.system() == 'Windows':
+		parser_services = subparsers.add_parser('services', help=argv.Lang[argv.lng]['winservices']['info'])
+		parser_services.add_argument ('-create', '--create', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['create'])
+		parser_services.add_argument ('-delete', '--delete', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['delete'])
+		parser_services.add_argument ('-status', '--status', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['status'])
+		parser_services.add_argument ('-start', '--start', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['start'])
+		parser_services.add_argument ('-stop', '--stop', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['stop'])
+		parser_services.add_argument ('-restart', '--reload', action='store_true', default=False, help=argv.Lang[argv.lng]['winservices']['restart'])
+		parser_services.set_defaults(onlist='services')
+		dict_parser['parser_services'] = parser_services
 	
 	parser_daemon = subparsers.add_parser('daemon', help=argv.Lang[argv.lng]['daemon']['info'])
 	
@@ -1773,6 +1833,72 @@ def systemd_process(argv):
 	else:
 		argv.parser_dict['parser_systemd'].parse_args(['-h'])
 		sys.exit(0)
+
+def windows_services(argv):
+	if argv.create:
+		services, err = ServicesConfig.control(argv.console, 'create')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'description')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'config')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	if argv.delete:
+		services, err = ServicesConfig.control(argv.console, 'stop')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'delete')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	if argv.status:
+		services, err = ServicesConfig.control(argv.console, 'status')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	if argv.start:
+		services, err = ServicesConfig.control(argv.console, 'start')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	if argv.stop:
+		services, err = ServicesConfig.control(argv.console, 'stop')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	if argv.restart:
+		services, err = ServicesConfig.control(argv.console, 'stop')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		services, err = ServicesConfig.control(argv.console, 'start')
+		if services != '':
+			print(services)
+		if err != '':
+			print('Error:\n', err)
+		sys.exit(0)
+	argv.parser_dict['parser_services'].parse_args(['-h'])
+	sys.exit(0)
 
 def daemon_process(argv):
 	def run_script_shell():
@@ -1862,7 +1988,8 @@ def main(*argv):
 	func = {
 				'systemd': systemd_process,
 				'daemon': daemon_process,
-				'config': config_process
+				'config': config_process,
+				'services': windows_services
 			}.get(args.onlist, empty)(args)
 	
 	args.client_server.TestConnected(args.client_server.get_host(), args.client_server.get_port())
