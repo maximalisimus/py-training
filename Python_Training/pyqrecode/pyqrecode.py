@@ -31,11 +31,11 @@ __progname__ = str(pathlib.Path(sys.argv[0]).resolve().name)
 __copyright__ = f"© The \"{__progname__}\". Copyright  by 2024."
 __credits__ = ["Mikhail Artamonov"]
 __license__ = "Open Source"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __maintainer__ = "Mikhail Artamonov"
 __status__ = "Production"
 __date__ = '24.10.2024'
-__modifed__ = '25.10.2024'
+__modifed__ = '28.10.2024'
 
 class Author:
 	
@@ -214,10 +214,24 @@ def createParser(argv):
 	parser = argparse.ArgumentParser(prog=Prog.name, description=Prog.desc)
 	parser.add_argument ('-v', '--version', action='version', version=f'{Prog.name} {Prog.vers}',  help='show version programm')
 	parser.add_argument ('-i', '--info', action='store_true', default=False, help='detailed product information')
-	parser.add_argument("-d", '--dirs', dest="dirs", metavar='DIRS', type=str, default=str(Prog.dirs), help='work directory')
-	parser.add_argument("-o", '--output', dest="output", metavar='OUTPUT', type=str, default='image.png', help='output fule name (default: image.png)')
-	parser.add_argument("-t", '--text', dest="text", metavar='TEXT', type=str, default='', help='text that needs to be encrypted into a QR code')
-	parser.add_argument ('-s', '--show', action='store_true', default=False, help='open image with final qr code')
+	
+	group1 = parser.add_argument_group('Parameters', 'Base config')
+	group1.add_argument("-d", '--dirs', dest="dirs", metavar='DIRS', type=str, default=str(Prog.dirs), help='work directory')
+	group1.add_argument("-o", '--output', dest="output", metavar='OUTPUT', type=str, default='image.png', help='output fule name (default: image.png)')
+	group1.add_argument("-t", '--text', dest="text", metavar='TEXT', type=str, default='', help='text that needs to be encrypted into a QR code')
+	group1.add_argument ('-s', '--show', action='store_true', default=False, help='open image with final qr code (Default: False)')
+	dict_parser['group1'] = group1	
+	
+	group2 = parser.add_argument_group('Sizes', 'Box and border')
+	group2.add_argument("-box", '--box', dest="box", metavar='BOX', type=int, default=10, help='Box size (Default: 10)')
+	group2.add_argument("-border", '--border', dest="border", metavar='BORDER', type=int, default=2, help='Border (Default: 2)')
+	dict_parser['group2'] = group2
+	
+	group3 = parser.add_argument_group('Settings', 'Additional settings')
+	group3.add_argument ('-fit', '--fit', action='store_false', default=True, help='Fit (default: True)')
+	group3.add_argument("-fill", '--fill', dest="fill", metavar='FILL', type=str, default='black', help='Text color (Default: black)')
+	group3.add_argument("-back", '--back', dest="back", metavar='BACK', type=str, default='white', help='Background color (Default: white)')
+	dict_parser['group3'] = group3
 	
 	dict_parser['parser'] = parser
 	return dict_parser
@@ -239,10 +253,10 @@ def main(*argv):
 		sys.exit(0)
 	
 	if args.text != '':
-		qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4, )
+		qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=args.box, border=args.border, )
 		qr.add_data(str(args.text))
-		qr.make(fit=True)
-		img = qr.make_image(fill_color="black", back_color="white")
+		qr.make(fit=args.fit)
+		img = qr.make_image(fill_color=args.fill, back_color=args.back)
 		img.save(output_filename)
 		if args.show:
 			im = Image.open(output_filename)
