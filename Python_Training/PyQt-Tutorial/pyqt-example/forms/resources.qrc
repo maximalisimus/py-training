@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="icon_res">
+    <file>excel.svg</file>
+  </qresource>
+</RCC>
