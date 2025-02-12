@@ -494,6 +494,9 @@ class QuestionForm(DefaultWidget):
 
 	'''
 	def open_file_dialog(self):
+		# fileName = QtWidgets.QFileDialog.getSaveFileName(parent=None, caption="Заголовок окна", directory="c:\\Python34", filter="All Files (*);;Python Files (*.py);;Text Files (*.txt)", initialFilter="Text Files (*.txt)")
+		# if fileName != "":
+		#	lineEdit1.setText(fileName)
 		filename, _ = QFileDialog.getOpenFileName(self, "Select a File", r"./", "Images (*.png *.jpg)")
 		return filename
 	'''
