@@ -1,0 +1,836 @@
+
+import sys
+from PyQt5.QtWidgets import * 
+                  
+ 
+#Main Window
+class App(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.title = 'PyQt5 - QTableWidget'
+        self.left = 0
+        self.top = 0
+        self.width = 300
+        self.height = 200
+ 
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+ 
+        self.createTable()
+ 
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.tableWidget)
+        self.setLayout(self.layout)
+ 
+        #Show window
+        self.show()
+ 
+    #Create table
+    def createTable(self):
+        self.tableWidget = QTableWidget()
+
+        #Row count
+        self.tableWidget.setRowCount(4) 
+
+        #Column count
+        self.tableWidget.setColumnCount(2)  
+
+        self.tableWidget.setItem(0,0, QTableWidgetItem("Name"))
+        self.tableWidget.setItem(0,1, QTableWidgetItem("City"))
+        self.tableWidget.setItem(1,0, QTableWidgetItem("Aloysius"))
+        self.tableWidget.setItem(1,1, QTableWidgetItem("Indore"))
+        self.tableWidget.setItem(2,0, QTableWidgetItem("Alan"))
+        self.tableWidget.setItem(2,1, QTableWidgetItem("Bhopal"))
+        self.tableWidget.setItem(3,0, QTableWidgetItem("Arnavi"))
+        self.tableWidget.setItem(3,1, QTableWidgetItem("Mandsaur"))
+ 
+        #Table will fit the screen horizontally
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(
+            QHeaderView.Stretch)
+ 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = App()
+    sys.exit(app.exec_())
+    
+    
+
+
+
+------------------------------------------------------------------------
+
+def action_cell(self):
+    row = self.ui.tableWidget.currentRow()
+    column = self.ui.tableWidget.currentColumn()
+    cell_text = self.ui.tableWidget.item(row, column).text()
+    # Обработка ячейки
+
+------------------------------------------------------------------------
+
+def addRow(self):
+        #Retrieve text from QLineEdit
+        x = str(self.x_input.text())
+        y = str(self.y_input.text())
+        z = str(self.z_input.text())        
+        #Create a empty row at bottom of table
+        numRows = self.tableWidget.rowCount()
+        self.tableWidget.insertRow(numRows)     
+        #Add text to the row
+        self.tableWidget.setItem(numRows, 0, QtGui.QTableWidgetItem(x))
+        self.tableWidget.setItem(numRows, 1, QtGui.QTableWidgetItem(y))
+        self.tableWidget.setItem(numRows, 2, QtGui.QTableWidgetItem(z))
+
+------------------------------------------------------------------------
+
+# Добавляем новый столбец
+new_column_index = table_widget.columnCount()  # Индекс нового столбца
+table_widget.insertColumn(new_column_index)
+
+# Устанавливаем заголовок для нового столбца
+table_widget.setHorizontalHeaderItem(new_column_index, QTableWidgetItem("Новый Столбец"))
+
+------------------------------------------------------------------------
+
+# Get data from a specific cell
+item = tableWidget.item(0, 0)
+if item is not None:
+    print("Data in Row 1, Column 1:", item.text())
+
+------------------------------------------------------------------------
+
+# Set item text
+item = QTableWidgetItem("Text")
+tableWidget.setItem(row, column, item)
+
+------------------------------------------------------------------------
+
+# Remove an item
+tableWidget.takeItem(row, column)
+# or
+tableWidget.removeRow(row)
+
+------------------------------------------------------------------------
+
+# Group items with different properties
+for row in range(3):
+    for column in range(3):
+        item = tableWidget.item(row, column)
+        if item:
+            # Set background color
+            item.setBackground(QColor(255, 0, 0))  # Red background color
+            # Set text color
+            item.setTextColor(QColor(0, 0, 255))  # Blue text color
+            # Set font
+            font = QFont()
+            font.setBold(True)
+            item.setFont(font)
+
+------------------------------------------------------------------------
+
+color = QColor(255,192,0)
+print(color.getRgb()[0], color.getRgb()[1], color.getRgb()[2], color.getRgb()[3])
+# 255 192 0 255
+
+------------------------------------------------------------------------
+
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView, QListWidget, QPushButton, QLabel
+from PyQt5.QtGui import QPainter, QFontMetrics, QIcon
+from PyQt5.QtCore import Qt, QRect
+
+class VerticalHeaderView(QHeaderView):
+    def __init__(self, orientation, parent=None, vertical_columns=None, max_size=(50, 100),
+                 column_sizes=None, row_heights=None, horizontal_align=Qt.AlignCenter, vertical_align=Qt.AlignBottom):
+        super().__init__(orientation, parent)
+        self.vertical_columns = vertical_columns if vertical_columns is not None else []
+        self.max_size = max_size  # (width, height)
+        self.column_sizes = column_sizes if column_sizes is not None else {}  # {index: width}
+        self.row_heights = row_heights if row_heights is not None else {}  # {index: height}
+        self.horizontal_align = horizontal_align
+        self.vertical_align = vertical_align
+
+    def paintSection(self, painter, rect, logicalIndex):
+        if logicalIndex in self.vertical_columns:
+            painter.save()
+            painter.translate(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2)
+            painter.rotate(-90)  # Поворачиваем текст на 90 градусов
+            
+            # Устанавливаем максимальный размер ячейки
+            rect.setWidth(self.max_size[1])
+            rect.setHeight(self.max_size[0])
+
+            # Получаем текст заголовка
+            text = self.model().headerData(logicalIndex, self.orientation())
+            font_metrics = QFontMetrics(painter.font())
+            
+            # Перенос текста по словам
+            if font_metrics.boundingRect(text).width() > rect.height():
+                text = "\n".join(text.split())
+            
+            # Выравнивание текста
+            painter.drawText(QRect(int(-rect.height() / 2), int(-rect.width() / 2), rect.height(), rect.width()), 
+                             self.vertical_align | self.horizontal_align, text)
+            painter.restore()
+        else:
+            # Рисуем обычный заголовок
+            super().paintSection(painter, rect, logicalIndex)
+
+    def sizeHint(self):
+        """ Возвращаем рекомендуемый размер для заголовка с учетом вертикальных столбцов. """
+        size = super().sizeHint()
+        for index in self.vertical_columns:
+            size.setHeight(max(size.height(), self.max_size[0]))
+            size.setWidth(max(size.width(), self.max_size[1]))
+
+        return size
+
+    def setColumnSizes(self):
+        """ Устанавливаем размеры столбцов только для заданных индексов. """
+        for index, width in self.column_sizes.items():
+            if index in self.vertical_columns:
+                self.parentWidget().setColumnWidth(index, width)
+
+    def setRowHeights(self):
+        """ Устанавливаем высоты строк только для заданных индексов. """
+        for index, height in self.row_heights.items():
+            self.parentWidget().setRowHeight(index, height)
+
+class MyTable(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.table = QTableWidget(5, 6)  # 5 строк и 6 столбцов
+        
+        self.list_widget = QListWidget(self)
+        self.reset_button = QPushButton("Сбросить фильтр", self)
+        self.reset_button.setIcon(QIcon("filter-clear.png"))  # Укажите путь к вашей иконке
+        self.reset_button.clicked.connect(self.reset_filter)
+        
+        self.setup_table()
+        
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Выберите элемент для фильтрации:"))
+        layout.addWidget(self.list_widget)
+        layout.addWidget(self.reset_button)
+        layout.addWidget(self.table)
+        self.setLayout(layout)
+
+        # Подключаем сигнал для обработки щелчков по элементам списка
+        self.list_widget.itemClicked.connect(self.apply_filter)        
+
+    def setup_table(self):
+        # Установка заголовков столбцов
+        headers = ["Соц. Работник", "Получатели ФИО", "Признак учета", "вып. процедур, связанных с сохранением здоровья", "оказание помощи в оформлении документов", "консультирование по соц-мед.вопросам"]
+        self.table.setHorizontalHeaderLabels(headers)
+
+        # Заменяем стандартный заголовок на наш вертикальный
+        vertical_columns = [3, 4, 5]  # Индексы столбцов, которые будут вертикальными
+        column_sizes = {0: 50, 1: 50, 2: 50}  # Размеры столбцов для вертикальных заголовков
+        row_heights = {0: 30, 1: 30}  # Высоты строк для вертикальных заголовков
+        
+        vertical_header = VerticalHeaderView(Qt.Horizontal, self.table, vertical_columns, max_size=(128, 100),
+                                             column_sizes=column_sizes, row_heights=row_heights,
+                                             horizontal_align=Qt.AlignCenter, vertical_align=Qt.AlignBottom)
+        self.table.setHorizontalHeader(vertical_header)
+
+        # Устанавливаем размеры столбцов и высоты строк
+        vertical_header.setColumnSizes()  # Устанавливаем размеры для вертикальных заголовков
+        vertical_header.setRowHeights()    # Устанавливаем высоты для строк
+
+        # Пример заполнения ячеек
+        for row in range(5):
+            for col in range(6):
+                item = QTableWidgetItem(f"Ячейка {row+1}, {col+1}")
+                self.table.setItem(row, col, item)
+        
+        self.table.setItem(0, 0, QTableWidgetItem(f"Вышегородцева Л.А."))
+        self.table.setItem(0, 1, QTableWidgetItem(f"Трефилова Т.Ф."))
+        self.table.setItem(0, 2, QTableWidgetItem(f"На учете"))
+        self.table.setItem(1, 0, QTableWidgetItem(f"Поликарпова Т.А. город"))
+        self.table.setItem(1, 1, QTableWidgetItem(f"Светова К.М."))
+        self.table.setItem(1, 2, QTableWidgetItem(f"На учете"))
+        
+        # Автоматическая подстройка ширины столбцов и высоты строк
+        self.adjust_table_size()
+        
+        # Ручное регулирование остальных столбцов и строк
+        for col in range(3, 6):  # Остальные столбцы
+            self.table.setColumnWidth(col, 100)  # Максимальная ширина столбцов
+        for row in range(2, 5):  # Остальные строки
+            self.table.setRowHeight(row, 30)  # Максимальная высота строк
+        
+        # Заполнение QListWidget уникальными значениями из первого столбца
+        self.update_list_widget()
+        
+    def adjust_table_size(self):
+        # Подстраиваем ширину столбцов по содержимому
+        for col in range(self.table.columnCount()):
+            self.table.resizeColumnToContents(col)
+
+        # Подстраиваем высоту строк по содержимому
+        for row in range(self.table.rowCount()):
+            self.table.resizeRowToContents(row)
+
+    def update_list_widget(self):
+        """ Обновление QListWidget уникальными значениями из первого столбца. """
+        unique_values = set()
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item:
+                unique_values.add(item.text())
+        self.list_widget.addItems(sorted(unique_values))
+
+    def apply_filter(self, item):
+        """ Применение фильтра к таблице на основе выбранного элемента из QListWidget. """
+        filter_text = item.text().lower()
+
+        for row in range(self.table.rowCount()):
+            table_item = self.table.item(row, 0)
+            if table_item:
+                if filter_text in table_item.text().lower():
+                    self.table.showRow(row)
+                else:
+                    self.table.hideRow(row)
+
+    def reset_filter(self):
+        """ Сброс фильтрации и отображение всех строк. """
+        for row in range(self.table.rowCount()):
+            self.table.showRow(row)
+        self.list_widget.clearSelection()  # Сбрасываем выделение в QListWidget
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = MyTable()
+    window.show()
+    app.exec_()
+
+------------------------------------------------------------------------
+
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QHeaderView, QListWidget, QPushButton, QLabel
+from PyQt5.QtGui import QPainter, QFontMetrics, QIcon
+from PyQt5.QtCore import Qt, QRect
+
+class VerticalHeaderView(QHeaderView):
+    def __init__(self, orientation, parent=None, vertical_columns=None, max_size=(50, 100),
+                 column_sizes=None, row_heights=None, horizontal_align=Qt.AlignCenter, vertical_align=Qt.AlignBottom):
+        super().__init__(orientation, parent)
+        self.vertical_columns = vertical_columns if vertical_columns is not None else []
+        self.max_size = max_size  # (width, height)
+        self.column_sizes = column_sizes if column_sizes is not None else {}  # {index: width}
+        self.row_heights = row_heights if row_heights is not None else {}  # {index: height}
+        self.horizontal_align = horizontal_align
+        self.vertical_align = vertical_align
+
+    def paintSection(self, painter, rect, logicalIndex):
+        if logicalIndex in self.vertical_columns:
+            painter.save()
+            painter.translate(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2)
+            painter.rotate(-90)  # Поворачиваем текст на 90 градусов
+            
+            # Устанавливаем максимальный размер ячейки
+            rect.setWidth(self.max_size[1])
+            rect.setHeight(self.max_size[0])
+
+            # Получаем текст заголовка
+            text = self.model().headerData(logicalIndex, self.orientation())
+            font_metrics = QFontMetrics(painter.font())
+            
+            # Перенос текста по словам
+            if font_metrics.boundingRect(text).width() > rect.height():
+                text = "\n".join(text.split())
+            
+            # Выравнивание текста
+            painter.drawText(QRect(int(-rect.height() / 2), int(-rect.width() / 2), rect.height(), rect.width()), 
+                             self.vertical_align | self.horizontal_align, text)
+            painter.restore()
+        else:
+            # Рисуем обычный заголовок
+            super().paintSection(painter, rect, logicalIndex)
+
+    def sizeHint(self):
+        """ Возвращаем рекомендуемый размер для заголовка с учетом вертикальных столбцов. """
+        size = super().sizeHint()
+        for index in self.vertical_columns:
+            size.setHeight(max(size.height(), self.max_size[0]))
+            size.setWidth(max(size.width(), self.max_size[1]))
+
+        return size
+
+    def setColumnSizes(self):
+        """ Устанавливаем размеры столбцов только для заданных индексов. """
+        for index, width in self.column_sizes.items():
+            if index in self.vertical_columns:
+                self.parentWidget().setColumnWidth(index, width)
+
+    def setRowHeights(self):
+        """ Устанавливаем высоты строк только для заданных индексов. """
+        for index, height in self.row_heights.items():
+            self.parentWidget().setRowHeight(index, height)
+
+class MyTable(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.table = QTableWidget(5, 6)  # 5 строк и 6 столбцов
+        
+        self.list_widget = QListWidget(self)
+        self.reset_button = QPushButton("Сбросить фильтр", self)
+        self.reset_button.setIcon(QIcon("filter-clear.png"))  # Укажите путь к вашей иконке
+        self.reset_button.clicked.connect(self.reset_filter)
+        
+        self.setup_table()
+        
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Выберите элемент для фильтрации:"))
+        layout.addWidget(self.list_widget)
+        layout.addWidget(self.reset_button)
+        layout.addWidget(self.table)
+        self.setLayout(layout)
+
+        # Подключаем сигнал для обработки щелчков по элементам списка
+        self.list_widget.itemClicked.connect(self.apply_filter)        
+
+    def setup_table(self):
+        # Установка заголовков столбцов
+        headers = ["Соц. Работник", "Получатели ФИО", "Признак учета", "вып. процедур, связанных с сохранением здоровья", "оказание помощи в оформлении документов", "консультирование по соц-мед.вопросам"]
+        self.table.setHorizontalHeaderLabels(headers)
+
+        # Заменяем стандартный заголовок на наш вертикальный
+        vertical_columns = [3, 4, 5]  # Индексы столбцов, которые будут вертикальными
+        column_sizes = {0: 50, 1: 50, 2: 50}  # Размеры столбцов для вертикальных заголовков
+        row_heights = {0: 30, 1: 30}  # Высоты строк для вертикальных заголовков
+        
+        vertical_header = VerticalHeaderView(Qt.Horizontal, self.table, vertical_columns, max_size=(128, 100),
+                                             column_sizes=column_sizes, row_heights=row_heights,
+                                             horizontal_align=Qt.AlignCenter, vertical_align=Qt.AlignBottom)
+        self.table.setHorizontalHeader(vertical_header)
+
+        # Устанавливаем размеры столбцов и высоты строк
+        vertical_header.setColumnSizes()  # Устанавливаем размеры для вертикальных заголовков
+        vertical_header.setRowHeights()    # Устанавливаем высоты для строк
+
+        # Пример заполнения ячеек
+        for row in range(5):
+            for col in range(6):
+                item = QTableWidgetItem(f"Ячейка {row+1}, {col+1}")
+                self.table.setItem(row, col, item)
+        
+        self.table.setItem(0, 0, QTableWidgetItem(f"Вышегородцева Л.А."))
+        self.table.setItem(0, 1, QTableWidgetItem(f"Трефилова Т.Ф."))
+        self.table.setItem(0, 2, QTableWidgetItem(f"На учете"))
+        self.table.setItem(1, 0, QTableWidgetItem(f"Поликарпова Т.А. город"))
+        self.table.setItem(1, 1, QTableWidgetItem(f"Светова К.М."))
+        self.table.setItem(1, 2, QTableWidgetItem(f"На учете"))
+        
+        # Автоматическая подстройка ширины столбцов и высоты строк
+        self.adjust_table_size()
+        
+        # Ручное регулирование остальных столбцов и строк
+        for col in range(3, 6):  # Остальные столбцы
+            self.table.setColumnWidth(col, 100)  # Максимальная ширина столбцов
+        for row in range(2, 5):  # Остальные строки
+            self.table.setRowHeight(row, 30)  # Максимальная высота строк
+        
+        # Заполнение QListWidget уникальными значениями из первого столбца
+        self.update_list_widget()
+        
+    def adjust_table_size(self):
+        # Подстраиваем ширину столбцов по содержимому
+        for col in range(self.table.columnCount()):
+            self.table.resizeColumnToContents(col)
+
+        # Подстраиваем высоту строк по содержимому
+        for row in range(self.table.rowCount()):
+            self.table.resizeRowToContents(row)
+
+    def update_list_widget(self):
+        """ Обновление QListWidget уникальными значениями из первого столбца. """
+        unique_values = set()
+        for row in range(self.table.rowCount()):
+            item = self.table.item(row, 0)
+            if item:
+                unique_values.add(item.text())
+        self.list_widget.addItems(sorted(unique_values))
+
+    def apply_filter(self, item):
+        """ Применение фильтра к таблице на основе выбранного элемента из QListWidget. """
+        filter_text = item.text().lower()
+
+        for row in range(self.table.rowCount()):
+            table_item = self.table.item(row, 0)
+            if table_item:
+                if filter_text in table_item.text().lower():
+                    self.table.showRow(row)
+                else:
+                    self.table.hideRow(row)
+
+    def reset_filter(self):
+        """ Сброс фильтрации и отображение всех строк. """
+        for row in range(self.table.rowCount()):
+            self.table.showRow(row)
+        self.list_widget.clearSelection()  # Сбрасываем выделение в QListWidget
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = MyTable()
+    window.show()
+    app.exec_()
+
+------------------------------------------------------------------------
+
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QListWidget, QPushButton, QVBoxLayout, QWidget, QMessageBox
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Создаем виджеты
+        self.listWidget1 = QListWidget()
+        self.listWidget2 = QListWidget()
+        self.button1 = QPushButton("Кнопка 1")
+        self.button2 = QPushButton("Кнопка 2")
+
+        # Добавляем элементы в QListWidget
+        self.listWidget1.addItems(["Item 1", "Item 2", "Item 3"])
+        self.listWidget2.addItems(["Item A", "Item B", "Item C"])
+
+        # Подключаем сигналы itemClicked к одному методу
+        self.listWidget1.itemClicked.connect(self.handle_item_clicked)
+        self.listWidget2.itemClicked.connect(self.handle_item_clicked)
+        self.listWidget1.name = 'listWidget1'
+        self.listWidget2.name = 'listWidget2'
+
+        # Устанавливаем макет
+        layout = QVBoxLayout()
+        layout.addWidget(self.listWidget1)
+        layout.addWidget(self.listWidget2)
+        layout.addWidget(self.button1)
+        layout.addWidget(self.button2)
+
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    def handle_item_clicked(self, item):
+        # Получаем имя объекта и текст элемента
+        sender = self.sender()  # Получаем отправителя сигнала
+        object_name = sender.name  # Имя объекта
+        item_text = item.text()  # Текст элемента
+
+        # Выводим информацию
+        #QMessageBox.information(self, "Item Clicked", f"Clicked: {item_text} from {object_name}")
+
+        # Пример блокировки кнопок в зависимости от нажатого элемента
+        if str(object_name) == str(self.listWidget1.name):
+            self.button1.setEnabled(False)
+            self.button2.setEnabled(True)
+        else:
+            self.button1.setEnabled(True)
+            self.button2.setEnabled(False)
+
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    main()
+
+------------------------------------------------------------------------
+
+from PyQt5.QtWidgets import (QApplication, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget, 
+                             QListWidget, QPushButton, QLabel, QHBoxLayout, QInputDialog)
+from PyQt5.QtGui import QIcon
+
+class TreeWidgetManager(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setup_ui()
+
+    def setup_ui(self):
+        # Основной вертикальный layout
+        main_layout = QVBoxLayout()
+
+        # Layout для кнопок управления
+        control_layout = QHBoxLayout()
+
+        # Кнопки управления
+        btn_add_root = QPushButton("Добавить корень")
+        btn_add_child = QPushButton("Добавить потомка")
+        btn_remove_item = QPushButton("Удалить элемент")
+        btn_add_column = QPushButton("Добавить столбец")
+        btn_remove_column = QPushButton("Удалить столбец")
+        btn_reset_filter = QPushButton("Сбросить фильтр")
+        btn_reset_filter.setIcon(QIcon("reset_icon.png"))  # Укажите путь к вашей иконке
+        btn_edit_item = QPushButton("Изменить данные")
+
+        # Подключение сигналов к слотам
+        btn_add_root.clicked.connect(self.add_root_item)
+        btn_add_child.clicked.connect(self.add_child_item)
+        btn_remove_item.clicked.connect(self.remove_item)
+        btn_add_column.clicked.connect(self.add_column)
+        btn_remove_column.clicked.connect(self.remove_column)
+        btn_reset_filter.clicked.connect(self.reset_filter)
+        btn_edit_item.clicked.connect(self.edit_item)
+
+        # Добавление кнопок в layout управления
+        control_layout.addWidget(btn_add_root)
+        control_layout.addWidget(btn_add_child)
+        control_layout.addWidget(btn_remove_item)
+        control_layout.addWidget(btn_add_column)
+        control_layout.addWidget(btn_remove_column)
+        control_layout.addWidget(btn_reset_filter)
+        control_layout.addWidget(btn_edit_item)
+
+        # Создание QTreeWidget
+        self.tree_widget = QTreeWidget()
+        self.tree_widget.setColumnCount(2)  # Начинаем с 2 столбцов
+        self.tree_widget.setHeaderLabels(["Название", "Описание"])
+
+        # Создание QListWidget для фильтрации по корневым элементам
+        self.list_widget_root = QListWidget()
+        self.list_widget_root.itemClicked.connect(self.apply_filter_root)
+
+        # Создание второго QListWidget для фильтрации по дочерним элементам
+        self.list_widget_child = QListWidget()
+        self.list_widget_child.itemClicked.connect(self.apply_filter_child)
+
+        # Компоновка элементов
+        main_layout.addLayout(control_layout)
+        main_layout.addWidget(QLabel("Выберите корневой элемент для фильтрации:"))
+        main_layout.addWidget(self.list_widget_root)
+        main_layout.addWidget(QLabel("Выберите дочерний элемент для фильтрации:"))
+        main_layout.addWidget(self.list_widget_child)
+        main_layout.addWidget(self.tree_widget)
+
+        self.setLayout(main_layout)
+        self.setWindowTitle("Менеджер дерева")
+        self.resize(800, 600)
+
+    def add_root_item(self):
+        """ Добавление корневого элемента """
+        name, ok = QInputDialog.getText(self, "Добавить корень", "Введите название:")
+        if ok and name:
+            root_item = QTreeWidgetItem(self.tree_widget)
+            root_item.setText(0, name)
+            root_item.setText(1, "Корневой элемент")
+            self.update_list_widget_root()
+
+    def add_child_item(self):
+        """ Добавление дочернего элемента """
+        root_items = [self.tree_widget.topLevelItem(i) for i in range(self.tree_widget.topLevelItemCount())]
+        root_names = [item.text(0) for item in root_items]
+        
+        # Открываем диалог для выбора корневого элемента
+        selected_root, ok = QInputDialog.getItem(self, "Выберите корень", "Выберите корневой элемент:", root_names, 0, False)
+        if ok and selected_root:
+            # Находим выбранный корневой элемент
+            for root_item in root_items:
+                if root_item.text(0) == selected_root:
+                    name, ok = QInputDialog.getText(self, "Добавить потомка", "Введите название:")
+                    if ok and name:
+                        child_item = QTreeWidgetItem(root_item)
+                        child_item.setText(0, name)
+                        child_item.setText(1, "Дочерний элемент")
+                    break
+
+    def remove_item(self):
+        """ Удаление выбранного элемента """
+        current_item = self.tree_widget.currentItem()
+        if current_item:
+            parent = current_item.parent()
+            if parent:
+                parent.removeChild(current_item)
+            else:
+                self.tree_widget.takeTopLevelItem(self.tree_widget.indexOfTopLevelItem(current_item))
+            self.update_list_widget_root()
+
+    def add_column(self):
+        """ Добавление нового столбца """
+        column_count = self.tree_widget.columnCount()
+        self.tree_widget.setColumnCount(column_count + 1)
+        
+        # Устанавливаем заголовок для нового столбца
+        headers = [self.tree_widget.headerItem().text(i) for i in range(column_count)]
+        headers.append(f"Столбец {column_count + 1}")
+        self.tree_widget.setHeaderLabels(headers)
+    
+        # Инициализируем данные для нового столбца во всех существующих элементах
+        for i in range(self.tree_widget.topLevelItemCount()):
+            root_item = self.tree_widget.topLevelItem(i)
+            root_item.setText(column_count, "")  # Пустое значение для нового столбца
+        
+        # Добавляем пустые значения для дочерних элементов
+        for j in range(root_item.childCount()):
+            child_item = root_item.child(j)
+            child_item.setText(column_count, "")
+
+    def edit_item(self):
+        """ Изменение текста выбранного элемента """
+        row, ok_row = QInputDialog.getInt(self, "Номер строки", "Введите номер строки (0 для корневого элемента):", 0, 0, self.tree_widget.topLevelItemCount() - 1)
+        column, ok_column = QInputDialog.getInt(self, "Номер столбца", "Введите номер столбца:", 0, 0, self.tree_widget.columnCount() - 1)
+        
+        if ok_row and ok_column:
+            # Проверяем, что строка существует
+            if row < self.tree_widget.topLevelItemCount():
+                item = self.tree_widget.topLevelItem(row)
+            
+                # Проверяем, что столбец существует
+                if column < self.tree_widget.columnCount():
+                    new_text, ok = QInputDialog.getText(self, "Изменить элемент", f"Введите новое значение для столбца {column}:")
+                    if ok and new_text:
+                        item.setText(column, new_text)
+				
+                # Проверка дочерних элементов
+                if item.childCount() > 0:
+                    child_index, ok_child = QInputDialog.getInt(self, "Номер дочернего элемента", 
+                                                                      f"Введите номер дочернего элемента (0 - {item.childCount() - 1}):", 
+                                                                      0, 0, item.childCount() - 1)
+                    if ok_child:
+                        child_item = item.child(child_index)
+                        if column < self.tree_widget.columnCount():
+                            new_text, ok = QInputDialog.getText(self, "Изменить дочерний элемент", 
+																f"Введите новое значение для столбца {column}:")
+                            if ok and new_text:
+                                child_item.setText(column, new_text)  # Изменяем текст в указанном столбце
+
+
+
+
+    def remove_column(self):
+        """ Удаление последнего столбца """
+        column_count = self.tree_widget.columnCount()
+        if column_count > 1:
+            self.tree_widget.setColumnCount(column_count - 1)
+
+    def update_list_widget_root(self):
+        """ Обновление QListWidget корневыми элементами """
+        self.list_widget_root.clear()
+        for i in range(self.tree_widget.topLevelItemCount()):
+            root_item = self.tree_widget.topLevelItem(i)
+            self.list_widget_root.addItem(root_item.text(0))
+        self.update_list_widget_child(None)  # Обновляем дочерний фильтр
+
+    def update_list_widget_child(self, parent_item):
+        """ Обновление QListWidget дочерними элементами """
+        self.list_widget_child.clear()
+        if parent_item:
+            for i in range(parent_item.childCount()):
+                child_item = parent_item.child(i)
+                self.list_widget_child.addItem(child_item.text(0))
+
+    def apply_filter_root(self, item):
+        """ Применение фильтра к дереву по корневым элементам """
+        filter_text = item.text().lower()
+        for i in range(self.tree_widget.topLevelItemCount()):
+            root_item = self.tree_widget.topLevelItem(i)
+            root_item.setHidden(filter_text not in root_item.text(0).lower())
+
+    def apply_filter_child(self, item):
+        """ Применение фильтра к дереву по дочерним элементам """
+        filter_text = item.text().lower()
+        for i in range(self.tree_widget.topLevelItemCount()):
+            root_item = self.tree_widget.topLevelItem(i)
+            for j in range(root_item.childCount()):
+                child_item = root_item.child(j)
+                child_item.setHidden(filter_text not in child_item.text(0).lower())
+
+    def reset_filter(self):
+        """ Сброс фильтрации """
+        for i in range(self.tree_widget.topLevelItemCount()):
+            root_item = self.tree_widget.topLevelItem(i)
+            root_item.setHidden(False)
+            for j in range(root_item.childCount()):
+                child_item = root_item.child(j)
+                child_item.setHidden(False)
+        self.list_widget_root.clearSelection()
+        self.list_widget_child.clearSelection()
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = TreeWidgetManager()
+    window.show()
+    app.exec_()
+
+------------------------------------------------------------------------
+
+import sys
+from PyQt5.QtWidgets import QApplication, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget, QPushButton
+from PyQt5.QtGui import QColor
+
+#pip install beautifulsoup4
+from bs4 import BeautifulSoup
+
+import pathlib
+import sys
+import json
+import re
+
+class MyTableWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.table = QTableWidget(10, 5)  # Создаем таблицу с 10 строками и 5 столбцами
+        self.init_ui()
+
+    def init_ui(self):
+        self.setWindowTitle("Вставка из буфера обмена с цветом заливки")
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+
+        paste_button = QPushButton("Вставить из буфера обмена")
+        paste_button.clicked.connect(self.paste_from_clipboard)
+        layout.addWidget(paste_button)
+
+        self.setLayout(layout)
+
+    def paste_from_clipboard(self):
+        clipboard = QApplication.clipboard()
+        data = clipboard.text()  # Получаем текст из буфера обмена
+        mime_data = clipboard.mimeData()
+        
+        # Проверяем, содержит ли данные HTML:
+        if mime_data.hasHtml():
+            html_data = mime_data.html().replace('></td>', '>0</td>').replace('&nbsp;', '0')
+            pay_color = '#FFC000'
+            no_pay_color = '#FFFFFF'
+            
+            soup = BeautifulSoup(html_data, 'html.parser')
+            tables = []
+            for row in soup.find_all('tr'):
+                row_data = []
+                for cell in row.find_all('td'):
+                    # Получение цвета фона
+                    bg_color = cell.get('style', '').split('background:')[-1].split(';')[0] if cell.get('style') else None
+                    # Обработка цвета фона
+                    if bg_color and bg_color.lower() != pay_color.lower():
+                        bg_color = no_pay_color
+                    else:
+                        bg_color = pay_color  # Принудительно закрашиваем в белый, если цвет не равен #FFC000
+                    # Обработка пустых значений
+                    value = cell.get_text(strip=True) or '0'
+                    if value == '&nbsp;':
+                        value = '0'
+                    row_data.append((int(value), bg_color))
+                tables.append(row_data)
+             
+            for row_index in range(0, len(tables), 1):
+                if row_index >= self.table.rowCount():
+                    break  # Проверяем, чтобы не выйти за пределы таблицы
+                for col_index in range(0, len(tables[row_index]), 1):
+                    if col_index >= self.table.columnCount():
+                        break  # Проверяем, чтобы не выйти за пределы таблицы
+                    item = QTableWidgetItem(str(tables[row_index][col_index][0]))
+                    fill_color = QColor(0, 0, 0)
+                    fill_color.setNamedColor(tables[row_index][col_index][1])
+                    item.setBackground(fill_color)
+                    self.table.setItem(row_index, col_index, item)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MyTableWidget()
+    window.show()
+    sys.exit(app.exec_())
+
+
+------------------------------------------------------------------------
+
