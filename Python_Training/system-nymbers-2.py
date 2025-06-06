@@ -177,16 +177,26 @@ def multiplication_float_base(num1_str, num2_str, base):
 def main():
 	print()
 	print(f"Задание 1.") # Задание 1.
-	print(f"a'10 = 219; a'2 = {convert_to_base(219, 2)}") # a'10 = 219; a'2 = 11011011
-	print(f"a'10 = 122; a'4 = {convert_to_base(219, 4)} ") # a'10 = 122; a'4 = 3123 
-	print(f"a'10 = 231; a'8 = {convert_to_base(231, 8)} ") # a'10 = 231; a'8 = 347
-	print(f"a'10 = 213; a'16 = {convert_integer_to_hex(213)} ") # a'10 = 213; a'16 = D5
+	print(f"219'10 = {convert_to_base(219, 2)}'2") # 219'10 = 11011011'2
+	print(f"122'10 = {convert_to_base(219, 4)}'4") # 122'10 = 3123'4 
+	print(f"231'10 = {convert_to_base(231, 8)}'8") # 231'10 = 347'8
+	print(f"213'10 = {convert_integer_to_hex(213)}'16") # 213'10 = D5'16
 	print()
 	print(f"Задание 2.") # Задание 2.
-	print(f"a'10 = 167; a'2 = {convert_to_base(167, 2)}") # a'10 = 167; a'2 = 10100111
-	print(f"a'10 = 167; a'4 = {convert_to_base(167, 4)}") # a'10 = 167; a'4 = 2213
-	print(f"a'10 = 167; a'8 = {convert_to_base(167, 8)}") # a'10 = 167; a'8 = 247
-	print(f"a'10 = 167; a'16 = {convert_integer_to_hex(167)}") # a'10 = 167; a'16 = A7
+	print(f"167'10 = {convert_to_base(167, 2)}") # 167'10 = 10100111
+	print(f"167'10 = {convert_to_base(167, 4)}") # 167'; a'4 = 2213'4
+	print(f"167'10 = {convert_to_base(167, 8)}") # 167'10 = 247'8
+	print(f"167'10 = {convert_integer_to_hex(167)}") # 167'10 = A7'16
+	print()
+	print(f"Задание 3.") # Задание 3.
+	print(f"11011011'2 = {convert_to_base(convert_to_decimal('11011011', 2), 4)}'4") # 11011011'2 = 3123'4
+	print(f"11011011'2 = {convert_to_base(convert_to_decimal('11011011', 2), 8)}'8") # 11011011'2 = 333'8
+	print(f"11011011'2 = {convert_integer_to_hex(convert_to_decimal('11011011', 2))}'16") # 11011011'2 = DB'16
+	print()
+	print(f"Задание 4.") # Задание 4.
+	print(f"D5'16 = {convert_to_base(convert_to_decimal('D5', 16), 2)}'2") # D5'16 = 11010101'2
+	print(f"D5'16 = {convert_to_base(convert_to_decimal('D5', 16), 4)}'4") # D5'16 = 3111'4
+	print(f"D5'16 = {convert_to_base(convert_to_decimal('D5', 16), 8)}'8") # D5'16 = 325'8
 	print()
 	print(f"Задание 5.") # Задание 5.
 	print(f"11011011'2 + 10111010'2 = {add_int_base('11011011', '10111010', 2)}") # 11011011'2 + 10111010'2 = 110010101
