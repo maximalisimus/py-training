@@ -130,9 +130,46 @@ class SystemNumbers:
 
 		return integer_decimal + fractional_decimal
 
+	@classmethod
+	def determine_base(cls, num_str):
+		"""Определяет основание системы счисления для заданного числа."""
+		# Удаляем пробелы и переводим в верхний регистр для единообразия
+		num_str = num_str.strip().upper()
+		
+		# Определяем максимальную цифру
+		max_digit = '0'
+		for char in num_str:
+			if char.isdigit() or ('A' <= char <= 'F'):
+				if char > max_digit:
+					max_digit = char
+		
+		# Определяем основание системы счисления
+		if '0' <= max_digit <= '9':
+			base = int(max_digit) + 1
+		elif 'A' <= max_digit <= 'F':
+			#base = ord(max_digit) - ord('A') + 11  # A=10, B=11, ..., F=15
+			base = 16
+		else:
+			#raise ValueError("Недопустимый символ в числе.")
+			return None
+		
+		return base
+
 class OperationNumbers:
 
 	__slots__ = '__dict__'
+	
+	@staticmethod
+	def is_integer(cls, num_str):
+		"""Определяет, является ли число целым или дробным."""
+		try:
+			# Пробуем преобразовать строку в число с плавающей точкой
+			num = float(num_str)
+			
+			# Проверяем, является ли число целым
+			return num.is_integer()
+		except ValueError:
+			return False  # Если не удалось преобразовать, возвращаем False
 	
 	@staticmethod
 	def add_int_base(num1_str, num2_str, base):
@@ -227,6 +264,6 @@ def main():
 	print(f"11011011'2 - 10111010'2 = {OperationNumbers.subtract_int_base('11011011', '10111010', 2)}") # 11011011'2 - 10111010'2 = 100001
 	print(f"11011011'2 * 10111010'2 = {OperationNumbers.multiplication_int_base('11011011', '10111010', 2)}") # 11011011'2 * 10111010'2 = 1001111100011110
 	print(f"11011011'2 / 10111010'2 = {OperationNumbers.division_float_base('11011011', '10111010', 2)}") # 11011011'2 / 10111010'2 = 1.00101
-
+	
 if __name__ == '__main__':
 	main()
